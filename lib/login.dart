@@ -123,7 +123,7 @@ class _LoginFormState extends State<LoginForm> {
             controller: _usernameController,
             decoration: const InputDecoration(
               labelText: '用户名',
-              hintText: '请输入手机号',
+              hintText: '请输入用户名',
             ),
             validator: usernameValidator,
           ),

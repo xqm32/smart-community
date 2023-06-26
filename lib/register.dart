@@ -99,7 +99,7 @@ class _RegisterFormState extends State<RegisterForm> {
             controller: _usernameController,
             decoration: InputDecoration(
               labelText: '用户名',
-              hintText: '请输入手机号',
+              hintText: '请输入用户名',
               // errorText 是 null 时不会显示
               errorText: _usernameErrorText,
             ),
