@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:smart_community/login.dart';
 
 void main() {
   runApp(const App());
 }
 
+// 应用组件
 class App extends StatelessWidget {
   const App({super.key});
 
@@ -15,7 +17,7 @@ class App extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const Text('Smart Community'),
+      home: const Login(),
     );
   }
 }
