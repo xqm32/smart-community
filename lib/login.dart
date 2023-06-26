@@ -83,17 +83,34 @@ class _LoginFormState extends State<LoginForm> {
       }
     }
 
+    void authError(error) {
+      // TODO: statusCode == 0 时是网络错误
+      if (error.statusCode == 400) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('用户名或密码错误'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      } else {
+        showError(context, error);
+      }
+    }
+
     // 参见 https://github.com/pocketbase/dart-sdk#error-handling
     // TODO: 完善这里的页面导航
     void onLoginPressed() {
+      if (!_formKey.currentState!.validate()) {
+        return;
+      }
+
       pb
           .collection('users')
           .authWithPassword(_usernameController.text, _passwordController.text)
           .then(authThen)
-          .catchError((error) => showError(context, error));
+          .catchError(authError);
     }
 
-    // TODO: 表单验证
     return Form(
       key: _formKey,
       child: Column(
@@ -108,6 +125,7 @@ class _LoginFormState extends State<LoginForm> {
               labelText: '用户名',
               hintText: '请输入手机号',
             ),
+            validator: usernameValidator,
           ),
           TextFormField(
             controller: _passwordController,
@@ -115,6 +133,7 @@ class _LoginFormState extends State<LoginForm> {
               labelText: '密码',
               hintText: '请输入密码',
             ),
+            validator: passwordValidator,
             // 隐藏密码
             obscureText: true,
           ),

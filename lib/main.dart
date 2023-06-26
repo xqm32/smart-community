@@ -14,6 +14,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: 'Smart Community',
       theme: ThemeData(
+        // TODO: 更改主题色
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),

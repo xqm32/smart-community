@@ -28,3 +28,20 @@ void navGoto(context, widget) {
 void showError(context, error) {
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$error')));
 }
+
+// 参见 https://docs.flutter.dev/cookbook/forms/validation
+String? usernameValidator(String? value) {
+  if (value == null || value.isEmpty || value.length < 3) {
+    return "用户名长度至少为 3";
+  } else {
+    return null;
+  }
+}
+
+String? passwordValidator(String? value) {
+  if (value == null || value.isEmpty || value.length < 8) {
+    return "密码长度至少为 8";
+  } else {
+    return null;
+  }
+}

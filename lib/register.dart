@@ -44,6 +44,8 @@ class _RegisterFormState extends State<RegisterForm> {
   final TextEditingController _passwordConfirmController =
       TextEditingController();
 
+  String? _usernameErrorText;
+
   @override
   void dispose() {
     // 参见 https://docs.flutter.dev/cookbook/forms/text-field-changes#create-a-texteditingcontroller 中的 Note
@@ -56,9 +58,25 @@ class _RegisterFormState extends State<RegisterForm> {
 
   @override
   Widget build(BuildContext context) {
+    void createError(error) {
+      if (error.statusCode == 400) {
+        setState(() {
+          _usernameErrorText = '用户名已存在';
+        });
+      } else {
+        showError(context, error);
+      }
+    }
+
     // 参见 https://github.com/pocketbase/dart-sdk#error-handling
     // TODO: 完善这里的页面导航
     void onRegisterPressed() {
+      // 参见 https://docs.flutter.dev/cookbook/forms/validation
+      if (!_formKey.currentState!.validate()) {
+        return;
+      }
+
+      // PocketBase API Preview 给出的样例
       final body = <String, dynamic>{
         'username': _usernameController.text,
         'password': _passwordController.text,
@@ -70,20 +88,23 @@ class _RegisterFormState extends State<RegisterForm> {
           .collection('users')
           .create(body: body)
           .then((value) => navGoto(context, const Login()))
-          .catchError((error) => showError(context, error));
+          .catchError(createError);
     }
 
-    // TODO: 表单验证
     return Form(
       key: _formKey,
       child: Column(
         children: [
           TextFormField(
             controller: _usernameController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: '用户名',
               hintText: '请输入手机号',
+              // errorText 是 null 时不会显示
+              errorText: _usernameErrorText,
             ),
+            validator: usernameValidator,
+            onChanged: (value) => {},
           ),
           TextFormField(
             controller: _passwordController,
@@ -91,6 +112,7 @@ class _RegisterFormState extends State<RegisterForm> {
               labelText: '密码',
               hintText: '请输入密码',
             ),
+            validator: passwordValidator,
             // 隐藏密码
             obscureText: true,
           ),
@@ -100,6 +122,16 @@ class _RegisterFormState extends State<RegisterForm> {
               labelText: '确认密码',
               hintText: '请再次输入密码',
             ),
+            validator: (value) {
+              final result = passwordValidator(value);
+              if (result != null) {
+                return result;
+              }
+              if (value != _passwordController.text) {
+                return '两次输入密码不一致';
+              }
+              return null;
+            },
             // 隐藏密码
             obscureText: true,
           ),
