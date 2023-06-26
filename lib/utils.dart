@@ -15,3 +15,11 @@ void navPush(context, widget) {
 void navPop(context) {
   Navigator.of(context).pop();
 }
+
+// 跳转至组件并移除导航栈
+void navGoto(context, widget) {
+  Navigator.of(context).pushAndRemoveUntil(
+    MaterialPageRoute(builder: (context) => widget),
+    (route) => false,
+  );
+}

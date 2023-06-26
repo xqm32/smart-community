@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:pocketbase/pocketbase.dart';
-import 'package:smart_community/register.dart';
 import 'package:smart_community/utils.dart';
+import 'package:smart_community/login.dart';
 
-// 登陆页面组件
-class Login extends StatelessWidget {
-  const Login({super.key});
+// 注册页面组件
+class Register extends StatelessWidget {
+  const Register({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +17,7 @@ class Login extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              LoginForm(),
+              RegisterForm(),
             ],
           ),
         ),
@@ -27,28 +26,23 @@ class Login extends StatelessWidget {
   }
 }
 
-// 登陆表单组件
-class LoginForm extends StatefulWidget {
-  const LoginForm({super.key});
+// 注册表单组件
+class RegisterForm extends StatefulWidget {
+  const RegisterForm({super.key});
 
   @override
-  State<LoginForm> createState() => _LoginFormState();
+  State<RegisterForm> createState() => _RegisterFormState();
 }
 
-class _LoginFormState extends State<LoginForm> {
+class _RegisterFormState extends State<RegisterForm> {
   // 参见 https://api.flutter.dev/flutter/widgets/Form-class.html#widgets.Form.1
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // 参见 https://docs.flutter.dev/cookbook/forms/text-field-changes#2-use-a-texteditingcontroller
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
-  // 角色属性定义在这里，传递到下级组件
-  String role = 'resident';
-  String getRole() => role;
-  void setRole(Set<dynamic> selection) {
-    setState(() => role = selection.first);
-  }
+  final TextEditingController _passwordConfirmController =
+      TextEditingController();
 
   @override
   void dispose() {
@@ -56,28 +50,26 @@ class _LoginFormState extends State<LoginForm> {
     // 释放 controller 的资源
     _usernameController.dispose();
     _passwordController.dispose();
+    _passwordConfirmController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: 完善这里的页面导航
-    void authThen(RecordAuth value) {
-      final authRole = value.record?.getStringValue('role');
-      if (authRole == role) {
-        navGoto(context, const Text('登陆成功'));
-      } else {
-        navGoto(context, const Text('角色不匹配'));
-      }
-    }
-
     // 参见 https://github.com/pocketbase/dart-sdk#error-handling
     // TODO: 完善这里的页面导航
-    void onLoginPressed() {
+    void onRegisterPressed() {
+      final body = <String, dynamic>{
+        'username': _usernameController.text,
+        'password': _passwordController.text,
+        'passwordConfirm': _passwordConfirmController.text,
+        'role': 'resident',
+      };
+
       pb
           .collection('users')
-          .authWithPassword(_usernameController.text, _passwordController.text)
-          .then(authThen)
+          .create(body: body)
+          .then((value) => navGoto(context, const Login()))
           .catchError((error) => navGoto(context, Text('$error')));
     }
 
@@ -86,10 +78,6 @@ class _LoginFormState extends State<LoginForm> {
       key: _formKey,
       child: Column(
         children: [
-          RoleChoice(
-            getRole: getRole,
-            setRole: setRole,
-          ),
           TextFormField(
             controller: _usernameController,
             decoration: const InputDecoration(
@@ -106,50 +94,27 @@ class _LoginFormState extends State<LoginForm> {
             // 隐藏密码
             obscureText: true,
           ),
+          TextFormField(
+            controller: _passwordConfirmController,
+            decoration: const InputDecoration(
+              labelText: '确认密码',
+              hintText: '请再次输入密码',
+            ),
+            // 隐藏密码
+            obscureText: true,
+          ),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: onLoginPressed,
-            child: const Text('登陆'),
+            onPressed: onRegisterPressed,
+            child: const Text('注册'),
           ),
           const SizedBox(height: 8),
           TextButton(
-            onPressed: () => navGoto(context, const Register()),
-            child: const Text('注册'),
+            onPressed: () => navGoto(context, const Login()),
+            child: const Text('登陆'),
           )
         ],
       ),
-    );
-  }
-}
-
-// 参见 https://api.flutter.dev/flutter/material/SegmentedButton-class.html
-// 角色选择组件
-class RoleChoice extends StatelessWidget {
-  // 非常暴力的获取上级属性方式......但很有效🥺
-  final String Function() getRole;
-  final void Function(Set<dynamic>) setRole;
-
-  const RoleChoice({
-    super.key,
-    required this.getRole,
-    required this.setRole,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SegmentedButton(
-      segments: const [
-        ButtonSegment(
-          value: 'resident',
-          label: Text('居民'),
-        ),
-        ButtonSegment(
-          value: 'property',
-          label: Text('物业'),
-        ),
-      ],
-      selected: {getRole()},
-      onSelectionChanged: setRole,
     );
   }
 }
