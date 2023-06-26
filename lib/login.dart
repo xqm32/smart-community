@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
+import 'package:smart_community/property/property.dart';
 import 'package:smart_community/register.dart';
+import 'package:smart_community/resident/resident.dart';
 import 'package:smart_community/utils.dart';
 
 // 登陆页面组件
@@ -63,11 +65,21 @@ class _LoginFormState extends State<LoginForm> {
   Widget build(BuildContext context) {
     // TODO: 完善这里的页面导航
     void authThen(RecordAuth value) {
-      final authRole = value.record?.getStringValue('role');
-      if (authRole == role) {
-        navGoto(context, const Text('登陆成功'));
+      final isResident = value.record?.getBoolValue('isResident');
+      final isProperty = value.record?.getBoolValue('isProperty');
+
+      if (role == 'resident' && isResident != null && isResident) {
+        navGoto(context, const Resident());
+      } else if (role == 'property' && isProperty != null && isProperty) {
+        navGoto(context, const Property());
       } else {
-        navGoto(context, const Text('角色不匹配'));
+        // 参见 https://api.flutter.dev/flutter/material/SnackBar-class.html
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('角色不匹配'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
       }
     }
 
@@ -78,7 +90,7 @@ class _LoginFormState extends State<LoginForm> {
           .collection('users')
           .authWithPassword(_usernameController.text, _passwordController.text)
           .then(authThen)
-          .catchError((error) => navGoto(context, Text('$error')));
+          .catchError((error) => showError(context, error));
     }
 
     // TODO: 表单验证

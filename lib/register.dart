@@ -70,7 +70,7 @@ class _RegisterFormState extends State<RegisterForm> {
           .collection('users')
           .create(body: body)
           .then((value) => navGoto(context, const Login()))
-          .catchError((error) => navGoto(context, Text('$error')));
+          .catchError((error) => showError(context, error));
     }
 
     // TODO: 表单验证

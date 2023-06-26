@@ -23,3 +23,8 @@ void navGoto(context, widget) {
     (route) => false,
   );
 }
+
+// 使用 SnackBar 显示错误信息的缩写
+void showError(context, error) {
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$error')));
+}
