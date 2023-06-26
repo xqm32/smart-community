@@ -81,7 +81,7 @@ class _RegisterFormState extends State<RegisterForm> {
         'username': _usernameController.text,
         'password': _passwordController.text,
         'passwordConfirm': _passwordConfirmController.text,
-        'role': 'resident',
+        'isResident': true,
       };
 
       pb
