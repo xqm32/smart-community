@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
-import 'package:smart_community/property/property.dart';
+
+import 'package:smart_community/community.dart';
 import 'package:smart_community/register.dart';
-import 'package:smart_community/resident/resident.dart';
 import 'package:smart_community/utils.dart';
 
 // 登陆页面组件
@@ -52,6 +52,42 @@ class _LoginFormState extends State<LoginForm> {
     setState(() => role = selection.first);
   }
 
+  void _onLoginPressed() {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    // 参见 https://github.com/pocketbase/dart-sdk#error-handling
+    pb
+        .collection('users')
+        .authWithPassword(_usernameController.text, _passwordController.text)
+        .then(_onValue)
+        .catchError(_onError);
+  }
+
+  void _onValue(RecordAuth value) {
+    final isResident = value.record?.getBoolValue('isResident');
+    final isProperty = value.record?.getBoolValue('isProperty');
+
+    if (role == 'resident' && isResident != null && isResident) {
+      navPush(context, const Community(role: 'resident'));
+    } else if (role == 'property' && isProperty != null && isProperty) {
+      navPush(context, const Community(role: 'property'));
+    } else {
+      showError(context, '角色不匹配');
+    }
+  }
+
+  void _onError(error) {
+    if (error.statusCode == 400) {
+      showError(context, '用户名或密码错误');
+    } else if (error.statusCode == 0) {
+      showError(context, '网络错误');
+    } else {
+      showException(context, error);
+    }
+  }
+
   @override
   void dispose() {
     // 参见 https://docs.flutter.dev/cookbook/forms/text-field-changes#create-a-texteditingcontroller 中的 Note
@@ -63,54 +99,6 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: 完善这里的页面导航
-    void authThen(RecordAuth value) {
-      final isResident = value.record?.getBoolValue('isResident');
-      final isProperty = value.record?.getBoolValue('isProperty');
-
-      if (role == 'resident' && isResident != null && isResident) {
-        navGoto(context, const Resident());
-      } else if (role == 'property' && isProperty != null && isProperty) {
-        navGoto(context, const Property());
-      } else {
-        // 参见 https://api.flutter.dev/flutter/material/SnackBar-class.html
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('角色不匹配'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
-    }
-
-    void authError(error) {
-      // TODO: statusCode == 0 时是网络错误
-      if (error.statusCode == 400) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('用户名或密码错误'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      } else {
-        showError(context, error);
-      }
-    }
-
-    // 参见 https://github.com/pocketbase/dart-sdk#error-handling
-    // TODO: 完善这里的页面导航
-    void onLoginPressed() {
-      if (!_formKey.currentState!.validate()) {
-        return;
-      }
-
-      pb
-          .collection('users')
-          .authWithPassword(_usernameController.text, _passwordController.text)
-          .then(authThen)
-          .catchError(authError);
-    }
-
     return Form(
       key: _formKey,
       child: Column(
@@ -139,7 +127,7 @@ class _LoginFormState extends State<LoginForm> {
           ),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: onLoginPressed,
+            onPressed: _onLoginPressed,
             child: const Text('登陆'),
           ),
           const SizedBox(height: 8),

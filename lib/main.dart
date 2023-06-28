@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:smart_community/login.dart';
 
 void main() {
@@ -14,7 +15,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: 'Smart Community',
       theme: ThemeData(
-        // TODO: 更改主题色
+        // 设置主题色
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),

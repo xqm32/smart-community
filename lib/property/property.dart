@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../utils.dart';
+
 // 参见 https://api.flutter.dev/flutter/material/BottomNavigationBar-class.html
 // 物业端页面组件
 class Property extends StatefulWidget {
-  const Property({super.key});
+  // 小区 ID
+  final String communityId;
+
+  const Property({super.key, required this.communityId});
 
   @override
   State<Property> createState() => _PropertyState();
@@ -19,17 +24,24 @@ class _PropertyState extends State<Property> {
 
   int _selectedIndex = 0;
 
+  String communityName = '物业端';
+
+  @override
+  void initState() {
+    pb.collection('communities').getOne(widget.communityId).then((value) {
+      setState(() {
+        communityName = value.getStringValue('name');
+      });
+    });
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    void onItemTapped(int index) {
-      setState(() {
-        _selectedIndex = index;
-      });
-    }
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('物业端'),
+        title: Text(communityName),
       ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
@@ -50,7 +62,11 @@ class _PropertyState extends State<Property> {
           ),
         ],
         currentIndex: _selectedIndex,
-        onTap: onItemTapped,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
       ),
     );
   }

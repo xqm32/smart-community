@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:smart_community/utils.dart';
 import 'package:smart_community/login.dart';
 
@@ -46,6 +47,36 @@ class _RegisterFormState extends State<RegisterForm> {
 
   String? _usernameErrorText;
 
+  // 参见 https://github.com/pocketbase/dart-sdk#error-handling
+  void _onRegisterPressed() {
+    // 参见 https://docs.flutter.dev/cookbook/forms/validation
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    // PocketBase API Preview 给出的样例
+    final body = <String, dynamic>{
+      'username': _usernameController.text,
+      'password': _passwordController.text,
+      'passwordConfirm': _passwordConfirmController.text,
+      'isResident': true,
+    };
+
+    pb.collection('users').create(body: body).then((value) {
+      navGoto(context, const Login());
+    }).catchError((error) {
+      if (error.statusCode == 400) {
+        setState(() {
+          _usernameErrorText = '用户名已存在';
+        });
+      } else if (error.statusCode == 0) {
+        showError(context, '网络错误');
+      } else {
+        showException(context, error);
+      }
+    });
+  }
+
   @override
   void dispose() {
     // 参见 https://docs.flutter.dev/cookbook/forms/text-field-changes#create-a-texteditingcontroller 中的 Note
@@ -58,39 +89,6 @@ class _RegisterFormState extends State<RegisterForm> {
 
   @override
   Widget build(BuildContext context) {
-    void createError(error) {
-      if (error.statusCode == 400) {
-        setState(() {
-          _usernameErrorText = '用户名已存在';
-        });
-      } else {
-        showError(context, error);
-      }
-    }
-
-    // 参见 https://github.com/pocketbase/dart-sdk#error-handling
-    // TODO: 完善这里的页面导航
-    void onRegisterPressed() {
-      // 参见 https://docs.flutter.dev/cookbook/forms/validation
-      if (!_formKey.currentState!.validate()) {
-        return;
-      }
-
-      // PocketBase API Preview 给出的样例
-      final body = <String, dynamic>{
-        'username': _usernameController.text,
-        'password': _passwordController.text,
-        'passwordConfirm': _passwordConfirmController.text,
-        'isResident': true,
-      };
-
-      pb
-          .collection('users')
-          .create(body: body)
-          .then((value) => navGoto(context, const Login()))
-          .catchError(createError);
-    }
-
     return Form(
       key: _formKey,
       child: Column(
@@ -137,7 +135,7 @@ class _RegisterFormState extends State<RegisterForm> {
           ),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: onRegisterPressed,
+            onPressed: _onRegisterPressed,
             child: const Text('注册'),
           ),
           const SizedBox(height: 8),

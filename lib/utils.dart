@@ -24,15 +24,24 @@ void navGoto(context, widget) {
   );
 }
 
-// 使用 SnackBar 显示错误信息的缩写
-void showError(context, error) {
+// 使用 SnackBar 显示异常信息的缩写
+void showException(context, error) {
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$error')));
+}
+
+// 使用 SnackBar 显示异常信息的缩写
+void showError(context, error) {
+  // 参见 https://api.flutter.dev/flutter/material/SnackBar-class.html
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text('$error'),
+    backgroundColor: Theme.of(context).colorScheme.error,
+  ));
 }
 
 // 参见 https://docs.flutter.dev/cookbook/forms/validation
 String? usernameValidator(String? value) {
   if (value == null || value.isEmpty || value.length < 3) {
-    return "用户名长度至少为 3";
+    return '用户名长度至少为 3';
   } else {
     return null;
   }
@@ -40,7 +49,7 @@ String? usernameValidator(String? value) {
 
 String? passwordValidator(String? value) {
   if (value == null || value.isEmpty || value.length < 8) {
-    return "密码长度至少为 8";
+    return '密码长度至少为 8';
   } else {
     return null;
   }
