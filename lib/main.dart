@@ -16,7 +16,7 @@ class App extends StatelessWidget {
       title: 'Smart Community',
       theme: ThemeData(
         // 设置主题色
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
       home: const Login(),
