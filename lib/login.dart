@@ -48,9 +48,8 @@ class _LoginFormState extends State<LoginForm> {
   // 角色属性定义在这里，传递到下级组件
   String role = 'resident';
   String getRole() => role;
-  void setRole(Set<dynamic> selection) {
-    setState(() => role = selection.first);
-  }
+  void setRole(Set<dynamic> selection) =>
+      setState(() => role = selection.first);
 
   void _onLoginPressed() {
     if (!_formKey.currentState!.validate()) {
