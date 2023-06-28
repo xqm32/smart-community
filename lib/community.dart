@@ -16,10 +16,13 @@ class Community extends StatefulWidget {
 class _CommunityState extends State<Community> {
   List<DropdownMenuEntry> communities = [];
   String? communityId;
+  String? errorText;
 
   void _onArrowPressed() {
     if (communityId == null) {
-      showError(context, '请选择小区');
+      setState(() {
+        errorText = '请选择小区';
+      });
     } else {
       // 参见 https://dart.dev/language/pattern-types#null-assert
       // 已经判断 community 不为 null，因此这里使用 ! 来断言
@@ -74,6 +77,7 @@ class _CommunityState extends State<Community> {
                     communityId = value;
                   });
                 },
+                errorText: errorText,
               ),
             ],
           ),
