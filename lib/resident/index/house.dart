@@ -110,7 +110,7 @@ class _ResidentHouseState extends State<ResidentHouse> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('添加房屋'),
+        title: const Text('房屋管理'),
         actions: _actionsBuilder(context),
       ),
       body: Stepper(
