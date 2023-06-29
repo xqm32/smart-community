@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:smart_community/login.dart';
+import 'package:smart_community/resident/account/information.dart';
+import 'package:smart_community/resident/account/password.dart';
 import 'package:smart_community/utils.dart';
 
 class ResidentAccount extends StatelessWidget {
@@ -17,13 +19,13 @@ class ResidentAccount extends StatelessWidget {
             const Divider(height: 0),
             ListTile(
               leading: const Icon(Icons.person),
-              onTap: () {},
+              onTap: () => navPush(context, const ResidentAccountInformation()),
               title: const Text('修改信息'),
             ),
             const Divider(height: 0),
             ListTile(
               leading: const Icon(Icons.lock),
-              onTap: () {},
+              onTap: () => navPush(context, const ResidentAccountPassword()),
               title: const Text('修改密码'),
             ),
             const Divider(height: 0),
@@ -60,7 +62,7 @@ class ResidentAccountAvatar extends StatelessWidget {
     }
 
     return ListTile(
-      onTap: () {},
+      onTap: () => navPush(context, const ResidentAccountInformation()),
       title: Row(
         children: [
           CircleAvatar(
