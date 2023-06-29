@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
+import 'package:smart_community/resident/account/account.dart';
 import 'package:smart_community/resident/index/index.dart';
 
 import 'package:smart_community/utils.dart';
@@ -65,11 +66,13 @@ class _ResidentState extends State<Resident> {
             } else if (snapshot.hasError) {
               showException(context, snapshot.error);
             }
-            return const LinearProgressIndicator();
+            // 使用进度条会使得切换页面时出现闪现的黑条，因此这里直接用一个空容器占位
+            // return const LinearProgressIndicator();
+            return Container();
           },
         ),
-        // const LinearProgressIndicator(),
-        const LinearProgressIndicator(),
+        // 我的
+        const ResidentAccount(),
       ].elementAt(_index),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
@@ -77,10 +80,6 @@ class _ResidentState extends State<Resident> {
             icon: Icon(Icons.home),
             label: '首页',
           ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.notifications),
-          //   label: '通知',
-          // ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: '我的',
