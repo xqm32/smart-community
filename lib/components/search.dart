@@ -16,6 +16,7 @@ class SearchAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SearchAnchor(
+        viewSurfaceTintColor: Theme.of(context).colorScheme.background,
         isFullScreen: true,
         builder: (context, controller) => IconButton(
             onPressed: () => controller.openView(),
