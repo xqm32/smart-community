@@ -55,6 +55,7 @@ class _ResidentState extends State<Resident> {
       ),
       body: [
         // 首页
+        // TODO: 在 ResidentIndex 中获取通知
         FutureBuilder(
           future: notifications,
           builder: (context, snapshot) {

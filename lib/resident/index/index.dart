@@ -55,7 +55,9 @@ class ResidentIndexNotification extends StatelessWidget {
       leading: const Icon(Icons.notifications),
       title: Row(
         children: [
-          Text(notifications.first.getStringValue('title')),
+          notifications.isEmpty
+              ? const Text('暂无通知')
+              : Text(notifications.first.getStringValue('title')),
           Expanded(
             child: Align(
               alignment: Alignment.centerRight,
