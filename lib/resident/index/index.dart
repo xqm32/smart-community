@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
+import 'package:smart_community/resident/index/house_list.dart';
+import 'package:smart_community/utils.dart';
 
 // 居民端首页组件
 class ResidentIndex extends StatefulWidget {
@@ -26,7 +28,9 @@ class _ResidentIndexState extends State<ResidentIndex> {
           children: [
             ResidentIndexNotification(notifications: widget.notifications),
             const SizedBox(height: 8),
-            const ResidentIndexService(),
+            ResidentIndexService(
+              communityId: widget.communityId,
+            ),
             const SizedBox(height: 8),
             ResidentIndexNews(notifications: widget.notifications),
           ],
@@ -73,7 +77,10 @@ class ResidentIndexNotification extends StatelessWidget {
 class ResidentIndexService extends StatelessWidget {
   const ResidentIndexService({
     super.key,
+    required this.communityId,
   });
+
+  final String communityId;
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +96,8 @@ class ResidentIndexService extends StatelessWidget {
                 color: Colors.orange,
               ),
               ResidentIndexServiceIcon(
-                onPressed: () {},
+                onPressed: () => navPush(
+                    context, ResidentHouseList(communityId: communityId)),
                 icon: Icons.home,
                 text: '房屋管理',
                 color: Colors.green,
