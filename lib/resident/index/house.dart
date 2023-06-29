@@ -39,11 +39,48 @@ class _ResidentHouseState extends State<ResidentHouse> {
     });
   }
 
+  // 删除房屋的确认框
+  List<Widget>? _actionsBuilder(context) {
+    if (_house == null || _index < 1) {
+      return null;
+    }
+
+    return [
+      IconButton(
+        // 参见 https://api.flutter.dev/flutter/material/AlertDialog-class.html
+        onPressed: () => showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('删除房屋'),
+              content: const Text('确定要删除该房屋吗？'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.pop(context, 'Cancel'),
+                  child: const Text('取消'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    pb.collection('houses').delete(_house!.id);
+                    Navigator.pop(context, 'OK');
+                    navPop(context);
+                  },
+                  child: const Text('确认'),
+                ),
+              ],
+            );
+          },
+        ),
+        icon: const Icon(Icons.delete_outline),
+      )
+    ];
+  }
+
   void _onContinuePressed() {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-    
+
     // 提交的数据不包含 Verified 字段，会自动设置为 false
     final body = <String, dynamic>{
       "userId": pb.authStore.model!.id,
@@ -72,7 +109,10 @@ class _ResidentHouseState extends State<ResidentHouse> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('添加房屋')),
+      appBar: AppBar(
+        title: const Text('添加房屋'),
+        actions: _actionsBuilder(context),
+      ),
       body: Stepper(
         type: StepperType.horizontal,
         currentStep: _index,
