@@ -13,6 +13,8 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      // 不显示 DEBUG 横幅
+      debugShowCheckedModeBanner: false,
       title: 'Smart Community',
       theme: ThemeData(
         // 设置主题色
