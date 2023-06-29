@@ -54,3 +54,13 @@ String? passwordValidator(String? value) {
     return null;
   }
 }
+
+String? Function(String?) notNullValidator(String message) {
+  return (String? value) {
+    if (value == null || value.isEmpty) {
+      return message;
+    } else {
+      return null;
+    }
+  };
+}

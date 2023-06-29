@@ -131,12 +131,7 @@ class _ResidentHouseState extends State<ResidentHouse> {
                       labelText: '地址',
                       hintText: '请填写房屋地址',
                     ),
-                    validator: (String? value) {
-                      if (value == null || value.isEmpty) {
-                        return '地址不能为空';
-                      }
-                      return null;
-                    },
+                    validator: notNullValidator('地址不能为空'),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
