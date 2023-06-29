@@ -52,6 +52,7 @@ class _ResidentHouseState extends State<ResidentHouse> {
           context: context,
           builder: (context) {
             return AlertDialog(
+              surfaceTintColor: Theme.of(context).colorScheme.background,
               title: const Text('删除房屋'),
               content: const Text('确定要删除该房屋吗？'),
               actions: <Widget>[
