@@ -29,7 +29,7 @@ class _ResidentHouseState extends State<ResidentHouse> {
 
   void _setHouse(RecordModel value) {
     int next = 1;
-    if (value.getBoolValue('Verified')) {
+    if (value.getBoolValue('verified')) {
       next = 2;
     }
 
@@ -81,11 +81,11 @@ class _ResidentHouseState extends State<ResidentHouse> {
       return;
     }
 
-    // 提交的数据不包含 Verified 字段，会自动设置为 false
+    // 提交的数据不包含 verified 字段，会自动设置为 false
     final body = <String, dynamic>{
-      "userId": pb.authStore.model!.id,
-      "communityId": widget.communityId,
-      "location": _locationController.text,
+      'userId': pb.authStore.model!.id,
+      'communityId': widget.communityId,
+      'location': _locationController.text,
     };
 
     pb.collection('houses').create(body: body).then(_setHouse);

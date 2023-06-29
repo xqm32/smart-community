@@ -106,7 +106,7 @@ class ResidentHouseItem extends StatelessWidget {
           Expanded(
             child: Align(
               alignment: Alignment.centerRight,
-              child: record.getBoolValue('Verified')
+              child: record.getBoolValue('verified')
                   ? const Text(
                       '审核通过',
                       style: TextStyle(color: Colors.green),

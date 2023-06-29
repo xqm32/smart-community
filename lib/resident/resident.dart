@@ -30,7 +30,7 @@ class _ResidentState extends State<Resident> {
     // 参见 https://docs.flutter.dev/cookbook/networking/fetch-data
     communityName = pb.collection('communities').getOne(widget.communityId);
     notifications = pb.collection('notifications').getFullList(
-          filter: 'communityId="${widget.communityId}"',
+          filter: 'communityId = "${widget.communityId}"',
           sort: '-created',
         );
   }
