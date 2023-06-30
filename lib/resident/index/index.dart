@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
+import 'package:smart_community/resident/index/cars.dart';
 import 'package:smart_community/resident/index/houses.dart';
 import 'package:smart_community/utils.dart';
 
@@ -133,7 +134,8 @@ class ResidentIndexService extends StatelessWidget {
               color: Colors.green,
             ),
             ResidentIndexServiceIcon(
-              onPressed: () {},
+              onPressed: () =>
+                  navPush(context, ResidentCarList(communityId: communityId)),
               icon: Icons.car_rental,
               text: '车辆管理',
               color: Colors.blue,
