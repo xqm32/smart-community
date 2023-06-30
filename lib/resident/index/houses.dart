@@ -19,11 +19,11 @@ class ResidentHouseList extends StatefulWidget {
 }
 
 class _ResidentHouseListState extends State<ResidentHouseList> {
-  late Future<List<RecordModel>> houses;
+  late Future<List<RecordModel>> _records;
 
   @override
   void initState() {
-    houses = fetchHouses();
+    _records = fetchRecords();
     super.initState();
   }
 
@@ -34,20 +34,18 @@ class _ResidentHouseListState extends State<ResidentHouseList> {
         title: const Text('房屋管理'),
         actions: [
           IconButton(
-              onPressed: () => setState(() {
-                    houses = fetchHouses();
-                  }),
+              onPressed: () => setState(() => _records = fetchRecords()),
               icon: const Icon(Icons.refresh)),
           FutureBuilder(
-            future: houses,
+            future: _records,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return SearchAction(
-                    records: snapshot.data!,
-                    test: (element, input) =>
-                        element.getStringValue('location').contains(input),
-                    toElement: (element) => ResidentHouseItem(
-                        communityId: widget.communityId, record: element));
+                  records: snapshot.data!,
+                  test: (element, input) =>
+                      element.getStringValue('location').contains(input),
+                  toElement: _toElement,
+                );
               }
               return const Icon(Icons.search);
             },
@@ -55,29 +53,36 @@ class _ResidentHouseListState extends State<ResidentHouseList> {
         ],
       ),
       body: FutureBuilder(
-        future: houses,
+        future: _records,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return RecordList(
                 records: snapshot.data!,
                 itemBuilder: (context, index) {
                   final element = snapshot.data!.elementAt(index);
-                  return ResidentHouseItem(
-                      communityId: widget.communityId, record: element);
+                  return _toElement(element);
                 });
           }
           return const LinearProgressIndicator();
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () =>
-            navPush(context, ResidentHouse(communityId: widget.communityId)),
+        onPressed: () {
+          navPush(
+            context,
+            ResidentHouse(communityId: widget.communityId),
+          ).then(
+            (value) => setState(() {
+              _records = fetchRecords();
+            }),
+          );
+        },
         child: const Icon(Icons.add),
       ),
     );
   }
 
-  Future<List<RecordModel>> fetchHouses() {
+  Future<List<RecordModel>> fetchRecords() {
     // 后端存在规则时可以移除「&& userId = "${pb.authStore.model!.id}"」
     final String filter =
         'communityId = "${widget.communityId}" && userId = "${pb.authStore.model!.id}"';
@@ -85,20 +90,8 @@ class _ResidentHouseListState extends State<ResidentHouseList> {
         .collection('houses')
         .getFullList(filter: filter, sort: '-created');
   }
-}
 
-class ResidentHouseItem extends StatelessWidget {
-  const ResidentHouseItem({
-    super.key,
-    required this.communityId,
-    required this.record,
-  });
-
-  final String communityId;
-  final RecordModel record;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _toElement(RecordModel record) {
     return ListTile(
       title: Row(
         children: [
@@ -106,18 +99,33 @@ class ResidentHouseItem extends StatelessWidget {
           Expanded(
             child: Align(
               alignment: Alignment.centerRight,
-              child: record.getBoolValue('verified')
-                  ? const Text(
-                      '审核通过',
-                      style: TextStyle(color: Colors.green),
-                    )
-                  : const Text('审核中'),
+              child: _recordState(record),
             ),
           )
         ],
       ),
-      onTap: () => navPush(
-          context, ResidentHouse(communityId: communityId, houesId: record.id)),
+      onTap: () {
+        navPush(
+          context,
+          ResidentHouse(communityId: widget.communityId, recordId: record.id),
+        ).then(
+          (value) => setState(() {
+            _records = fetchRecords();
+          }),
+        );
+      },
     );
+  }
+
+  Widget _recordState(RecordModel record) {
+    final state = record.getStringValue('state');
+    if (state == 'reviewing') {
+      return const Text('审核中', style: TextStyle(color: Colors.orange));
+    } else if (state == 'verified') {
+      return const Text('审核通过', style: TextStyle(color: Colors.green));
+    } else if (state == 'rejected') {
+      return const Text('审核未通过', style: TextStyle(color: Colors.red));
+    }
+    return const Text('未知状态');
   }
 }

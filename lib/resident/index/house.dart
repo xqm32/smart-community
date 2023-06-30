@@ -7,32 +7,33 @@ class ResidentHouse extends StatefulWidget {
   const ResidentHouse({
     super.key,
     required this.communityId,
-    this.houesId,
+    this.recordId,
   });
 
   final String communityId;
-  final String? houesId;
+  final String? recordId;
 
   @override
   State<ResidentHouse> createState() => _ResidentHouseState();
 }
 
 class _ResidentHouseState extends State<ResidentHouse> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final List<GlobalKey<FormState>> _formKeys =
+      List.generate(3, (index) => GlobalKey<FormState>());
 
   final List<String> _fields = ['location'];
   Map<String, TextEditingController> _controllers = {};
 
   int _index = 0;
-  RecordModel? _house;
+  RecordModel? _record;
 
   @override
   void initState() {
     _controllers = {
       for (final i in _fields) i: TextEditingController(),
     };
-    if (widget.houesId != null) {
-      pb.collection('houses').getOne(widget.houesId!).then(_setHouse);
+    if (widget.recordId != null) {
+      pb.collection('houses').getOne(widget.recordId!).then(_setRecord);
     }
     super.initState();
   }
@@ -60,37 +61,43 @@ class _ResidentHouseState extends State<ResidentHouse> {
           Step(
             isActive: _index >= 0,
             title: const Text('填写信息'),
-            content: _houseForm(),
+            content: _houseForm(index: 0),
           ),
           Step(
             isActive: _index >= 1,
             title: const Text('物业审核'),
-            content: _houseAudit(),
+            content: _houseForm(index: 1),
           ),
           Step(
             isActive: _index >= 2,
             title: const Text('审核通过'),
-            content: _housePassed(),
+            content: _houseForm(index: 2),
           )
         ],
       ),
     );
   }
 
-  void _setHouse(RecordModel value) {
+  void _setRecord(RecordModel value) {
     int next = 1;
-    if (value.getBoolValue('verified')) {
+    final state = value.getStringValue('state');
+    // 'reviewing' 和 'rejected' 均跳转至「物业审核」
+    if (state == 'verified') {
       next = 2;
     }
 
+    for (final i in _controllers.entries) {
+      i.value.text = value.getStringValue(i.key);
+    }
+
     setState(() {
-      _house = value;
+      _record = value;
       _index = next;
     });
   }
 
-  void _onContinuePressed() {
-    if (!_formKey.currentState!.validate()) {
+  void _onCreatePressed() {
+    if (!_formKeys[0].currentState!.validate()) {
       return;
     }
 
@@ -100,18 +107,61 @@ class _ResidentHouseState extends State<ResidentHouse> {
     body.addAll({
       'userId': pb.authStore.model!.id,
       'communityId': widget.communityId,
+      'state': 'reviewing',
     });
 
     pb
         .collection('houses')
         .create(body: body)
-        .then(_setHouse)
+        .then(_setRecord)
+        .catchError((error) => showException(context, error));
+  }
+
+  void _onUpdatePressed() {
+    if (!_formKeys[1].currentState!.validate()) {
+      return;
+    }
+
+    final Map<String, dynamic> body = {
+      for (final i in _controllers.entries) i.key: i.value.text
+    };
+    body.addAll({
+      'userId': pb.authStore.model!.id,
+      'communityId': widget.communityId,
+      'state': 'reviewing',
+    });
+
+    pb
+        .collection('houses')
+        .update(_record!.id, body: body)
+        .then(_setRecord)
+        .catchError((error) => showException(context, error));
+  }
+
+  void _onResubmitPressed() {
+    if (!_formKeys[2].currentState!.validate()) {
+      return;
+    }
+
+    final Map<String, dynamic> body = {
+      for (final i in _controllers.entries) i.key: i.value.text
+    };
+    body.addAll({
+      'userId': pb.authStore.model!.id,
+      'communityId': widget.communityId,
+      'state': 'reviewing',
+    });
+
+    pb
+        .collection('houses')
+        .update(_record!.id, body: body)
+        .then(_setRecord)
         .catchError((error) => showException(context, error));
   }
 
   // 居民端/首页/房屋管理/删除房屋
   List<Widget>? _actionsBuilder(context) {
-    if (_house == null || _index < 1) {
+    if (_record == null || _index < 1) {
       return null;
     }
 
@@ -131,9 +181,10 @@ class _ResidentHouseState extends State<ResidentHouse> {
                 ),
                 TextButton(
                   onPressed: () {
-                    pb.collection('houses').delete(_house!.id);
-                    Navigator.pop(context, 'OK');
-                    navPop(context);
+                    pb.collection('houses').delete(_record!.id).then((value) {
+                      Navigator.pop(context, 'OK');
+                      navPop(context);
+                    });
                   },
                   child: const Text('确认'),
                 ),
@@ -147,9 +198,9 @@ class _ResidentHouseState extends State<ResidentHouse> {
   }
 
   // 居民端/首页/房屋管理/填写信息
-  Widget _houseForm() {
+  Widget _houseForm({required int index}) {
     return Form(
-      key: _formKey,
+      key: _formKeys[index],
       child: Column(
         children: [
           TextFormField(
@@ -161,31 +212,22 @@ class _ResidentHouseState extends State<ResidentHouse> {
             validator: notNullValidator('地址不能为空'),
           ),
           const SizedBox(height: 16),
-          ElevatedButton(
-              onPressed: _onContinuePressed, child: const Text('下一步')),
+          [
+            ElevatedButton(
+              onPressed: _onCreatePressed,
+              child: const Text('提交'),
+            ),
+            ElevatedButton(
+              onPressed: _onUpdatePressed,
+              child: const Text('修改信息'),
+            ),
+            ElevatedButton(
+              onPressed: _onResubmitPressed,
+              child: const Text('修改信息'),
+            ),
+          ].elementAt(index),
         ],
       ),
-    );
-  }
-
-  // 居民端/首页/房屋管理/物业审核
-  Widget _houseAudit() {
-    return Column(
-      children: [
-        ListTile(title: Text('房屋地址：${_house?.getStringValue('location')}')),
-        ListTile(title: Text('提交时间：${_house?.created.split(' ')[0]}')),
-      ],
-    );
-  }
-
-// 居民端/首页/房屋管理/审核通过
-  Widget _housePassed() {
-    return Column(
-      children: [
-        ListTile(title: Text('房屋地址：${_house?.getStringValue('location')}')),
-        ListTile(title: Text('提交时间：${_house?.created.split(' ')[0]}')),
-        ListTile(title: Text('通过时间：${_house?.updated.split(' ')[0]}')),
-      ],
     );
   }
 }
