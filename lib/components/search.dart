@@ -7,20 +7,23 @@ class SearchAction extends StatelessWidget {
     required this.records,
     required this.test,
     required this.toElement,
+    this.builder,
   });
 
   final List<RecordModel> records;
-  final bool Function(RecordModel, String) test;
-  final Widget Function(RecordModel) toElement;
+  final bool Function(RecordModel element, String input) test;
+  final Widget Function(RecordModel element) toElement;
+  final Widget Function(BuildContext context, SearchController controller)? builder;
 
   @override
   Widget build(BuildContext context) {
     return SearchAnchor(
         viewSurfaceTintColor: Theme.of(context).colorScheme.background,
         isFullScreen: true,
-        builder: (context, controller) => IconButton(
-            onPressed: () => controller.openView(),
-            icon: const Icon(Icons.search)),
+        builder: builder ??
+            (context, controller) => IconButton(
+                onPressed: () => controller.openView(),
+                icon: const Icon(Icons.search)),
         suggestionsBuilder: (context, controller) {
           final String input = controller.value.text;
           return records

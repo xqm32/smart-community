@@ -1,35 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
+import 'package:smart_community/components/search.dart';
 import 'package:smart_community/utils.dart';
 
-// 参见 https://api.flutter.dev/flutter/material/BottomNavigationBar-class.html
-// 物业端页面组件
+// 物业端
 class Property extends StatefulWidget {
-  // 小区 ID
-  final String communityId;
-
-  const Property({super.key, required this.communityId});
+  const Property({super.key});
 
   @override
   State<Property> createState() => _PropertyState();
 }
 
 class _PropertyState extends State<Property> {
-  // _selectedIndex 下标所指定的页面
-  static const List<Widget> _widgetOptions = [
-    Text('首页'),
-    // Text('通知'),
-    Text('设置'),
-  ];
+  // 小区列表
+  late Future<List<RecordModel>> communities;
+  // 当前选择的小区
+  late Future<RecordModel> community;
 
-  int _selectedIndex = 0;
-
-  late Future<RecordModel> communityName;
+  // 当前选择的小区 ID
+  String? communityId;
+  // 底部导航栏索引
+  int _index = 0;
 
   @override
   void initState() {
-    communityName = pb.collection('communities').getOne(widget.communityId);
+    communities = pb.collection('communities').getFullList();
+    // TODO: 从缓存中读取 communityId
+    if (communityId != null) {
+      community = pb.collection('communities').getOne(communityId!);
+    }
 
     super.initState();
   }
@@ -37,46 +37,103 @@ class _PropertyState extends State<Property> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        // 参见 https://docs.flutter.dev/cookbook/networking/fetch-data#complete-example
-        // FutureBuilder 确实比 setState 好用
-        title: FutureBuilder(
-          future: communityName,
+      appBar: AppBar(title: const Text('物业端'), actions: [
+        // 右上角选择小区按钮
+        FutureBuilder(
+          future: communities,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return Text(snapshot.data!.getStringValue('name'));
-            } else if (snapshot.hasError) {
-              showException(context, snapshot.error);
+              return SearchAction(
+                builder: _searchActionBuilder,
+                records: snapshot.data!,
+                test: (element, input) =>
+                    element.getStringValue('name').contains(input),
+                toElement: (element) => ListTile(
+                  title: Text(element.getStringValue('name')),
+                  onTap: () {
+                    fetchCommunity(element.id);
+                    navPop(context);
+                  },
+                ),
+              );
             }
-            return const Text('加载中');
+            return Container();
           },
-        ),
-      ),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
+        )
+      ]),
+      body: [
+        // 物业端首页
+        communityId != null
+            ? const LinearProgressIndicator()
+            : FutureBuilder(
+                future: communities,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return RecordList(
+                      records: snapshot.data!,
+                      itemBuilder: (context, index) {
+                        final element = snapshot.data!.elementAt(index);
+                        return ListTile(
+                          title: Text(element.getStringValue('name')),
+                          onTap: () => fetchCommunity(element.id),
+                        );
+                      },
+                    );
+                  }
+                  return Container();
+                },
+              ),
+
+        // 物业端我的
+        const LinearProgressIndicator(),
+      ].elementAt(_index),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: '首页',
           ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.notifications),
-          //   label: '通知',
-          // ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: '我的',
           ),
         ],
-        currentIndex: _selectedIndex,
+        currentIndex: _index,
         onTap: (index) {
           setState(() {
-            _selectedIndex = index;
+            _index = index;
           });
         },
       ),
+    );
+  }
+
+  // 选择小区
+  void fetchCommunity(String id) {
+    setState(
+      () {
+        communityId = id;
+        community = pb.collection('communities').getOne(communityId!);
+      },
+    );
+  }
+
+  // 右上角选择小区按钮
+  Widget _searchActionBuilder(context, controller) {
+    return TextButton(
+      onPressed: () => controller.openView(),
+      // 没有选择小区时显示「请选择小区」，有小区时显示小区名
+      child: communityId != null
+          ? FutureBuilder(
+              future: community,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Text(snapshot.data!.getStringValue('name'));
+                }
+                return Container();
+              },
+            )
+          : const Text('请选择小区'),
     );
   }
 }

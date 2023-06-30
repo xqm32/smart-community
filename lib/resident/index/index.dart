@@ -8,17 +8,24 @@ class ResidentIndex extends StatefulWidget {
   const ResidentIndex({
     super.key,
     required this.communityId,
-    required this.notifications,
   });
 
   final String communityId;
-  final List<RecordModel> notifications;
 
   @override
   State<ResidentIndex> createState() => _ResidentIndexState();
 }
 
 class _ResidentIndexState extends State<ResidentIndex> {
+  late Future<List<RecordModel>> notifications;
+
+  @override
+  void initState() {
+    notifications = pb.collection('notifications').getFullList(
+        filter: 'communityId = "${widget.communityId}"', sort: '-created');
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -26,13 +33,30 @@ class _ResidentIndexState extends State<ResidentIndex> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            ResidentIndexNotification(notifications: widget.notifications),
+            FutureBuilder(
+              future: notifications,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return ResidentIndexNotification(
+                      notifications: snapshot.data!);
+                }
+                return const ResidentIndexNotification(notifications: []);
+              },
+            ),
             const Divider(height: 8),
             ResidentIndexService(
               communityId: widget.communityId,
             ),
             const Divider(height: 8),
-            ResidentIndexNews(notifications: widget.notifications),
+            FutureBuilder(
+              future: notifications,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return ResidentIndexNews(notifications: snapshot.data!);
+                }
+                return const ResidentIndexNews(notifications: []);
+              },
+            ),
           ],
         ),
       ),

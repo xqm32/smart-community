@@ -1,78 +1,92 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
+
+import 'package:smart_community/components/search.dart';
 import 'package:smart_community/resident/account/account.dart';
 import 'package:smart_community/resident/index/index.dart';
-
 import 'package:smart_community/utils.dart';
 
-// 参见 https://api.flutter.dev/flutter/material/BottomNavigationBar-class.html
-// 居民端页面组件
+// 居民端
 class Resident extends StatefulWidget {
-  // 小区 ID
-  final String communityId;
-
-  const Resident({super.key, required this.communityId});
+  const Resident({super.key});
 
   @override
   State<Resident> createState() => _ResidentState();
 }
 
 class _ResidentState extends State<Resident> {
-  int _index = 0;
+  // 小区列表
+  late Future<List<RecordModel>> communities;
+  // 当前选择的小区
+  late Future<RecordModel> community;
 
-  late Future<RecordModel> communityName;
-  late Future<List<RecordModel>> notifications;
+  // 当前选择的小区 ID
+  String? communityId;
+  // 底部导航栏索引
+  int _index = 0;
 
   @override
   void initState() {
-    super.initState();
+    communities = pb.collection('communities').getFullList();
+    // TODO: 从缓存中读取 communityId
+    if (communityId != null) {
+      community = pb.collection('communities').getOne(communityId!);
+    }
 
-    // 参见 https://docs.flutter.dev/cookbook/networking/fetch-data
-    communityName = pb.collection('communities').getOne(widget.communityId);
-    notifications = pb.collection('notifications').getFullList(
-          filter: 'communityId = "${widget.communityId}"',
-          sort: '-created',
-        );
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        // 参见 https://docs.flutter.dev/cookbook/networking/fetch-data#complete-example
-        // FutureBuilder 确实比 setState 好用
-        title: FutureBuilder(
-          future: communityName,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return Text(snapshot.data!.getStringValue('name'));
-            } else if (snapshot.hasError) {
-              showException(context, snapshot.error);
-            }
-            return const Text('加载中');
-          },
-        ),
-      ),
-      body: [
-        // 首页
-        // TODO: 在 ResidentIndex 中获取通知
+      appBar: AppBar(title: const Text('居民端'), actions: [
+        // 右上角选择小区按钮
         FutureBuilder(
-          future: notifications,
+          future: communities,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return ResidentIndex(
-                communityId: widget.communityId,
-                notifications: snapshot.data!,
+              return SearchAction(
+                builder: _searchActionBuilder,
+                records: snapshot.data!,
+                test: (element, input) =>
+                    element.getStringValue('name').contains(input),
+                toElement: (element) => ListTile(
+                  title: Text(element.getStringValue('name')),
+                  onTap: () {
+                    fetchCommunity(element.id);
+                    navPop(context);
+                  },
+                ),
               );
-            } else if (snapshot.hasError) {
-              showException(context, snapshot.error);
             }
-            // 使用进度条会使得切换页面时出现闪现的黑条，因此这里直接用一个空容器占位
-            // return const LinearProgressIndicator();
             return Container();
           },
-        ),
-        // 我的
+        )
+      ]),
+      body: [
+        // 居民端首页
+        communityId != null
+            ? ResidentIndex(communityId: communityId!)
+            : FutureBuilder(
+                future: communities,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return RecordList(
+                      records: snapshot.data!,
+                      itemBuilder: (context, index) {
+                        final element = snapshot.data!.elementAt(index);
+                        return ListTile(
+                          title: Text(element.getStringValue('name')),
+                          onTap: () => fetchCommunity(element.id),
+                        );
+                      },
+                    );
+                  }
+                  return Container();
+                },
+              ),
+
+        // 居民端我的
         const ResidentAccount(),
       ].elementAt(_index),
       bottomNavigationBar: BottomNavigationBar(
@@ -93,6 +107,35 @@ class _ResidentState extends State<Resident> {
           });
         },
       ),
+    );
+  }
+
+  // 选择小区
+  void fetchCommunity(String id) {
+    setState(
+      () {
+        communityId = id;
+        community = pb.collection('communities').getOne(communityId!);
+      },
+    );
+  }
+
+  // 右上角选择小区按钮
+  Widget _searchActionBuilder(context, controller) {
+    return TextButton(
+      onPressed: () => controller.openView(),
+      // 没有选择小区时显示「请选择小区」，有小区时显示小区名
+      child: communityId != null
+          ? FutureBuilder(
+              future: community,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Text(snapshot.data!.getStringValue('name'));
+                }
+                return Container();
+              },
+            )
+          : const Text('请选择小区'),
     );
   }
 }

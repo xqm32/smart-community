@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
-import 'package:smart_community/community.dart';
+import 'package:smart_community/property/property.dart';
 import 'package:smart_community/register.dart';
+import 'package:smart_community/resident/resident.dart';
 import 'package:smart_community/utils.dart';
 
 // 登陆页面组件
@@ -69,9 +70,9 @@ class _LoginFormState extends State<LoginForm> {
     final isProperty = value.record?.getBoolValue('isProperty');
 
     if (role == 'resident' && isResident != null && isResident) {
-      navPush(context, const Community(role: 'resident'));
+      navPush(context, const Resident());
     } else if (role == 'property' && isProperty != null && isProperty) {
-      navPush(context, const Community(role: 'property'));
+      navPush(context, const Property());
     } else {
       showError(context, '角色不匹配');
     }
