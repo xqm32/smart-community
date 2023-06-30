@@ -45,3 +45,6 @@ app.*.map.json
 
 # See https://fvm.app/docs/getting_started/configuration#project
 .fvm/flutter_sdk
+
+# Configurations
+/lib/config.dart

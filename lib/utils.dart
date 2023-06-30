@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
+import 'package:smart_community/config.dart';
 
 // PocketBase 实例
-final pb = PocketBase('http://127.0.0.1:8090');
+final pb = PocketBase(baseUrl);
 
 Future<dynamic> navPush(context, widget) {
   return Navigator.of(context).push(MaterialPageRoute(
