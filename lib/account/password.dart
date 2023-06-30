@@ -3,8 +3,8 @@ import 'package:smart_community/login.dart';
 
 import 'package:smart_community/utils.dart';
 
-class ResidentAccountPassword extends StatelessWidget {
-  const ResidentAccountPassword({super.key});
+class AccountPassword extends StatelessWidget {
+  const AccountPassword({super.key});
 
   @override
   Widget build(BuildContext context) {

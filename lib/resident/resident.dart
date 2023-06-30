@@ -3,7 +3,7 @@ import 'package:pocketbase/pocketbase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:smart_community/components/search.dart';
-import 'package:smart_community/resident/account/account.dart';
+import 'package:smart_community/account/account.dart';
 import 'package:smart_community/resident/index/index.dart';
 import 'package:smart_community/utils.dart';
 
@@ -89,7 +89,7 @@ class _ResidentState extends State<Resident> {
               ),
 
         // 居民端/我的
-        const ResidentAccount(),
+        const Account(),
       ].elementAt(_index),
       bottomNavigationBar: BottomNavigationBar(
         items: const [

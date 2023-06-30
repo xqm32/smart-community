@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:smart_community/utils.dart';
 
-class ResidentAccountInformation extends StatelessWidget {
-  const ResidentAccountInformation({super.key});
+class AccountInformation extends StatelessWidget {
+  const AccountInformation({super.key});
 
   @override
   Widget build(BuildContext context) {

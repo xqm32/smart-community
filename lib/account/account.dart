@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:smart_community/login.dart';
-import 'package:smart_community/resident/account/information.dart';
-import 'package:smart_community/resident/account/password.dart';
+import 'package:smart_community/account/information.dart';
+import 'package:smart_community/account/password.dart';
 import 'package:smart_community/utils.dart';
 
-class ResidentAccount extends StatelessWidget {
-  const ResidentAccount({super.key});
+class Account extends StatelessWidget {
+  const Account({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,17 +16,17 @@ class ResidentAccount extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            const ResidentAccountAvatar(),
+            const AccountAvatar(),
             const Divider(height: 0),
             ListTile(
               leading: const Icon(Icons.person),
-              onTap: () => navPush(context, const ResidentAccountInformation()),
+              onTap: () => navPush(context, const AccountInformation()),
               title: const Text('修改信息'),
             ),
             const Divider(height: 0),
             ListTile(
               leading: const Icon(Icons.lock),
-              onTap: () => navPush(context, const ResidentAccountPassword()),
+              onTap: () => navPush(context, const AccountPassword()),
               title: const Text('修改密码'),
             ),
             const Divider(height: 0),
@@ -49,8 +49,8 @@ class ResidentAccount extends StatelessWidget {
   }
 }
 
-class ResidentAccountAvatar extends StatelessWidget {
-  const ResidentAccountAvatar({super.key});
+class AccountAvatar extends StatelessWidget {
+  const AccountAvatar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +67,7 @@ class ResidentAccountAvatar extends StatelessWidget {
     }
 
     return ListTile(
-      onTap: () => navPush(context, const ResidentAccountInformation()),
+      onTap: () => navPush(context, const AccountInformation()),
       title: Row(
         children: [
           CircleAvatar(
