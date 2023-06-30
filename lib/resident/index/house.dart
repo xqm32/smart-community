@@ -60,47 +60,17 @@ class _ResidentHouseState extends State<ResidentHouse> {
           Step(
             isActive: _index >= 0,
             title: const Text('填写信息'),
-            content: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  TextFormField(
-                    controller: _controllers['location'],
-                    decoration: const InputDecoration(
-                      labelText: '地址',
-                      hintText: '请填写房屋地址',
-                    ),
-                    validator: notNullValidator('地址不能为空'),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                      onPressed: _onContinuePressed, child: const Text('下一步')),
-                ],
-              ),
-            ),
+            content: _houseForm(),
           ),
           Step(
             isActive: _index >= 1,
             title: const Text('物业审核'),
-            content: Column(
-              children: [
-                ListTile(
-                    title: Text('房屋地址：${_house?.getStringValue('location')}')),
-                ListTile(title: Text('提交时间：${_house?.created.split(' ')[0]}')),
-              ],
-            ),
+            content: _houseAudit(),
           ),
           Step(
             isActive: _index >= 2,
             title: const Text('审核通过'),
-            content: Column(
-              children: [
-                ListTile(
-                    title: Text('房屋地址：${_house?.getStringValue('location')}')),
-                ListTile(title: Text('提交时间：${_house?.created.split(' ')[0]}')),
-                ListTile(title: Text('通过时间：${_house?.updated.split(' ')[0]}')),
-              ],
-            ),
+            content: _housePassed(),
           )
         ],
       ),
@@ -174,5 +144,48 @@ class _ResidentHouseState extends State<ResidentHouse> {
         icon: const Icon(Icons.delete_outline),
       )
     ];
+  }
+
+  // 居民端/首页/房屋管理/填写信息
+  Widget _houseForm() {
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: [
+          TextFormField(
+            controller: _controllers['location'],
+            decoration: const InputDecoration(
+              labelText: '地址',
+              hintText: '请填写房屋地址',
+            ),
+            validator: notNullValidator('地址不能为空'),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+              onPressed: _onContinuePressed, child: const Text('下一步')),
+        ],
+      ),
+    );
+  }
+
+  // 居民端/首页/房屋管理/物业审核
+  Widget _houseAudit() {
+    return Column(
+      children: [
+        ListTile(title: Text('房屋地址：${_house?.getStringValue('location')}')),
+        ListTile(title: Text('提交时间：${_house?.created.split(' ')[0]}')),
+      ],
+    );
+  }
+
+// 居民端/首页/房屋管理/审核通过
+  Widget _housePassed() {
+    return Column(
+      children: [
+        ListTile(title: Text('房屋地址：${_house?.getStringValue('location')}')),
+        ListTile(title: Text('提交时间：${_house?.created.split(' ')[0]}')),
+        ListTile(title: Text('通过时间：${_house?.updated.split(' ')[0]}')),
+      ],
+    );
   }
 }

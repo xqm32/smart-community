@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
-import 'package:smart_community/resident/index/house_list.dart';
+import 'package:smart_community/resident/index/houses.dart';
 import 'package:smart_community/utils.dart';
 
 // 居民端/首页
