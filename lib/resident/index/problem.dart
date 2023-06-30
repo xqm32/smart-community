@@ -3,9 +3,9 @@ import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
 
-// 居民端/首页/房屋管理
-class ResidentHouse extends StatefulWidget {
-  const ResidentHouse({
+// 居民端/首页/问题上报
+class ResidentProblem extends StatefulWidget {
+  const ResidentProblem({
     super.key,
     required this.communityId,
     this.recordId,
@@ -15,14 +15,14 @@ class ResidentHouse extends StatefulWidget {
   final String? recordId;
 
   @override
-  State<ResidentHouse> createState() => _ResidentHouseState();
+  State<ResidentProblem> createState() => _ResidentProblemState();
 }
 
-class _ResidentHouseState extends State<ResidentHouse> {
+class _ResidentProblemState extends State<ResidentProblem> {
   final List<GlobalKey<FormState>> _formKeys =
       List.generate(3, (index) => GlobalKey<FormState>());
 
-  final List<String> _fields = ['location'];
+  final List<String> _fields = ['type', 'title', 'content'];
   Map<String, TextEditingController> _controllers = {};
 
   int _index = 0;
@@ -34,7 +34,7 @@ class _ResidentHouseState extends State<ResidentHouse> {
       for (final i in _fields) i: TextEditingController(),
     };
     if (widget.recordId != null) {
-      pb.collection('houses').getOne(widget.recordId!).then(_setRecord);
+      pb.collection('problems').getOne(widget.recordId!).then(_setRecord);
     }
     super.initState();
   }
@@ -51,7 +51,7 @@ class _ResidentHouseState extends State<ResidentHouse> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('房屋管理'),
+        title: const Text('问题上报'),
         actions: _actionsBuilder(context),
       ),
       body: Stepper(
@@ -62,17 +62,17 @@ class _ResidentHouseState extends State<ResidentHouse> {
           Step(
             isActive: _index >= 0,
             title: const Text('填写信息'),
-            content: _houseForm(index: 0),
+            content: _problemForm(index: 0),
           ),
           Step(
             isActive: _index >= 1,
-            title: const Text('物业审核'),
-            content: _houseForm(index: 1),
+            title: const Text('事件处理'),
+            content: _problemForm(index: 1),
           ),
           Step(
             isActive: _index >= 2,
-            title: const Text('审核通过'),
-            content: _houseForm(index: 2),
+            title: const Text('处理完毕'),
+            content: _problemForm(index: 2),
           )
         ],
       ),
@@ -108,11 +108,11 @@ class _ResidentHouseState extends State<ResidentHouse> {
     body.addAll({
       'userId': pb.authStore.model!.id,
       'communityId': widget.communityId,
-      'state': 'reviewing',
+      'state': 'pending',
     });
 
     pb
-        .collection('houses')
+        .collection('problems')
         .create(body: body)
         .then(_setRecord)
         .catchError((error) => showException(context, error));
@@ -129,11 +129,11 @@ class _ResidentHouseState extends State<ResidentHouse> {
     body.addAll({
       'userId': pb.authStore.model!.id,
       'communityId': widget.communityId,
-      'state': 'reviewing',
+      'state': 'pending',
     });
 
     pb
-        .collection('houses')
+        .collection('problems')
         .update(_record!.id, body: body)
         .then(_setRecord)
         .catchError((error) => showException(context, error));
@@ -150,17 +150,17 @@ class _ResidentHouseState extends State<ResidentHouse> {
     body.addAll({
       'userId': pb.authStore.model!.id,
       'communityId': widget.communityId,
-      'state': 'reviewing',
+      'state': 'pending',
     });
 
     pb
-        .collection('houses')
+        .collection('problems')
         .update(_record!.id, body: body)
         .then(_setRecord)
         .catchError((error) => showException(context, error));
   }
 
-  // 居民端/首页/房屋管理/删除房屋
+  // 居民端/首页/问题上报/删除问题
   List<Widget>? _actionsBuilder(context) {
     if (_record == null || _index < 1) {
       return null;
@@ -173,8 +173,8 @@ class _ResidentHouseState extends State<ResidentHouse> {
           builder: (context) {
             return AlertDialog(
               surfaceTintColor: Theme.of(context).colorScheme.background,
-              title: const Text('删除房屋'),
-              content: const Text('确定要删除该房屋吗？'),
+              title: const Text('删除问题'),
+              content: const Text('确定要删除该问题吗？'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -182,7 +182,7 @@ class _ResidentHouseState extends State<ResidentHouse> {
                 ),
                 TextButton(
                   onPressed: () {
-                    pb.collection('houses').delete(_record!.id).then((value) {
+                    pb.collection('problems').delete(_record!.id).then((value) {
                       Navigator.pop(context, 'OK');
                       navPop(context);
                     });
@@ -198,19 +198,35 @@ class _ResidentHouseState extends State<ResidentHouse> {
     ];
   }
 
-  // 居民端/首页/房屋管理/填写信息
-  Widget _houseForm({required int index}) {
+  // 居民端/首页/问题上报/填写信息
+  Widget _problemForm({required int index}) {
     return Form(
       key: _formKeys[index],
       child: Column(
         children: [
           TextFormField(
-            controller: _controllers['location'],
+            controller: _controllers['type'],
             decoration: const InputDecoration(
-              labelText: '地址',
-              hintText: '请填写房屋地址',
+              labelText: '类型',
+              hintText: '请填写问题类型',
             ),
-            validator: notNullValidator('地址不能为空'),
+            validator: notNullValidator('类型不能为空'),
+          ),
+          TextFormField(
+            controller: _controllers['title'],
+            decoration: const InputDecoration(
+              labelText: '标题',
+              hintText: '请填写问题标题',
+            ),
+            validator: notNullValidator('标题不能为空'),
+          ),
+          TextFormField(
+            controller: _controllers['content'],
+            decoration: const InputDecoration(
+              labelText: '内容',
+              hintText: '请填写问题内容',
+            ),
+            validator: notNullValidator('内容不能为空'),
           ),
           const SizedBox(height: 16),
           [

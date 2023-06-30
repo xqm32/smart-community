@@ -4,6 +4,7 @@ import 'package:pocketbase/pocketbase.dart';
 import 'package:smart_community/resident/index/cars.dart';
 import 'package:smart_community/resident/index/families.dart';
 import 'package:smart_community/resident/index/houses.dart';
+import 'package:smart_community/resident/index/problems.dart';
 import 'package:smart_community/utils.dart';
 
 // 居民端/首页
@@ -154,7 +155,8 @@ class ResidentIndexService extends StatelessWidget {
         Row(
           children: [
             ResidentIndexServiceIcon(
-              onPressed: () {},
+              onPressed: () => navPush(
+                  context, ResidentProblemList(communityId: communityId)),
               icon: Icons.question_mark,
               text: '问题上报',
               color: Colors.cyan,
