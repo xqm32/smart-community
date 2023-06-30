@@ -6,11 +6,13 @@ import 'package:smart_community/components/search.dart';
 class Manage extends StatefulWidget {
   const Manage({
     super.key,
+    this.title,
     required this.fetchRecords,
     required this.onAddPressed,
     required this.toElement,
   });
 
+  final Widget? title;
   final Future<List<RecordModel>> Function() fetchRecords;
   final Function(
     BuildContext context,
@@ -39,7 +41,7 @@ class _ManageState extends State<Manage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('房屋管理'),
+        title: widget.title,
         actions: [
           IconButton(
               onPressed: refreshRecords, icon: const Icon(Icons.refresh)),

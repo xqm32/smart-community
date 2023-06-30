@@ -17,6 +17,7 @@ class ResidentHouseList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Manage(
+      title: const Text('房屋管理'),
       fetchRecords: fetchRecords,
       onAddPressed: onAddPressed,
       toElement: toElement,
