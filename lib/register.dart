@@ -36,7 +36,12 @@ class RegisterForm extends StatefulWidget {
 class _RegisterFormState extends State<RegisterForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  final List<String> _fields = ['username', 'password', 'passwordConfirm'];
+  final List<String> _fields = [
+    'name',
+    'username',
+    'password',
+    'passwordConfirm'
+  ];
   Map<String, TextEditingController> _controllers = {};
 
   String? _usernameErrorText;
@@ -91,6 +96,14 @@ class _RegisterFormState extends State<RegisterForm> {
       child: Column(
         children: [
           TextFormField(
+            controller: _controllers['name'],
+            decoration: const InputDecoration(
+              labelText: '姓名',
+              hintText: '请输入姓名',
+            ),
+            validator: notNullValidator('姓名不能为空'),
+          ),
+          TextFormField(
             controller: _controllers['username'],
             decoration: InputDecoration(
               labelText: '用户名',
@@ -98,7 +111,6 @@ class _RegisterFormState extends State<RegisterForm> {
               errorText: _usernameErrorText,
             ),
             validator: usernameValidator,
-            onChanged: (value) => {},
           ),
           TextFormField(
             controller: _controllers['password'],
