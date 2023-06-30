@@ -4,8 +4,8 @@ import 'package:pocketbase/pocketbase.dart';
 // PocketBase 实例
 final pb = PocketBase('http://127.0.0.1:8090');
 
-void navPush(context, widget) {
-  Navigator.of(context).push(MaterialPageRoute(
+Future<dynamic> navPush(context, widget) {
+  return Navigator.of(context).push(MaterialPageRoute(
     builder: (context) => widget,
   ));
 }
@@ -14,8 +14,8 @@ void navPop(context) {
   Navigator.of(context).pop();
 }
 
-void navGoto(context, widget) {
-  Navigator.of(context).pushAndRemoveUntil(
+Future<dynamic> navGoto(context, widget) {
+  return Navigator.of(context).pushAndRemoveUntil(
     MaterialPageRoute(builder: (context) => widget),
     (route) => false,
   );

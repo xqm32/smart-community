@@ -27,6 +27,13 @@ class _ResidentIndexState extends State<ResidentIndex> {
   }
 
   @override
+  void didUpdateWidget(covariant ResidentIndex oldWidget) {
+    notifications = pb.collection('notifications').getFullList(
+        filter: 'communityId = "${widget.communityId}"', sort: '-created');
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
