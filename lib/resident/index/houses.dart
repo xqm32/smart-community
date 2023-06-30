@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
+import 'package:smart_community/components/manage.dart';
 
-import 'package:smart_community/components/search.dart';
 import 'package:smart_community/resident/index/house.dart';
 import 'package:smart_community/utils.dart';
 
 // 居民端/首页/房屋管理
-class ResidentHouseList extends StatefulWidget {
+class ResidentHouseList extends StatelessWidget {
   const ResidentHouseList({
     super.key,
     required this.communityId,
@@ -15,85 +15,35 @@ class ResidentHouseList extends StatefulWidget {
   final String communityId;
 
   @override
-  State<ResidentHouseList> createState() => _ResidentHouseListState();
-}
-
-class _ResidentHouseListState extends State<ResidentHouseList> {
-  late Future<List<RecordModel>> _records;
-
-  @override
-  void initState() {
-    _records = fetchRecords();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('房屋管理'),
-        actions: [
-          IconButton(
-              onPressed: () => setState(() {
-                    _records = fetchRecords();
-                  }),
-              icon: const Icon(Icons.refresh)),
-          FutureBuilder(
-            future: _records,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return SearchAction(
-                  records: snapshot.data!,
-                  test: (element, input) =>
-                      element.getStringValue('location').contains(input),
-                  toElement: _toElement,
-                );
-              }
-              return const Icon(Icons.search);
-            },
-          )
-        ],
-      ),
-      body: FutureBuilder(
-        future: _records,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return RecordList(
-                records: snapshot.data!,
-                itemBuilder: (context, index) {
-                  final element = snapshot.data!.elementAt(index);
-                  return _toElement(element);
-                });
-          }
-          return const LinearProgressIndicator();
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          navPush(
-            context,
-            ResidentHouse(communityId: widget.communityId),
-          ).then(
-            (value) => setState(() {
-              _records = fetchRecords();
-            }),
-          );
-        },
-        child: const Icon(Icons.add),
-      ),
+    return Manage(
+      fetchRecords: fetchRecords,
+      onAddPressed: onAddPressed,
+      toElement: toElement,
     );
   }
 
   Future<List<RecordModel>> fetchRecords() {
     // 后端存在规则时可以移除「&& userId = "${pb.authStore.model!.id}"」
     final String filter =
-        'communityId = "${widget.communityId}" && userId = "${pb.authStore.model!.id}"';
+        'communityId = "$communityId" && userId = "${pb.authStore.model!.id}"';
     return pb
         .collection('houses')
         .getFullList(filter: filter, sort: '-created');
   }
 
-  Widget _toElement(RecordModel record) {
+  void onAddPressed(BuildContext context, void Function() refreshRecords) {
+    navPush(
+      context,
+      ResidentHouse(communityId: communityId),
+    ).then((value) => refreshRecords());
+  }
+
+  Widget toElement(
+    BuildContext context,
+    void Function() refreshRecords,
+    RecordModel record,
+  ) {
     return ListTile(
       title: Row(
         children: [
@@ -109,12 +59,8 @@ class _ResidentHouseListState extends State<ResidentHouseList> {
       onTap: () {
         navPush(
           context,
-          ResidentHouse(communityId: widget.communityId, recordId: record.id),
-        ).then(
-          (value) => setState(() {
-            _records = fetchRecords();
-          }),
-        );
+          ResidentHouse(communityId: communityId, recordId: record.id),
+        ).then((value) => refreshRecords());
       },
     );
   }

@@ -11,8 +11,8 @@ class SearchAction extends StatelessWidget {
   });
 
   final List<RecordModel> records;
-  final bool Function(RecordModel element, String input) test;
-  final Widget Function(RecordModel element) toElement;
+  final bool Function(RecordModel record, String input) test;
+  final Widget Function(RecordModel record) toElement;
   final Widget Function(BuildContext context, SearchController controller)? builder;
 
   @override
@@ -27,7 +27,7 @@ class SearchAction extends StatelessWidget {
         suggestionsBuilder: (context, controller) {
           final String input = controller.value.text;
           return records
-              .where((element) => test(element, input))
+              .where((record) => test(record, input))
               .map(toElement)
               .toList();
         });
