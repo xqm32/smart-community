@@ -220,13 +220,16 @@ class _ResidentProblemState extends State<ResidentProblem> {
             ),
             validator: notNullValidator('标题不能为空'),
           ),
+          const SizedBox(height: 16),
           TextFormField(
             controller: _controllers['content'],
             decoration: const InputDecoration(
               labelText: '内容',
               hintText: '请填写问题内容',
+              border: OutlineInputBorder(),
             ),
             validator: notNullValidator('内容不能为空'),
+            maxLines: 16,
           ),
           const SizedBox(height: 16),
           [
