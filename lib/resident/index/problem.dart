@@ -227,6 +227,7 @@ class _ResidentProblemState extends State<ResidentProblem> {
               labelText: '内容',
               hintText: '请填写问题内容',
               border: OutlineInputBorder(),
+              floatingLabelBehavior: FloatingLabelBehavior.always,
             ),
             validator: notNullValidator('内容不能为空'),
             maxLines: 16,
