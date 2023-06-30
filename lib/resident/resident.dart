@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:smart_community/components/search.dart';
 import 'package:smart_community/resident/account/account.dart';
@@ -28,10 +29,11 @@ class _ResidentState extends State<Resident> {
   @override
   void initState() {
     communities = pb.collection('communities').getFullList();
-    // TODO: 从缓存中读取 communityId
-    if (communityId != null) {
-      community = pb.collection('communities').getOne(communityId!);
-    }
+    SharedPreferences.getInstance().then((prefs) {
+      if (prefs.containsKey('communityId')) {
+        fetchCommunity(prefs.getString('communityId')!);
+      }
+    });
 
     super.initState();
   }
@@ -112,12 +114,15 @@ class _ResidentState extends State<Resident> {
 
   // 选择小区
   void fetchCommunity(String id) {
-    setState(
-      () {
-        communityId = id;
-        community = pb.collection('communities').getOne(communityId!);
-      },
-    );
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.setString('communityId', id);
+      setState(
+        () {
+          communityId = id;
+          community = pb.collection('communities').getOne(communityId!);
+        },
+      );
+    });
   }
 
   // 右上角选择小区按钮

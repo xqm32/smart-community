@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:smart_community/property/property.dart';
 import 'package:smart_community/register.dart';
@@ -49,6 +50,19 @@ class _LoginFormState extends State<LoginForm> {
     _controllers = {
       for (final i in _fields) i: TextEditingController(),
     };
+
+    SharedPreferences.getInstance().then((prefs) {
+      final username = prefs.getString('username');
+      final password = prefs.getString('password');
+      final selectedRole = prefs.getString('role');
+
+      if (username == null || password == null || selectedRole == null) {
+        return;
+      } else {
+        _login(username, password, selectedRole);
+      }
+    });
+
     super.initState();
   }
 
@@ -103,26 +117,43 @@ class _LoginFormState extends State<LoginForm> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
+    _login(
+      _controllers['username']!.text,
+      _controllers['password']!.text,
+      _role,
+    );
+  }
 
+  void _login(String username, String password, String selectedRole) {
     pb
         .collection('users')
-        .authWithPassword(
-            _controllers['username']!.text, _controllers['password']!.text)
-        .then(_onValue)
+        .authWithPassword(username, password)
+        .then((record) => _didLogin(record, username, password, selectedRole))
         .catchError(_onError);
   }
 
-  void _onValue(RecordAuth value) {
-    final role = value.record!.getListValue('role');
+  void _didLogin(
+    RecordAuth record,
+    String username,
+    String password,
+    String selectedRole,
+  ) {
+    final role = record.record!.getListValue('role');
 
-    if (!role.contains(_role)) {
+    if (!role.contains(selectedRole)) {
       showError(context, '角色不匹配');
       return;
     }
 
-    if (_role == 'resident') {
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.setString('username', username);
+      prefs.setString('password', password);
+      prefs.setString('role', selectedRole);
+    });
+
+    if (selectedRole == 'resident') {
       navGoto(context, const Resident());
-    } else if (_role == 'property') {
+    } else if (selectedRole == 'property') {
       navGoto(context, const Property());
     }
   }

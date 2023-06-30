@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:smart_community/login.dart';
 import 'package:smart_community/resident/account/information.dart';
@@ -33,7 +34,11 @@ class ResidentAccount extends StatelessWidget {
               leading: const Icon(Icons.logout, color: Colors.red),
               onTap: () {
                 pb.authStore.clear();
-                navGoto(context, const Login());
+                SharedPreferences.getInstance().then((prefs) {
+                  prefs
+                      .clear()
+                      .then((value) => navGoto(context, const Login()));
+                });
               },
               title: const Text('退出登陆', style: TextStyle(color: Colors.red)),
             ),
