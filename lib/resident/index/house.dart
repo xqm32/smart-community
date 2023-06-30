@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:smart_community/utils.dart';
 
-// 居民房屋管理页面组件
+// 居民端/首页/房屋管理
 class ResidentHouse extends StatefulWidget {
   const ResidentHouse({
     super.key,
@@ -18,92 +18,30 @@ class ResidentHouse extends StatefulWidget {
 }
 
 class _ResidentHouseState extends State<ResidentHouse> {
-  // 参见 https://api.flutter.dev/flutter/widgets/Form-class.html#widgets.Form.1
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  // 参见 https://docs.flutter.dev/cookbook/forms/text-field-changes#2-use-a-texteditingcontroller
-  final TextEditingController _locationController = TextEditingController();
+  final List<String> _fields = ['location'];
+  Map<String, TextEditingController> _controllers = {};
 
   int _index = 0;
   RecordModel? _house;
 
-  void _setHouse(RecordModel value) {
-    int next = 1;
-    if (value.getBoolValue('verified')) {
-      next = 2;
-    }
-
-    setState(() {
-      _house = value;
-      _index = next;
-    });
-  }
-
-  // 删除房屋的确认框
-  List<Widget>? _actionsBuilder(context) {
-    if (_house == null || _index < 1) {
-      return null;
-    }
-
-    return [
-      IconButton(
-        // 参见 https://api.flutter.dev/flutter/material/AlertDialog-class.html
-        onPressed: () => showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              surfaceTintColor: Theme.of(context).colorScheme.background,
-              title: const Text('删除房屋'),
-              content: const Text('确定要删除该房屋吗？'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.pop(context, 'Cancel'),
-                  child: const Text('取消'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    pb.collection('houses').delete(_house!.id);
-                    Navigator.pop(context, 'OK');
-                    navPop(context);
-                  },
-                  child: const Text('确认'),
-                ),
-              ],
-            );
-          },
-        ),
-        icon: const Icon(Icons.delete_outline),
-      )
-    ];
-  }
-
-  void _onContinuePressed() {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
-    // 提交的数据不包含 verified 字段，会自动设置为 false
-    final body = <String, dynamic>{
-      'userId': pb.authStore.model!.id,
-      'communityId': widget.communityId,
-      'location': _locationController.text,
-    };
-
-    pb.collection('houses').create(body: body).then(_setHouse);
-  }
-
   @override
   void initState() {
+    _controllers = {
+      for (final i in _fields) i: TextEditingController(),
+    };
     if (widget.houesId != null) {
       pb.collection('houses').getOne(widget.houesId!).then(_setHouse);
     }
-
     super.initState();
   }
 
   @override
   void dispose() {
-    _locationController.dispose();
+    for (var i in _controllers.values) {
+      i.dispose();
+    }
     super.dispose();
   }
 
@@ -127,7 +65,7 @@ class _ResidentHouseState extends State<ResidentHouse> {
               child: Column(
                 children: [
                   TextFormField(
-                    controller: _locationController,
+                    controller: _controllers['location'],
                     decoration: const InputDecoration(
                       labelText: '地址',
                       hintText: '请填写房屋地址',
@@ -167,5 +105,74 @@ class _ResidentHouseState extends State<ResidentHouse> {
         ],
       ),
     );
+  }
+
+  void _setHouse(RecordModel value) {
+    int next = 1;
+    if (value.getBoolValue('verified')) {
+      next = 2;
+    }
+
+    setState(() {
+      _house = value;
+      _index = next;
+    });
+  }
+
+  void _onContinuePressed() {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    final Map<String, dynamic> body = {
+      for (final i in _controllers.entries) i.key: i.value.text
+    };
+    body.addAll({
+      'userId': pb.authStore.model!.id,
+      'communityId': widget.communityId,
+    });
+
+    pb
+        .collection('houses')
+        .create(body: body)
+        .then(_setHouse)
+        .catchError((error) => showException(context, error));
+  }
+
+  // 居民端/首页/房屋管理/删除房屋
+  List<Widget>? _actionsBuilder(context) {
+    if (_house == null || _index < 1) {
+      return null;
+    }
+
+    return [
+      IconButton(
+        onPressed: () => showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              surfaceTintColor: Theme.of(context).colorScheme.background,
+              title: const Text('删除房屋'),
+              content: const Text('确定要删除该房屋吗？'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.pop(context, 'Cancel'),
+                  child: const Text('取消'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    pb.collection('houses').delete(_house!.id);
+                    Navigator.pop(context, 'OK');
+                    navPop(context);
+                  },
+                  child: const Text('确认'),
+                ),
+              ],
+            );
+          },
+        ),
+        icon: const Icon(Icons.delete_outline),
+      )
+    ];
   }
 }

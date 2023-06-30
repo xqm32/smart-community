@@ -37,25 +37,11 @@ class _LoginFormState extends State<_PasswordForm> {
   final List<String> _fields = ['password', 'passwordConfirm', 'oldPassword'];
   Map<String, TextEditingController> _controllers = {};
 
-  void _onSubmitPressed(context) {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
-    final body = {for (final i in _controllers.entries) i.key: i.value.text};
-    pb
-        .collection('users')
-        .update(pb.authStore.model.id, body: body)
-        .then((value) => navGoto(context, const Login()))
-        .catchError((error) => showException(context, error));
-  }
-
   @override
   void initState() {
     _controllers = {
       for (final i in _fields) i: TextEditingController(),
     };
-
     super.initState();
   }
 
@@ -117,5 +103,18 @@ class _LoginFormState extends State<_PasswordForm> {
         ],
       ),
     );
+  }
+
+  void _onSubmitPressed(context) {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    final body = {for (final i in _controllers.entries) i.key: i.value.text};
+    pb
+        .collection('users')
+        .update(pb.authStore.model.id, body: body)
+        .then((value) => navGoto(context, const Login()))
+        .catchError((error) => showException(context, error));
   }
 }

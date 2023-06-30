@@ -3,7 +3,7 @@ import 'package:pocketbase/pocketbase.dart';
 import 'package:smart_community/resident/index/house_list.dart';
 import 'package:smart_community/utils.dart';
 
-// 居民端首页组件
+// 居民端/首页
 class ResidentIndex extends StatefulWidget {
   const ResidentIndex({
     super.key,
@@ -64,7 +64,7 @@ class _ResidentIndexState extends State<ResidentIndex> {
   }
 }
 
-// 居民端通知组件
+// 居民端/首页/通知
 class ResidentIndexNotification extends StatelessWidget {
   const ResidentIndexNotification({
     super.key,
@@ -97,7 +97,7 @@ class ResidentIndexNotification extends StatelessWidget {
   }
 }
 
-// 居民端服务组件
+// 居民端/首页/服务
 class ResidentIndexService extends StatelessWidget {
   const ResidentIndexService({
     super.key,
@@ -167,14 +167,13 @@ class ResidentIndexService extends StatelessWidget {
             ),
           ],
         ),
-        // 卡片底部留 8 像素的空，不然会跟上面的组件贴合太近
         const SizedBox(height: 8),
       ],
     );
   }
 }
 
-// 居民端服务图标组件
+// 居民端/首页/服务/图标
 class ResidentIndexServiceIcon extends StatelessWidget {
   const ResidentIndexServiceIcon({
     super.key,
@@ -207,7 +206,7 @@ class ResidentIndexServiceIcon extends StatelessWidget {
   }
 }
 
-// 居民端新闻组件
+// 居民端/首页/新闻
 class ResidentIndexNews extends StatelessWidget {
   const ResidentIndexNews({
     super.key,

@@ -3,16 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:smart_community/utils.dart';
 import 'package:smart_community/login.dart';
 
-// 注册页面组件
+// 注册
 class Register extends StatelessWidget {
   const Register({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      // 使用 Center 将内容居中
       body: Center(
-        // 外侧加入边距，这样显得好看些😊
         child: Padding(
           padding: EdgeInsets.all(16.0),
           child: Column(
@@ -27,7 +25,7 @@ class Register extends StatelessWidget {
   }
 }
 
-// 注册表单组件
+// 注册/表单
 class RegisterForm extends StatefulWidget {
   const RegisterForm({super.key});
 
@@ -36,31 +34,22 @@ class RegisterForm extends StatefulWidget {
 }
 
 class _RegisterFormState extends State<RegisterForm> {
-  // 参见 https://api.flutter.dev/flutter/widgets/Form-class.html#widgets.Form.1
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  // 参见 https://docs.flutter.dev/cookbook/forms/text-field-changes#2-use-a-texteditingcontroller
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _passwordConfirmController =
-      TextEditingController();
+  final List<String> _fields = ['username', 'password', 'passwordConfirm'];
+  Map<String, TextEditingController> _controllers = {};
 
   String? _usernameErrorText;
 
-  // 参见 https://github.com/pocketbase/dart-sdk#error-handling
   void _onRegisterPressed() {
-    // 参见 https://docs.flutter.dev/cookbook/forms/validation
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
-    // PocketBase API Preview 给出的样例
-    final body = <String, dynamic>{
-      'username': _usernameController.text,
-      'password': _passwordController.text,
-      'passwordConfirm': _passwordConfirmController.text,
-      'isResident': true,
+    final Map<String, dynamic> body = {
+      for (final i in _controllers.entries) i.key: i.value.text
     };
+    body.addAll({'isResident': true});
 
     pb.collection('users').create(body: body).then((value) {
       navGoto(context, const Login());
@@ -78,12 +67,20 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 
   @override
+  void initState() {
+    _controllers = {
+      for (final i in _fields) i: TextEditingController(),
+    };
+
+    super.initState();
+  }
+
+  @override
   void dispose() {
-    // 参见 https://docs.flutter.dev/cookbook/forms/text-field-changes#create-a-texteditingcontroller 中的 Note
-    // 释放 controller 的资源
-    _usernameController.dispose();
-    _passwordController.dispose();
-    _passwordConfirmController.dispose();
+    for (var i in _controllers.values) {
+      i.dispose();
+    }
+
     super.dispose();
   }
 
@@ -94,28 +91,26 @@ class _RegisterFormState extends State<RegisterForm> {
       child: Column(
         children: [
           TextFormField(
-            controller: _usernameController,
+            controller: _controllers['username'],
             decoration: InputDecoration(
               labelText: '用户名',
               hintText: '请输入用户名',
-              // errorText 是 null 时不会显示
               errorText: _usernameErrorText,
             ),
             validator: usernameValidator,
             onChanged: (value) => {},
           ),
           TextFormField(
-            controller: _passwordController,
+            controller: _controllers['password'],
             decoration: const InputDecoration(
               labelText: '密码',
               hintText: '请输入密码',
             ),
             validator: passwordValidator,
-            // 隐藏密码
             obscureText: true,
           ),
           TextFormField(
-            controller: _passwordConfirmController,
+            controller: _controllers['passwordConfirm'],
             decoration: const InputDecoration(
               labelText: '确认密码',
               hintText: '请再次输入密码',
@@ -125,12 +120,11 @@ class _RegisterFormState extends State<RegisterForm> {
               if (result != null) {
                 return result;
               }
-              if (value != _passwordController.text) {
+              if (value != _controllers['password']!.text) {
                 return '两次输入密码不一致';
               }
               return null;
             },
-            // 隐藏密码
             obscureText: true,
           ),
           const SizedBox(height: 16),

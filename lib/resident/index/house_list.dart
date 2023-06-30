@@ -5,7 +5,7 @@ import 'package:smart_community/components/search.dart';
 import 'package:smart_community/resident/index/house.dart';
 import 'package:smart_community/utils.dart';
 
-// 居民端房屋管理组件
+// 居民端/首页/房屋管理
 class ResidentHouseList extends StatefulWidget {
   const ResidentHouseList({
     super.key,
@@ -20,15 +20,6 @@ class ResidentHouseList extends StatefulWidget {
 
 class _ResidentHouseListState extends State<ResidentHouseList> {
   late Future<List<RecordModel>> houses;
-
-  Future<List<RecordModel>> fetchHouses() {
-    // 如果后端设置了规则，&& userId = "${pb.authStore.model!.id}" 也可以不用添加
-    final String filter =
-        'communityId = "${widget.communityId}" && userId = "${pb.authStore.model!.id}"';
-    return pb
-        .collection('houses')
-        .getFullList(filter: filter, sort: '-created');
-  }
 
   @override
   void initState() {
@@ -84,6 +75,15 @@ class _ResidentHouseListState extends State<ResidentHouseList> {
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  Future<List<RecordModel>> fetchHouses() {
+    // 后端存在规则时可以移除「&& userId = "${pb.authStore.model!.id}"」
+    final String filter =
+        'communityId = "${widget.communityId}" && userId = "${pb.authStore.model!.id}"';
+    return pb
+        .collection('houses')
+        .getFullList(filter: filter, sort: '-created');
   }
 }
 

@@ -64,7 +64,7 @@ class _ResidentState extends State<Resident> {
         )
       ]),
       body: [
-        // 居民端首页
+        // 居民端/首页
         communityId != null
             ? ResidentIndex(communityId: communityId!)
             : FutureBuilder(
@@ -86,7 +86,7 @@ class _ResidentState extends State<Resident> {
                 },
               ),
 
-        // 居民端我的
+        // 居民端/我的
         const ResidentAccount(),
       ].elementAt(_index),
       bottomNavigationBar: BottomNavigationBar(

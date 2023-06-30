@@ -36,19 +36,6 @@ class _LoginFormState extends State<_InformationForm> {
   final List<String> _fields = ['name', 'phone'];
   Map<String, TextEditingController> _controllers = {};
 
-  void _onSubmitPressed(context) {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
-    final body = {for (final i in _controllers.entries) i.key: i.value.text};
-    pb
-        .collection('users')
-        .update(pb.authStore.model.id, body: body)
-        .then((value) => navPop(context))
-        .catchError((error) => showException(context, error));
-  }
-
   @override
   void initState() {
     _controllers = {
@@ -97,5 +84,18 @@ class _LoginFormState extends State<_InformationForm> {
         ],
       ),
     );
+  }
+
+  void _onSubmitPressed(context) {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    final body = {for (final i in _controllers.entries) i.key: i.value.text};
+    pb
+        .collection('users')
+        .update(pb.authStore.model.id, body: body)
+        .then((value) => navPop(context))
+        .catchError((error) => showException(context, error));
   }
 }

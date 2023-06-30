@@ -62,7 +62,7 @@ class _PropertyState extends State<Property> {
         )
       ]),
       body: [
-        // 物业端首页
+        // 物业端/首页
         communityId != null
             ? const LinearProgressIndicator()
             : FutureBuilder(
@@ -84,7 +84,7 @@ class _PropertyState extends State<Property> {
                 },
               ),
 
-        // 物业端我的
+        // 物业端/我的
         const LinearProgressIndicator(),
       ].elementAt(_index),
       bottomNavigationBar: BottomNavigationBar(
