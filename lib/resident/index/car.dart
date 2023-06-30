@@ -209,7 +209,7 @@ class _ResidentCarState extends State<ResidentCar> {
               labelText: '名称',
               hintText: '请填写车辆名称',
             ),
-            validator: notNullValidator('地址不能为空'),
+            validator: notNullValidator('名称不能为空'),
           ),
           TextFormField(
             controller: _controllers['plate'],
