@@ -34,7 +34,9 @@ class _ResidentHouseListState extends State<ResidentHouseList> {
         title: const Text('房屋管理'),
         actions: [
           IconButton(
-              onPressed: () => setState(() => _records = fetchRecords()),
+              onPressed: () => setState(() {
+                    _records = fetchRecords();
+                  }),
               icon: const Icon(Icons.refresh)),
           FutureBuilder(
             future: _records,
