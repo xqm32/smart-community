@@ -54,7 +54,9 @@ class _RegisterFormState extends State<RegisterForm> {
     final Map<String, dynamic> body = {
       for (final i in _controllers.entries) i.key: i.value.text
     };
-    body.addAll({'isResident': true});
+    body.addAll({
+      'role': ['resident']
+    });
 
     pb.collection('users').create(body: body).then((value) {
       navGoto(context, const Login());

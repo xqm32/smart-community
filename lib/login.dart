@@ -42,7 +42,7 @@ class _LoginFormState extends State<LoginForm> {
   final List<String> _fields = ['username', 'password'];
   Map<String, TextEditingController> _controllers = {};
 
-  String role = 'resident';
+  String _role = 'resident';
 
   @override
   void initState() {
@@ -103,7 +103,7 @@ class _LoginFormState extends State<LoginForm> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-  
+
     pb
         .collection('users')
         .authWithPassword(
@@ -113,15 +113,17 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   void _onValue(RecordAuth value) {
-    final isResident = value.record?.getBoolValue('isResident');
-    final isProperty = value.record?.getBoolValue('isProperty');
+    final role = value.record!.getListValue('role');
 
-    if (role == 'resident' && isResident != null && isResident) {
-      navGoto(context, const Resident());
-    } else if (role == 'property' && isProperty != null && isProperty) {
-      navGoto(context, const Property());
-    } else {
+    if (!role.contains(_role)) {
       showError(context, '角色不匹配');
+      return;
+    }
+
+    if (_role == 'resident') {
+      navGoto(context, const Resident());
+    } else if (_role == 'property') {
+      navGoto(context, const Property());
     }
   }
 
@@ -147,8 +149,8 @@ class _LoginFormState extends State<LoginForm> {
           label: Text('物业'),
         ),
       ],
-      selected: {role},
-      onSelectionChanged: (value) => setState(() => role = value.first),
+      selected: {_role},
+      onSelectionChanged: (value) => setState(() => _role = value.first),
     );
   }
 }
