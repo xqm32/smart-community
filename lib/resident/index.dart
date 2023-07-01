@@ -21,18 +21,18 @@ class ResidentIndex extends StatefulWidget {
 }
 
 class _ResidentIndexState extends State<ResidentIndex> {
-  late Future<List<RecordModel>> notifications;
+  late Future<List<RecordModel>> announcements;
 
   @override
   void initState() {
-    notifications = pb.collection('notifications').getFullList(
+    announcements = pb.collection('announcements').getFullList(
         filter: 'communityId = "${widget.communityId}"', sort: '-created');
     super.initState();
   }
 
   @override
   void didUpdateWidget(covariant ResidentIndex oldWidget) {
-    notifications = pb.collection('notifications').getFullList(
+    announcements = pb.collection('announcements').getFullList(
         filter: 'communityId = "${widget.communityId}"', sort: '-created');
     super.didUpdateWidget(oldWidget);
   }
@@ -45,14 +45,14 @@ class _ResidentIndexState extends State<ResidentIndex> {
         child: Column(
           children: [
             FutureBuilder(
-              future: notifications,
+              future: announcements,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return ResidentIndexAnnouncement(
-                    notifications: snapshot.data!,
+                    announcements: snapshot.data!,
                   );
                 }
-                return const ResidentIndexAnnouncement(notifications: []);
+                return const ResidentIndexAnnouncement(announcements: []);
               },
             ),
             const Divider(height: 8),
@@ -61,14 +61,14 @@ class _ResidentIndexState extends State<ResidentIndex> {
             ),
             const Divider(height: 8),
             FutureBuilder(
-              future: notifications,
+              future: announcements,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return ResidentIndexAnnouncements(
-                    notifications: snapshot.data!,
+                    announcements: snapshot.data!,
                   );
                 }
-                return const ResidentIndexAnnouncements(notifications: []);
+                return const ResidentIndexAnnouncements(announcements: []);
               },
             ),
           ],
@@ -82,10 +82,10 @@ class _ResidentIndexState extends State<ResidentIndex> {
 class ResidentIndexAnnouncement extends StatelessWidget {
   const ResidentIndexAnnouncement({
     super.key,
-    required this.notifications,
+    required this.announcements,
   });
 
-  final List<RecordModel> notifications;
+  final List<RecordModel> announcements;
 
   @override
   Widget build(BuildContext context) {
@@ -93,9 +93,9 @@ class ResidentIndexAnnouncement extends StatelessWidget {
       leading: const Icon(Icons.notifications),
       title: Row(
         children: [
-          notifications.isEmpty
+          announcements.isEmpty
               ? const Text('暂无通知')
-              : Text(notifications.first.getStringValue('title')),
+              : Text(announcements.first.getStringValue('title')),
           Expanded(
             child: Align(
               alignment: Alignment.centerRight,
@@ -227,10 +227,10 @@ class ResidentIndexServiceIcon extends StatelessWidget {
 class ResidentIndexAnnouncements extends StatelessWidget {
   const ResidentIndexAnnouncements({
     super.key,
-    required this.notifications,
+    required this.announcements,
   });
 
-  final List<RecordModel> notifications;
+  final List<RecordModel> announcements;
 
   @override
   Widget build(BuildContext context) {
@@ -258,11 +258,11 @@ class ResidentIndexAnnouncements extends StatelessWidget {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: notifications.length,
+              itemCount: announcements.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(notifications[index].getStringValue('title')),
-                  subtitle: Text(notifications[index].updated.split(' ')[0]),
+                  title: Text(announcements[index].getStringValue('title')),
+                  subtitle: Text(announcements[index].updated.split(' ')[0]),
                 );
               },
             ),
