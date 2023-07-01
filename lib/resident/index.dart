@@ -97,24 +97,19 @@ class ResidentIndexAnnouncement extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: const Icon(Icons.notifications),
-      title: Row(
-        children: [
-          announcements.isEmpty
-              ? const Text('暂无通知')
-              : Text(announcements.first.getStringValue('title')),
-          Expanded(
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () => navPush(
-                  context,
-                  ResidentAnnouncement(recordId: announcements.first.id),
-                ),
-                child: const Text('查看'),
-              ),
+      title: announcements.isEmpty
+          ? const Text('暂无通知')
+          : Text(
+              announcements.first.getStringValue('title'),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
             ),
-          )
-        ],
+      trailing: TextButton(
+        onPressed: () => navPush(
+          context,
+          ResidentAnnouncement(recordId: announcements.first.id),
+        ),
+        child: const Text('查看'),
       ),
     );
   }
@@ -252,22 +247,13 @@ class ResidentIndexAnnouncements extends StatelessWidget {
         children: [
           ListTile(
             leading: const Icon(Icons.newspaper),
-            title: Row(
-              children: [
-                const Text('通知公告'),
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () => navPush(
-                        context,
-                        ResidentAnnouncements(communityId: communityId),
-                      ),
-                      child: const Text('更多'),
-                    ),
-                  ),
-                )
-              ],
+            title: const Text('通知公告'),
+            trailing: TextButton(
+              onPressed: () => navPush(
+                context,
+                ResidentAnnouncements(communityId: communityId),
+              ),
+              child: const Text('更多'),
             ),
           ),
           Expanded(
