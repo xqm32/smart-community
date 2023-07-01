@@ -8,7 +8,7 @@ class Manage extends StatefulWidget {
     super.key,
     this.title,
     required this.fetchRecords,
-    required this.onAddPressed,
+    this.onAddPressed,
     required this.toElement,
   });
 
@@ -17,7 +17,7 @@ class Manage extends StatefulWidget {
   final Function(
     BuildContext context,
     void Function() refreshRecords,
-  ) onAddPressed;
+  )? onAddPressed;
   final Widget Function(
     BuildContext context,
     void Function() refreshRecords,
@@ -76,10 +76,12 @@ class _ManageState extends State<Manage> {
           return const LinearProgressIndicator();
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => widget.onAddPressed(context, refreshRecords),
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: widget.onAddPressed != null
+          ? FloatingActionButton(
+              onPressed: () => widget.onAddPressed!(context, refreshRecords),
+              child: const Icon(Icons.add),
+            )
+          : null,
     );
   }
 

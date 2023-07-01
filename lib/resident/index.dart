@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
+import 'package:smart_community/resident/announcement/Announcement.dart';
+import 'package:smart_community/resident/announcement/announcements.dart';
 
 import 'package:smart_community/resident/car/cars.dart';
 import 'package:smart_community/resident/family/families.dart';
@@ -65,10 +67,14 @@ class _ResidentIndexState extends State<ResidentIndex> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return ResidentIndexAnnouncements(
+                    communityId: widget.communityId,
                     announcements: snapshot.data!,
                   );
                 }
-                return const ResidentIndexAnnouncements(announcements: []);
+                return ResidentIndexAnnouncements(
+                  communityId: widget.communityId,
+                  announcements: const [],
+                );
               },
             ),
           ],
@@ -100,7 +106,10 @@ class ResidentIndexAnnouncement extends StatelessWidget {
             child: Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: () {},
+                onPressed: () => navPush(
+                  context,
+                  ResidentAnnouncement(recordId: announcements.first.id),
+                ),
                 child: const Text('查看'),
               ),
             ),
@@ -227,9 +236,11 @@ class ResidentIndexServiceIcon extends StatelessWidget {
 class ResidentIndexAnnouncements extends StatelessWidget {
   const ResidentIndexAnnouncements({
     super.key,
+    required this.communityId,
     required this.announcements,
   });
 
+  final String communityId;
   final List<RecordModel> announcements;
 
   @override
@@ -248,7 +259,10 @@ class ResidentIndexAnnouncements extends StatelessWidget {
                   child: Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
-                      onPressed: () {},
+                      onPressed: () => navPush(
+                        context,
+                        ResidentAnnouncements(communityId: communityId),
+                      ),
                       child: const Text('更多'),
                     ),
                   ),
@@ -263,6 +277,10 @@ class ResidentIndexAnnouncements extends StatelessWidget {
                 return ListTile(
                   title: Text(announcements[index].getStringValue('title')),
                   subtitle: Text(announcements[index].updated.split(' ')[0]),
+                  onTap: () => navPush(
+                    context,
+                    ResidentAnnouncement(recordId: announcements.first.id),
+                  ),
                 );
               },
             ),
