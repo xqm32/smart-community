@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/components/manage.dart';
-import 'package:smart_community/resident/index/problem.dart';
+import 'package:smart_community/resident/car/car.dart';
 import 'package:smart_community/utils.dart';
 
-// 居民端/首页/问题上报
-class ResidentProblems extends StatelessWidget {
-  const ResidentProblems({
+// 居民端/首页/车辆管理
+class ResidentCars extends StatelessWidget {
+  const ResidentCars({
     super.key,
     required this.communityId,
   });
@@ -17,7 +17,7 @@ class ResidentProblems extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Manage(
-      title: const Text('问题上报'),
+      title: const Text('车辆管理'),
       fetchRecords: fetchRecords,
       onAddPressed: onAddPressed,
       toElement: toElement,
@@ -28,15 +28,13 @@ class ResidentProblems extends StatelessWidget {
     // 后端存在规则时可以移除「&& userId = "${pb.authStore.model!.id}"」
     final String filter =
         'communityId = "$communityId" && userId = "${pb.authStore.model!.id}"';
-    return pb
-        .collection('problems')
-        .getFullList(filter: filter, sort: '-created');
+    return pb.collection('cars').getFullList(filter: filter, sort: '-created');
   }
 
   void onAddPressed(BuildContext context, void Function() refreshRecords) {
     navPush(
       context,
-      ResidentProblem(communityId: communityId),
+      ResidentCar(communityId: communityId),
     ).then((value) => refreshRecords());
   }
 
@@ -45,29 +43,14 @@ class ResidentProblems extends StatelessWidget {
     void Function() refreshRecords,
     RecordModel record,
   ) {
-    final state = record.getStringValue('state');
-    final remark = record.getStringValue('remark');
-
     return ListTile(
-      title: Text(record.getStringValue('title')),
-      subtitle: Row(
-        children: [
-          Text(record.created.split(' ')[0]),
-          const SizedBox(width: 16),
-          if (state == 'processing' && remark.isNotEmpty)
-            Text(
-              '由${record.getStringValue('remark')}处理',
-              style: const TextStyle(color: Colors.grey),
-            )
-          else
-            const SizedBox(width: 0),
-        ],
-      ),
+      title: Text(record.getStringValue('name')),
+      subtitle: Text(record.getStringValue('plate')),
       trailing: _recordState(record),
       onTap: () {
         navPush(
           context,
-          ResidentProblem(communityId: communityId, recordId: record.id),
+          ResidentCar(communityId: communityId, recordId: record.id),
         ).then((value) => refreshRecords());
       },
     );
@@ -77,27 +60,27 @@ class ResidentProblems extends StatelessWidget {
     final state = record.getStringValue('state');
     const double fontSize = 16;
 
-    if (state == 'pending') {
+    if (state == 'reviewing') {
       return const Text(
-        '等待处理',
-        style: TextStyle(
-          color: Colors.grey,
-          fontSize: fontSize,
-        ),
-      );
-    } else if (state == 'processing') {
-      return const Text(
-        '处理中',
+        '审核中',
         style: TextStyle(
           color: Colors.purple,
           fontSize: fontSize,
         ),
       );
-    } else if (state == 'finished') {
+    } else if (state == 'verified') {
       return const Text(
-        '处理完毕',
+        '审核通过',
         style: TextStyle(
           color: Colors.green,
+          fontSize: fontSize,
+        ),
+      );
+    } else if (state == 'rejected') {
+      return const Text(
+        '审核未通过',
+        style: TextStyle(
+          color: Colors.red,
           fontSize: fontSize,
         ),
       );

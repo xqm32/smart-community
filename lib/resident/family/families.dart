@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/components/manage.dart';
-import 'package:smart_community/resident/index/car.dart';
+import 'package:smart_community/resident/family/family.dart';
 import 'package:smart_community/utils.dart';
 
-// 居民端/首页/车辆管理
-class ResidentCars extends StatelessWidget {
-  const ResidentCars({
+// 居民端/首页/家人管理
+class ResidentFamilies extends StatelessWidget {
+  const ResidentFamilies({
     super.key,
     required this.communityId,
   });
@@ -17,7 +17,7 @@ class ResidentCars extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Manage(
-      title: const Text('车辆管理'),
+      title: const Text('家人管理'),
       fetchRecords: fetchRecords,
       onAddPressed: onAddPressed,
       toElement: toElement,
@@ -28,13 +28,13 @@ class ResidentCars extends StatelessWidget {
     // 后端存在规则时可以移除「&& userId = "${pb.authStore.model!.id}"」
     final String filter =
         'communityId = "$communityId" && userId = "${pb.authStore.model!.id}"';
-    return pb.collection('cars').getFullList(filter: filter, sort: '-created');
+    return pb.collection('families').getFullList(filter: filter, sort: '-created');
   }
 
   void onAddPressed(BuildContext context, void Function() refreshRecords) {
     navPush(
       context,
-      ResidentCar(communityId: communityId),
+      ResidentFamily(communityId: communityId),
     ).then((value) => refreshRecords());
   }
 
@@ -45,12 +45,12 @@ class ResidentCars extends StatelessWidget {
   ) {
     return ListTile(
       title: Text(record.getStringValue('name')),
-      subtitle: Text(record.getStringValue('plate')),
+      subtitle: Text(record.getStringValue('relation')),
       trailing: _recordState(record),
       onTap: () {
         navPush(
           context,
-          ResidentCar(communityId: communityId, recordId: record.id),
+          ResidentFamily(communityId: communityId, recordId: record.id),
         ).then((value) => refreshRecords());
       },
     );

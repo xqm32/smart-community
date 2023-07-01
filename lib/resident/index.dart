@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
-import 'package:smart_community/resident/index/cars.dart';
-import 'package:smart_community/resident/index/families.dart';
-import 'package:smart_community/resident/index/houses.dart';
-import 'package:smart_community/resident/index/problems.dart';
+import 'package:smart_community/resident/car/cars.dart';
+import 'package:smart_community/resident/family/families.dart';
+import 'package:smart_community/resident/house/houses.dart';
+import 'package:smart_community/resident/problem/problems.dart';
 import 'package:smart_community/utils.dart';
 
 // 居民端/首页

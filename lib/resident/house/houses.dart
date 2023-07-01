@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/components/manage.dart';
-import 'package:smart_community/resident/index/house.dart';
+import 'package:smart_community/resident/house/house.dart';
 import 'package:smart_community/utils.dart';
 
 // 居民端/首页/房屋管理

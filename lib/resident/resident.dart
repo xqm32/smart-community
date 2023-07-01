@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:smart_community/components/search.dart';
 import 'package:smart_community/account/account.dart';
-import 'package:smart_community/resident/index/index.dart';
+import 'package:smart_community/resident/index.dart';
 import 'package:smart_community/utils.dart';
 
 // 居民端
