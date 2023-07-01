@@ -45,18 +45,22 @@ class ResidentProblemList extends StatelessWidget {
     void Function() refreshRecords,
     RecordModel record,
   ) {
+    final state = record.getStringValue('state');
+    final remark = record.getStringValue('remark');
+
     return ListTile(
       title: Text(record.getStringValue('title')),
       subtitle: Row(
         children: [
           Text(record.created.split(' ')[0]),
           const SizedBox(width: 16),
-          record.getStringValue('state') == 'processing'
-              ? Text(
-                  '由${record.getStringValue('remark')}处理',
-                  style: const TextStyle(color: Colors.grey),
-                )
-              : const SizedBox(width: 0),
+          if (state == 'processing' && remark.isNotEmpty)
+            Text(
+              '由${record.getStringValue('remark')}处理',
+              style: const TextStyle(color: Colors.grey),
+            )
+          else
+            const SizedBox(width: 0),
         ],
       ),
       trailing: _recordState(record),

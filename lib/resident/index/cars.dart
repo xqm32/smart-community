@@ -64,7 +64,7 @@ class ResidentCarList extends StatelessWidget {
       return const Text(
         '审核中',
         style: TextStyle(
-          color: Colors.orange,
+          color: Colors.purple,
           fontSize: fontSize,
         ),
       );

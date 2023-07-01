@@ -11,8 +11,8 @@ Future<dynamic> navPush(context, widget) {
   ));
 }
 
-void navPop(context) {
-  Navigator.of(context).pop();
+void navPop(context, [dynamic result]) {
+  Navigator.of(context).pop(result);
 }
 
 Future<dynamic> navGoto(context, widget) {
