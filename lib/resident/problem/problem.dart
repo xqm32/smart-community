@@ -149,7 +149,7 @@ class _ResidentProblemState extends State<ResidentProblem> {
               floatingLabelBehavior: FloatingLabelBehavior.always,
             ),
             validator: notNullValidator('内容不能为空'),
-            maxLines: 16,
+            maxLines: null,
           ),
           const SizedBox(height: 16),
           ElevatedButton(
