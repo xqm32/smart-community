@@ -60,3 +60,13 @@ String? Function(String?) notNullValidator(String message) {
     }
   };
 }
+
+String getDate(String formattedString) {
+  final datetime = DateTime.parse(formattedString).toLocal();
+  return datetime.toIso8601String().split('T')[0];
+}
+
+String getDateTime(String formattedString) {
+  final datetime = DateTime.parse(formattedString).toLocal();
+  return datetime.toIso8601String().replaceAll('T', ' ').split('.')[0];
+}

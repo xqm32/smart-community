@@ -62,7 +62,7 @@ class _ResidentAnnouncementState extends State<ResidentAnnouncement> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          _record!.created.split('.')[0],
+                          getDateTime(_record!.created),
                           style: const TextStyle(
                             color: Colors.grey,
                           ),

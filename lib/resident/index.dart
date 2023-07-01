@@ -262,7 +262,7 @@ class ResidentIndexAnnouncements extends StatelessWidget {
               itemBuilder: (context, index) {
                 return ListTile(
                   title: Text(announcements[index].getStringValue('title')),
-                  subtitle: Text(announcements[index].updated.split(' ')[0]),
+                  subtitle: Text(getDateTime(announcements[index].created)),
                   onTap: () => navPush(
                     context,
                     ResidentAnnouncement(recordId: announcements.first.id),

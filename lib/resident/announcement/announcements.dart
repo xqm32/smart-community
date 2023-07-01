@@ -36,7 +36,7 @@ class ResidentAnnouncements extends StatelessWidget {
   ) {
     return ListTile(
       title: Text(record.getStringValue('title')),
-      subtitle: Text(record.created.split('.')[0]),
+      subtitle: Text(getDateTime(record.created)),
       onTap: () {
         navPush(
           context,

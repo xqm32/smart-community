@@ -52,7 +52,7 @@ class ResidentProblems extends StatelessWidget {
       title: Text(record.getStringValue('title')),
       subtitle: Row(
         children: [
-          Text(record.created.split(' ')[0]),
+          Text(getDateTime(record.created)),
           const SizedBox(width: 16),
           if (state == 'processing' && remark.isNotEmpty)
             Text(
