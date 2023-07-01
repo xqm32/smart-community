@@ -6,8 +6,8 @@ import 'package:smart_community/resident/index/problem.dart';
 import 'package:smart_community/utils.dart';
 
 // 居民端/首页/问题上报
-class ResidentProblemList extends StatelessWidget {
-  const ResidentProblemList({
+class ResidentProblems extends StatelessWidget {
+  const ResidentProblems({
     super.key,
     required this.communityId,
   });

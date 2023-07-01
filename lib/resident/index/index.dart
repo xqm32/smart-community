@@ -48,10 +48,11 @@ class _ResidentIndexState extends State<ResidentIndex> {
               future: notifications,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return ResidentIndexNotification(
-                      notifications: snapshot.data!);
+                  return ResidentIndexAnnouncement(
+                    notifications: snapshot.data!,
+                  );
                 }
-                return const ResidentIndexNotification(notifications: []);
+                return const ResidentIndexAnnouncement(notifications: []);
               },
             ),
             const Divider(height: 8),
@@ -63,9 +64,11 @@ class _ResidentIndexState extends State<ResidentIndex> {
               future: notifications,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return ResidentIndexNews(notifications: snapshot.data!);
+                  return ResidentIndexAnnouncements(
+                    notifications: snapshot.data!,
+                  );
                 }
-                return const ResidentIndexNews(notifications: []);
+                return const ResidentIndexAnnouncements(notifications: []);
               },
             ),
           ],
@@ -76,8 +79,8 @@ class _ResidentIndexState extends State<ResidentIndex> {
 }
 
 // 居民端/首页/通知
-class ResidentIndexNotification extends StatelessWidget {
-  const ResidentIndexNotification({
+class ResidentIndexAnnouncement extends StatelessWidget {
+  const ResidentIndexAnnouncement({
     super.key,
     required this.notifications,
   });
@@ -131,21 +134,21 @@ class ResidentIndexService extends StatelessWidget {
             ),
             ResidentIndexServiceIcon(
               onPressed: () =>
-                  navPush(context, ResidentHouseList(communityId: communityId)),
+                  navPush(context, ResidentHouses(communityId: communityId)),
               icon: Icons.home,
               text: '房屋管理',
               color: Colors.green,
             ),
             ResidentIndexServiceIcon(
               onPressed: () =>
-                  navPush(context, ResidentCarList(communityId: communityId)),
+                  navPush(context, ResidentCars(communityId: communityId)),
               icon: Icons.car_rental,
               text: '车辆管理',
               color: Colors.blue,
             ),
             ResidentIndexServiceIcon(
-              onPressed: () => navPush(
-                  context, ResidentFamilyList(communityId: communityId)),
+              onPressed: () =>
+                  navPush(context, ResidentFamilies(communityId: communityId)),
               icon: Icons.people,
               text: '家人管理',
               color: Colors.purple,
@@ -155,8 +158,8 @@ class ResidentIndexService extends StatelessWidget {
         Row(
           children: [
             ResidentIndexServiceIcon(
-              onPressed: () => navPush(
-                  context, ResidentProblemList(communityId: communityId)),
+              onPressed: () =>
+                  navPush(context, ResidentProblems(communityId: communityId)),
               icon: Icons.question_mark,
               text: '问题上报',
               color: Colors.cyan,
@@ -221,8 +224,8 @@ class ResidentIndexServiceIcon extends StatelessWidget {
 }
 
 // 居民端/首页/新闻
-class ResidentIndexNews extends StatelessWidget {
-  const ResidentIndexNews({
+class ResidentIndexAnnouncements extends StatelessWidget {
+  const ResidentIndexAnnouncements({
     super.key,
     required this.notifications,
   });

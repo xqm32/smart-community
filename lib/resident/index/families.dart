@@ -6,8 +6,8 @@ import 'package:smart_community/resident/index/family.dart';
 import 'package:smart_community/utils.dart';
 
 // 居民端/首页/家人管理
-class ResidentFamilyList extends StatelessWidget {
-  const ResidentFamilyList({
+class ResidentFamilies extends StatelessWidget {
+  const ResidentFamilies({
     super.key,
     required this.communityId,
   });

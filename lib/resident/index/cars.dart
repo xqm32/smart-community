@@ -6,8 +6,8 @@ import 'package:smart_community/resident/index/car.dart';
 import 'package:smart_community/utils.dart';
 
 // 居民端/首页/车辆管理
-class ResidentCarList extends StatelessWidget {
-  const ResidentCarList({
+class ResidentCars extends StatelessWidget {
+  const ResidentCars({
     super.key,
     required this.communityId,
   });
