@@ -85,6 +85,12 @@ class ResidentFamilyList extends StatelessWidget {
         ),
       );
     }
-    return const Text('未知状态');
+    return const Text(
+      '未知状态',
+      style: TextStyle(
+        color: Colors.grey,
+        fontSize: fontSize,
+      ),
+    );
   }
 }

@@ -46,17 +46,9 @@ class ResidentHouseList extends StatelessWidget {
     RecordModel record,
   ) {
     return ListTile(
-      title: Row(
-        children: [
-          Text(record.getStringValue('location')),
-          Expanded(
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: _recordState(record),
-            ),
-          )
-        ],
-      ),
+      title: Text(record.getStringValue('location')),
+      subtitle: Text(record.created.split(' ')[0]),
+      trailing: _recordState(record),
       onTap: () {
         navPush(
           context,
@@ -68,13 +60,39 @@ class ResidentHouseList extends StatelessWidget {
 
   Widget _recordState(RecordModel record) {
     final state = record.getStringValue('state');
+    const double fontSize = 16;
+
     if (state == 'reviewing') {
-      return const Text('审核中', style: TextStyle(color: Colors.orange));
+      return const Text(
+        '审核中',
+        style: TextStyle(
+          color: Colors.orange,
+          fontSize: fontSize,
+        ),
+      );
     } else if (state == 'verified') {
-      return const Text('审核通过', style: TextStyle(color: Colors.green));
+      return const Text(
+        '审核通过',
+        style: TextStyle(
+          color: Colors.green,
+          fontSize: fontSize,
+        ),
+      );
     } else if (state == 'rejected') {
-      return const Text('审核未通过', style: TextStyle(color: Colors.red));
+      return const Text(
+        '审核未通过',
+        style: TextStyle(
+          color: Colors.red,
+          fontSize: fontSize,
+        ),
+      );
     }
-    return const Text('未知状态');
+    return const Text(
+      '未知状态',
+      style: TextStyle(
+        color: Colors.grey,
+        fontSize: fontSize,
+      ),
+    );
   }
 }
