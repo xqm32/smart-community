@@ -97,7 +97,7 @@ class _LoginFormState extends State<_PasswordForm> {
           ),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () => _onSubmitPressed(context),
+            onPressed: _onSubmitPressed,
             child: const Text('确认修改'),
           ),
         ],
@@ -105,7 +105,7 @@ class _LoginFormState extends State<_PasswordForm> {
     );
   }
 
-  void _onSubmitPressed(context) {
+  void _onSubmitPressed() {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -115,6 +115,16 @@ class _LoginFormState extends State<_PasswordForm> {
         .collection('users')
         .update(pb.authStore.model.id, body: body)
         .then((value) => navGoto(context, const Login()))
-        .catchError((error) => showException(context, error));
+        .catchError(_onError);
+  }
+
+  void _onError(error) {
+    if (error.statusCode == 0) {
+      showError(context, '网络错误');
+    } else if (error.statusCode == 400) {
+      showError(context, '原密码错误');
+    } else {
+      showException(context, error);
+    }
   }
 }

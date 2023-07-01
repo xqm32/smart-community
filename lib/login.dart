@@ -159,10 +159,10 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   void _onError(error) {
-    if (error.statusCode == 400) {
-      showError(context, '用户名或密码错误');
-    } else if (error.statusCode == 0) {
+    if (error.statusCode == 0) {
       showError(context, '网络错误');
+    } else if (error.statusCode == 400) {
+      showError(context, '用户名或密码错误');
     } else {
       showException(context, error);
     }
