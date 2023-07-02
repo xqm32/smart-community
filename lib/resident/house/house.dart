@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
@@ -31,6 +33,10 @@ class _ResidentHouseState extends State<ResidentHouse> {
   final service = pb.collection('houses');
 
   RecordModel? _record;
+  Map<String, dynamic>? _struct;
+  String? _building;
+  String? _floor;
+  String? _room;
 
   @override
   void initState() {
@@ -38,9 +44,21 @@ class _ResidentHouseState extends State<ResidentHouse> {
     _controllers = {
       for (final i in _fields) i: TextEditingController(),
     };
-    if (widget.recordId != null) {
-      service.getOne(widget.recordId!).then(_setRecord);
-    }
+
+    pb.collection('communities').getOne(widget.communityId).then((value) {
+      final struct = value.getStringValue('struct');
+
+      setState(() {
+        _struct = struct.isNotEmpty
+            ? jsonDecode(struct) as Map<String, dynamic>
+            : null;
+      });
+
+      if (widget.recordId != null) {
+        service.getOne(widget.recordId!).then(_setRecord);
+      }
+    });
+
     super.initState();
   }
 
@@ -80,9 +98,27 @@ class _ResidentHouseState extends State<ResidentHouse> {
     for (final i in _controllers.entries) {
       i.value.text = value.getStringValue(i.key);
     }
+
+    String? building = value.getStringValue('building');
+    String? floor = value.getStringValue('floor');
+    String? room = value.getStringValue('room');
+    if (_struct == null || !_struct!.containsKey(building)) {
+      building = null;
+      floor = null;
+      room = null;
+    } else if (!_struct![building]!.containsKey(floor)) {
+      floor = null;
+      room = null;
+    } else if (!_struct![building]![floor]!.contains(room)) {
+      room = null;
+    }
+
     setState(() {
       _record = value;
       _index = _stateIndex[state] ?? 0;
+      _building = building;
+      _floor = floor;
+      _room = room;
     });
   }
 
@@ -94,6 +130,9 @@ class _ResidentHouseState extends State<ResidentHouse> {
       'userId': pb.authStore.model!.id,
       'communityId': widget.communityId,
       'state': 'reviewing',
+      'building': _building,
+      'floor': _floor,
+      'room': _room,
     });
 
     return body;
@@ -130,6 +169,69 @@ class _ResidentHouseState extends State<ResidentHouse> {
               hintText: '请填写房屋地址',
             ),
             validator: notNullValidator('地址不能为空'),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Flexible(
+                child: DropdownButtonFormField(
+                  decoration: const InputDecoration(labelText: '楼幢'),
+                  value: _building,
+                  items: _struct?.keys
+                      .map((e) => DropdownMenuItem(
+                            value: e,
+                            child: Text(e),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _building = value;
+                      _floor = null;
+                      _room = null;
+                    });
+                  },
+                  validator: notNullValidator('楼层不能为空'),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Flexible(
+                child: DropdownButtonFormField(
+                  decoration: const InputDecoration(labelText: '楼层'),
+                  value: _floor,
+                  items: (_struct?[_building] as Map<String, dynamic>?)
+                      ?.keys
+                      .map((e) => DropdownMenuItem(
+                            value: e,
+                            child: Text(e),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _floor = value;
+                      _room = null;
+                    });
+                  },
+                  validator: notNullValidator('楼层不能为空'),
+                ),
+              ),
+            ],
+          ),
+          DropdownButtonFormField(
+            decoration: const InputDecoration(labelText: '房间号'),
+            value: _room,
+            items: (_struct?[_building]?[_floor] as List?)
+                ?.map((e) => DropdownMenuItem(
+                      value: e as String,
+                      child: Text(e),
+                    ))
+                .toList(),
+            onChanged: (value) {
+              setState(() {
+                _room = value;
+              });
+            },
+            validator: notNullValidator('房间不能为空'),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
