@@ -4,6 +4,7 @@ import 'package:pocketbase/pocketbase.dart';
 import 'package:smart_community/components/announcements.dart';
 import 'package:smart_community/property/announcement/Announcement.dart';
 import 'package:smart_community/property/announcement/announcements.dart';
+import 'package:smart_community/property/car/cars.dart';
 
 import 'package:smart_community/utils.dart';
 
@@ -150,7 +151,8 @@ class PropertyIndexService extends StatelessWidget {
               color: Colors.green,
             ),
             PropertyIndexServiceIcon(
-              onPressed: () {},
+              onPressed: () =>
+                  navPush(context, PropertyCars(communityId: communityId)),
               icon: Icons.car_rental,
               text: '车辆审核',
               color: Colors.blue,
