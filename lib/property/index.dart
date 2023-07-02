@@ -2,17 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/components/announcements.dart';
-import 'package:smart_community/resident/announcement/Announcement.dart';
-import 'package:smart_community/resident/announcement/announcements.dart';
-import 'package:smart_community/resident/car/cars.dart';
-import 'package:smart_community/resident/family/families.dart';
-import 'package:smart_community/resident/house/houses.dart';
-import 'package:smart_community/resident/problem/problems.dart';
+import 'package:smart_community/property/announcement/Announcement.dart';
+import 'package:smart_community/property/announcement/announcements.dart';
+
 import 'package:smart_community/utils.dart';
 
-// 居民端/首页
-class ResidentIndex extends StatefulWidget {
-  const ResidentIndex({
+// 物业端/首页
+class PropertyIndex extends StatefulWidget {
+  const PropertyIndex({
     super.key,
     required this.communityId,
   });
@@ -20,10 +17,10 @@ class ResidentIndex extends StatefulWidget {
   final String communityId;
 
   @override
-  State<ResidentIndex> createState() => _ResidentIndexState();
+  State<PropertyIndex> createState() => _PropertyIndexState();
 }
 
-class _ResidentIndexState extends State<ResidentIndex> {
+class _PropertyIndexState extends State<PropertyIndex> {
   late Future<List<RecordModel>> announcements;
 
   @override
@@ -34,7 +31,7 @@ class _ResidentIndexState extends State<ResidentIndex> {
   }
 
   @override
-  void didUpdateWidget(covariant ResidentIndex oldWidget) {
+  void didUpdateWidget(covariant PropertyIndex oldWidget) {
     announcements = pb.collection('announcements').getFullList(
         filter: 'communityId = "${widget.communityId}"', sort: '-created');
     super.didUpdateWidget(oldWidget);
@@ -51,15 +48,19 @@ class _ResidentIndexState extends State<ResidentIndex> {
               future: announcements,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return ResidentIndexAnnouncement(
+                  return PropertyIndexAnnouncement(
+                    communityId: widget.communityId,
                     announcements: snapshot.data!,
                   );
                 }
-                return const ResidentIndexAnnouncement(announcements: []);
+                return PropertyIndexAnnouncement(
+                  communityId: widget.communityId,
+                  announcements: const [],
+                );
               },
             ),
             const Divider(height: 8),
-            ResidentIndexService(
+            PropertyIndexService(
               communityId: widget.communityId,
             ),
             const Divider(height: 8),
@@ -67,12 +68,12 @@ class _ResidentIndexState extends State<ResidentIndex> {
               future: announcements,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return ResidentIndexAnnouncements(
+                  return PropertyIndexAnnouncements(
                     communityId: widget.communityId,
                     announcements: snapshot.data!,
                   );
                 }
-                return ResidentIndexAnnouncements(
+                return PropertyIndexAnnouncements(
                   communityId: widget.communityId,
                   announcements: const [],
                 );
@@ -85,13 +86,15 @@ class _ResidentIndexState extends State<ResidentIndex> {
   }
 }
 
-// 居民端/首页/通知
-class ResidentIndexAnnouncement extends StatelessWidget {
-  const ResidentIndexAnnouncement({
+// 物业端/首页/通知
+class PropertyIndexAnnouncement extends StatelessWidget {
+  const PropertyIndexAnnouncement({
     super.key,
+    required this.communityId,
     required this.announcements,
   });
 
+  final String communityId;
   final List<RecordModel> announcements;
 
   @override
@@ -108,17 +111,20 @@ class ResidentIndexAnnouncement extends StatelessWidget {
       trailing: TextButton(
         onPressed: () => navPush(
           context,
-          ResidentAnnouncement(recordId: announcements.first.id),
+          PropertyAnnouncement(
+            communityId: communityId,
+            recordId: announcements.first.id,
+          ),
         ),
-        child: const Text('查看'),
+        child: const Text('编辑'),
       ),
     );
   }
 }
 
-// 居民端/首页/服务
-class ResidentIndexService extends StatelessWidget {
-  const ResidentIndexService({
+// 物业端/首页/服务
+class PropertyIndexService extends StatelessWidget {
+  const PropertyIndexService({
     super.key,
     required this.communityId,
   });
@@ -131,57 +137,53 @@ class ResidentIndexService extends StatelessWidget {
       children: [
         Row(
           children: [
-            ResidentIndexServiceIcon(
+            PropertyIndexServiceIcon(
               onPressed: () {},
               icon: Icons.person,
-              text: '实名认证',
+              text: '居民管理',
               color: Colors.orange,
             ),
-            ResidentIndexServiceIcon(
-              onPressed: () =>
-                  navPush(context, ResidentHouses(communityId: communityId)),
+            PropertyIndexServiceIcon(
+              onPressed: () {},
               icon: Icons.home,
-              text: '房屋管理',
+              text: '房屋审核',
               color: Colors.green,
             ),
-            ResidentIndexServiceIcon(
-              onPressed: () =>
-                  navPush(context, ResidentCars(communityId: communityId)),
+            PropertyIndexServiceIcon(
+              onPressed: () {},
               icon: Icons.car_rental,
-              text: '车辆管理',
+              text: '车辆审核',
               color: Colors.blue,
             ),
-            ResidentIndexServiceIcon(
-              onPressed: () =>
-                  navPush(context, ResidentFamilies(communityId: communityId)),
+            PropertyIndexServiceIcon(
+              onPressed: () {},
               icon: Icons.people,
-              text: '家人管理',
+              text: '家人审核',
               color: Colors.purple,
             ),
           ],
         ),
         Row(
           children: [
-            ResidentIndexServiceIcon(
-              onPressed: () =>
-                  navPush(context, ResidentProblems(communityId: communityId)),
+            PropertyIndexServiceIcon(
+              onPressed: () {},
               icon: Icons.question_mark,
-              text: '问题上报',
+              text: '事件处置',
               color: Colors.cyan,
             ),
-            ResidentIndexServiceIcon(
+            PropertyIndexServiceIcon(
               onPressed: () {},
               icon: Icons.how_to_vote,
-              text: '预算支出投票',
+              text: '支出投票管理',
               color: Colors.indigo,
             ),
-            ResidentIndexServiceIcon(
+            PropertyIndexServiceIcon(
               onPressed: () {},
-              icon: Icons.phone,
-              text: '联系物业',
+              icon: Icons.settings,
+              text: '小区信息配置',
               color: Colors.lightGreen,
             ),
-            ResidentIndexServiceIcon(
+            PropertyIndexServiceIcon(
               onPressed: () {},
               icon: Icons.more_horiz,
               text: '更多服务',
@@ -195,9 +197,9 @@ class ResidentIndexService extends StatelessWidget {
   }
 }
 
-// 居民端/首页/服务/图标
-class ResidentIndexServiceIcon extends StatelessWidget {
-  const ResidentIndexServiceIcon({
+// 物业端/首页/服务/图标
+class PropertyIndexServiceIcon extends StatelessWidget {
+  const PropertyIndexServiceIcon({
     super.key,
     required this.onPressed,
     required this.icon,
@@ -228,9 +230,9 @@ class ResidentIndexServiceIcon extends StatelessWidget {
   }
 }
 
-// 居民端/首页/新闻
-class ResidentIndexAnnouncements extends StatelessWidget {
-  const ResidentIndexAnnouncements({
+// 物业端/首页/新闻
+class PropertyIndexAnnouncements extends StatelessWidget {
+  const PropertyIndexAnnouncements({
     super.key,
     required this.communityId,
     required this.announcements,
@@ -252,7 +254,7 @@ class ResidentIndexAnnouncements extends StatelessWidget {
             trailing: TextButton(
               onPressed: () => navPush(
                 context,
-                ResidentAnnouncements(communityId: communityId),
+                PropertyAnnouncements(communityId: communityId),
               ),
               child: const Text('更多'),
             ),
@@ -267,7 +269,8 @@ class ResidentIndexAnnouncements extends StatelessWidget {
                   onTap: () {
                     navPush(
                       context,
-                      ResidentAnnouncement(recordId: record.id),
+                      PropertyAnnouncement(
+                          communityId: communityId, recordId: record.id),
                     );
                   },
                 );

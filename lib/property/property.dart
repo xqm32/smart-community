@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:smart_community/components/search.dart';
 import 'package:smart_community/account/account.dart';
+import 'package:smart_community/property/index.dart';
 import 'package:smart_community/utils.dart';
 
 // 物业端
@@ -67,7 +68,7 @@ class _PropertyState extends State<Property> {
       body: [
         // 物业端/首页
         communityId != null
-            ? const LinearProgressIndicator()
+            ? PropertyIndex(communityId: communityId!)
             : FutureBuilder(
                 future: communities,
                 builder: (context, snapshot) {

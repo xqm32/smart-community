@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:smart_community/login.dart';
 
+import 'package:smart_community/login.dart';
 import 'package:smart_community/utils.dart';
 
 class AccountPassword extends StatelessWidget {

@@ -3,12 +3,12 @@ import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/components/announcements.dart';
 import 'package:smart_community/components/manage.dart';
-import 'package:smart_community/resident/announcement/announcement.dart';
+import 'package:smart_community/property/announcement/Announcement.dart';
 import 'package:smart_community/utils.dart';
 
-// 居民端/首页/通知公告
-class ResidentAnnouncements extends StatelessWidget {
-  const ResidentAnnouncements({
+// 物业端/首页/通知公告
+class PropertyAnnouncements extends StatelessWidget {
+  const PropertyAnnouncements({
     super.key,
     required this.communityId,
   });
@@ -22,6 +22,7 @@ class ResidentAnnouncements extends StatelessWidget {
       fetchRecords: fetchRecords,
       filter: keyFilter('title'),
       toElement: toElement,
+      onAddPressed: onAddPressed,
     );
   }
 
@@ -30,6 +31,13 @@ class ResidentAnnouncements extends StatelessWidget {
     return pb
         .collection('announcements')
         .getFullList(filter: filter, sort: '-created');
+  }
+
+  void onAddPressed(BuildContext context, void Function() refreshRecords) {
+    navPush(
+      context,
+      PropertyAnnouncement(communityId: communityId),
+    ).then((value) => refreshRecords());
   }
 
   Widget toElement(
@@ -42,7 +50,7 @@ class ResidentAnnouncements extends StatelessWidget {
       onTap: () {
         navPush(
           context,
-          ResidentAnnouncement(recordId: record.id),
+          PropertyAnnouncement(communityId: communityId, recordId: record.id),
         ).then((value) => refreshRecords());
       },
     );
