@@ -49,7 +49,7 @@ class _PropertyState extends State<Property> {
               return SearchAction(
                 builder: _searchActionBuilder,
                 records: snapshot.data!,
-                test: (element, input) =>
+                filter: (element, input) =>
                     element.getStringValue('name').contains(input),
                 toElement: (element) => ListTile(
                   title: Text(element.getStringValue('name')),

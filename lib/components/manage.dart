@@ -6,23 +6,26 @@ import 'package:smart_community/components/search.dart';
 class Manage extends StatefulWidget {
   const Manage({
     super.key,
-    this.title,
+    required this.title,
     required this.fetchRecords,
-    this.onAddPressed,
     required this.toElement,
+    required this.filter,
+    this.onAddPressed,
   });
 
-  final Widget? title;
+  final Widget title;
   final Future<List<RecordModel>> Function() fetchRecords;
-  final Function(
-    BuildContext context,
-    void Function() refreshRecords,
-  )? onAddPressed;
+
+  final bool Function(RecordModel record, String input) filter;
   final Widget Function(
     BuildContext context,
     void Function() refreshRecords,
     RecordModel record,
   ) toElement;
+  final Function(
+    BuildContext context,
+    void Function() refreshRecords,
+  )? onAddPressed;
 
   @override
   State<Manage> createState() => _ManageState();
@@ -44,15 +47,18 @@ class _ManageState extends State<Manage> {
         title: widget.title,
         actions: [
           IconButton(
-              onPressed: refreshRecords, icon: const Icon(Icons.refresh)),
+            onPressed: refreshRecords,
+            icon: const Icon(
+              Icons.refresh,
+            ),
+          ),
           FutureBuilder(
             future: _records,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return SearchAction(
                   records: snapshot.data!,
-                  test: (record, input) =>
-                      record.getStringValue('location').contains(input),
+                  filter: widget.filter,
                   toElement: (record) =>
                       widget.toElement(context, refreshRecords, record),
                 );

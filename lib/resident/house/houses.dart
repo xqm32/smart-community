@@ -19,6 +19,7 @@ class ResidentHouses extends StatelessWidget {
     return Manage(
       title: const Text('房屋管理'),
       fetchRecords: fetchRecords,
+      filter: keyFilter('location'),
       onAddPressed: onAddPressed,
       toElement: toElement,
     );
@@ -47,7 +48,7 @@ class ResidentHouses extends StatelessWidget {
   ) {
     return ListTile(
       title: Text(record.getStringValue('location')),
-      subtitle: Text(record.created.split(' ')[0]),
+      subtitle: Text(getDateTime(record.created)),
       trailing: _recordState(record),
       onTap: () {
         navPush(

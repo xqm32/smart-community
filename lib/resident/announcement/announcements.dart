@@ -19,6 +19,7 @@ class ResidentAnnouncements extends StatelessWidget {
     return Manage(
       title: const Text('通知公告'),
       fetchRecords: fetchRecords,
+      filter: keyFilter('title'),
       toElement: toElement,
     );
   }
@@ -29,6 +30,7 @@ class ResidentAnnouncements extends StatelessWidget {
         .collection('announcements')
         .getFullList(filter: filter, sort: '-created');
   }
+
   Widget toElement(
     BuildContext context,
     void Function() refreshRecords,

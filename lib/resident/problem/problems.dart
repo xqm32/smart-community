@@ -19,8 +19,9 @@ class ResidentProblems extends StatelessWidget {
     return Manage(
       title: const Text('问题上报'),
       fetchRecords: fetchRecords,
-      onAddPressed: onAddPressed,
+      filter: keyFilter('title'),
       toElement: toElement,
+      onAddPressed: onAddPressed,
     );
   }
 
@@ -45,23 +46,24 @@ class ResidentProblems extends StatelessWidget {
     void Function() refreshRecords,
     RecordModel record,
   ) {
-    final state = record.getStringValue('state');
     final remark = record.getStringValue('remark');
 
     return ListTile(
       title: Text(record.getStringValue('title')),
-      subtitle: Row(
-        children: [
-          Text(getDateTime(record.created)),
-          const SizedBox(width: 16),
-          if (state == 'processing' && remark.isNotEmpty)
-            Text(
-              '由${record.getStringValue('remark')}处理',
+      subtitle: RichText(
+        text: TextSpan(
+          children: [
+            if (remark.isNotEmpty)
+              TextSpan(
+                text: '$remark  ',
+                style: TextStyle(color: Theme.of(context).primaryColor),
+              ),
+            TextSpan(
+              text: getDateTime(record.created),
               style: const TextStyle(color: Colors.grey),
-            )
-          else
-            const SizedBox(width: 0),
-        ],
+            ),
+          ],
+        ),
       ),
       trailing: _recordState(record),
       onTap: () {

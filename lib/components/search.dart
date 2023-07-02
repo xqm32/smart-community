@@ -5,15 +5,16 @@ class SearchAction extends StatelessWidget {
   const SearchAction({
     super.key,
     required this.records,
-    required this.test,
+    required this.filter,
     required this.toElement,
     this.builder,
   });
 
   final List<RecordModel> records;
-  final bool Function(RecordModel record, String input) test;
+  final bool Function(RecordModel record, String input) filter;
   final Widget Function(RecordModel record) toElement;
-  final Widget Function(BuildContext context, SearchController controller)? builder;
+  final Widget Function(BuildContext context, SearchController controller)?
+      builder;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +28,7 @@ class SearchAction extends StatelessWidget {
         suggestionsBuilder: (context, controller) {
           final String input = controller.value.text;
           return records
-              .where((record) => test(record, input))
+              .where((record) => filter(record, input))
               .map(toElement)
               .toList();
         });

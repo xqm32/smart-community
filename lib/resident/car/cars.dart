@@ -19,8 +19,9 @@ class ResidentCars extends StatelessWidget {
     return Manage(
       title: const Text('车辆管理'),
       fetchRecords: fetchRecords,
-      onAddPressed: onAddPressed,
+      filter: keyFilter('name'),
       toElement: toElement,
+      onAddPressed: onAddPressed,
     );
   }
 

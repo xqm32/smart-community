@@ -70,3 +70,31 @@ String getDateTime(String formattedString) {
   final datetime = DateTime.parse(formattedString).toLocal();
   return datetime.toIso8601String().replaceAll('T', ' ').split('.')[0];
 }
+
+bool Function(RecordModel, String) keyFilter(String primaryKey) {
+  return (record, input) {
+    return input.split(' ').every((element) {
+      if (element.contains(':')) {
+        final elements = element.replaceFirst(':', ' ').split(' ');
+        final key = elements.first;
+        final value = elements.last;
+
+        if (key == 'after') {
+          final datetime = DateTime.tryParse(value);
+          return datetime != null
+              ? DateTime.parse(record.created).toLocal().isAfter(datetime)
+              : false;
+        } else if (key == 'before') {
+          final datetime = DateTime.tryParse(value);
+          return datetime != null
+              ? DateTime.parse(record.created).toLocal().isBefore(datetime)
+              : false;
+        } else {
+          return record.getStringValue(key).contains(value);
+        }
+      } else {
+        return record.getStringValue(primaryKey).contains(element);
+      }
+    });
+  };
+}

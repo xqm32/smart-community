@@ -19,8 +19,9 @@ class ResidentFamilies extends StatelessWidget {
     return Manage(
       title: const Text('家人管理'),
       fetchRecords: fetchRecords,
-      onAddPressed: onAddPressed,
+      filter: keyFilter('name'),
       toElement: toElement,
+      onAddPressed: onAddPressed,
     );
   }
 
@@ -28,7 +29,9 @@ class ResidentFamilies extends StatelessWidget {
     // 后端存在规则时可以移除「&& userId = "${pb.authStore.model!.id}"」
     final String filter =
         'communityId = "$communityId" && userId = "${pb.authStore.model!.id}"';
-    return pb.collection('families').getFullList(filter: filter, sort: '-created');
+    return pb
+        .collection('families')
+        .getFullList(filter: filter, sort: '-created');
   }
 
   void onAddPressed(BuildContext context, void Function() refreshRecords) {
