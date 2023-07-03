@@ -7,6 +7,7 @@ import 'package:smart_community/property/announcement/announcements.dart';
 import 'package:smart_community/property/car/cars.dart';
 import 'package:smart_community/property/family/families.dart';
 import 'package:smart_community/property/house/houses.dart';
+import 'package:smart_community/property/problem/problems.dart';
 import 'package:smart_community/property/resident/residents.dart';
 
 import 'package:smart_community/utils.dart';
@@ -222,7 +223,8 @@ class PropertyIndexService extends StatelessWidget {
         Row(
           children: [
             PropertyIndexServiceIcon(
-              onPressed: () {},
+              onPressed: () =>
+                  navPush(context, PropertyProblems(communityId: communityId)),
               icon: Icons.question_mark,
               text: '事件处置',
               color: Colors.cyan,

@@ -3,9 +3,9 @@ import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
 
-// 居民端/首页/问题上报
-class ResidentProblem extends StatefulWidget {
-  const ResidentProblem({
+// 物业端/首页/事件处置
+class PropertyProblem extends StatefulWidget {
+  const PropertyProblem({
     super.key,
     required this.communityId,
     this.recordId,
@@ -15,37 +15,51 @@ class ResidentProblem extends StatefulWidget {
   final String? recordId;
 
   @override
-  State<ResidentProblem> createState() => _ResidentProblemState();
+  State<PropertyProblem> createState() => _PropertyProblemState();
 }
 
-class _ResidentProblemState extends State<ResidentProblem> {
+class _PropertyProblemState extends State<PropertyProblem> {
   List<GlobalKey<FormState>> _formKeys = [];
 
+  final List<String> _userFields = ['name'];
+  Map<String, TextEditingController> _userControllers = {};
   final List<String> _fields = ['type', 'title', 'content'];
   Map<String, TextEditingController> _controllers = {};
 
-  final List<String> _steps = ['填写信息', '事件处理', '处理完毕'];
-  final Map<String, int> _stateIndex = {'pending': 1, 'finished': 2};
-  int _index = 0;
+  final List<String> _steps = ['问题上报', '事件处理', '处理完毕'];
+  final Map<String, int> _stateIndex = {
+    'pending': 1,
+    'processing': 1,
+    'finished': 2,
+  };
+  int _index = 1;
 
-  final service = pb.collection('problems');
+  final _service = pb.collection('problems');
+  static const String _expand = 'userId';
 
   RecordModel? _record;
 
   @override
   void initState() {
     _formKeys = List.generate(_steps.length, (index) => GlobalKey<FormState>());
+    _userControllers = {
+      for (final i in _userFields) i: TextEditingController(),
+    };
     _controllers = {
       for (final i in _fields) i: TextEditingController(),
     };
+
     if (widget.recordId != null) {
-      service.getOne(widget.recordId!).then(_setRecord);
+      _service.getOne(widget.recordId!, expand: _expand).then(_setRecord);
     }
     super.initState();
   }
 
   @override
   void dispose() {
+    for (var i in _userControllers.values) {
+      i.dispose();
+    }
     for (var i in _controllers.values) {
       i.dispose();
     }
@@ -56,7 +70,7 @@ class _ResidentProblemState extends State<ResidentProblem> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('问题上报'),
+        title: const Text('事件处置'),
         actions: _actionsBuilder(context),
       ),
       body: Stepper(
@@ -76,92 +90,102 @@ class _ResidentProblemState extends State<ResidentProblem> {
   }
 
   void _setRecord(RecordModel record) {
-    final state = record.getStringValue('state');
     for (final i in _controllers.entries) {
       i.value.text = record.getStringValue(i.key);
     }
+    for (final i in _userControllers.entries) {
+      i.value.text = record.expand['userId']!.first.getStringValue(i.key);
+    }
+
+    final state = record.getStringValue('state');
     setState(() {
       _record = record;
       _index = _stateIndex[state] ?? 0;
     });
   }
 
-  Map<String, dynamic> _getBody() {
-    final Map<String, dynamic> body = {
-      for (final i in _controllers.entries) i.key: i.value.text
+  void Function() _onPressed(String state) {
+    return () {
+      if (!_formKeys[_index].currentState!.validate()) {
+        return;
+      }
+
+      final Map<String, dynamic> body = {
+        'state': state,
+      };
+      _service
+          .update(_record!.id, body: body, expand: _expand)
+          .then(_setRecord)
+          .catchError((error) => showException(context, error));
     };
-    body.addAll({
-      'userId': pb.authStore.model!.id,
-      'communityId': widget.communityId,
-      'state': 'pending',
-    });
-
-    return body;
   }
 
-  void _onSubmitPressed() {
-    if (!_formKeys[_index].currentState!.validate()) {
-      return;
-    }
-
-    if (_index == 0) {
-      service
-          .create(body: _getBody())
-          .then(_setRecord)
-          .catchError((error) => showException(context, error));
-    } else {
-      service
-          .update(_record!.id, body: _getBody())
-          .then(_setRecord)
-          .catchError((error) => showException(context, error));
-    }
-  }
-
-  // 居民端/首页/问题上报/填写信息
+  // 物业端/首页/事件处置/填写信息
   Widget _form({required int index}) {
+    const fieldTextStyle = TextStyle(color: Colors.black);
+    const fieldBorder = UnderlineInputBorder();
     return Form(
       key: _formKeys[index],
       child: Column(
         children: [
           TextFormField(
+            enabled: false,
+            controller: _userControllers['name'],
+            decoration: const InputDecoration(
+              labelText: '姓名',
+              labelStyle: fieldTextStyle,
+              disabledBorder: fieldBorder,
+            ),
+            style: fieldTextStyle,
+          ),
+          TextFormField(
+            enabled: false,
             controller: _controllers['type'],
             decoration: const InputDecoration(
               labelText: '类型',
-              hintText: '请填写问题类型',
+              labelStyle: fieldTextStyle,
+              disabledBorder: fieldBorder,
             ),
-            validator: notNullValidator('类型不能为空'),
+            style: fieldTextStyle,
           ),
           TextFormField(
+            enabled: false,
             controller: _controllers['title'],
             decoration: const InputDecoration(
               labelText: '标题',
-              hintText: '请填写问题标题',
+              labelStyle: fieldTextStyle,
+              disabledBorder: fieldBorder,
             ),
-            validator: notNullValidator('标题不能为空'),
+            style: fieldTextStyle,
           ),
           const SizedBox(height: 16),
           TextFormField(
+            enabled: false,
             controller: _controllers['content'],
             decoration: const InputDecoration(
               labelText: '内容',
-              hintText: '请填写问题内容',
-              border: OutlineInputBorder(),
-              floatingLabelBehavior: FloatingLabelBehavior.always,
+              labelStyle: fieldTextStyle,
+              disabledBorder: OutlineInputBorder(),
             ),
-            validator: notNullValidator('内容不能为空'),
+            style: fieldTextStyle,
             maxLines: null,
           ),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: _onSubmitPressed,
-            child: Text(['提交', '修改信息', '修改信息'].elementAt(_index)),
-          )
+            onPressed: _onPressed('finished'),
+            child: const Text('处理完毕'),
+          ),
+          const SizedBox(height: 8),
+          TextButton(
+            onPressed: _onPressed('processing'),
+            child: const Text('交于下级', style: TextStyle(color: Colors.orange)),
+          ),
         ],
       ),
     );
   }
 
-  // 居民端/首页/问题上报/删除问题
+  // 物业端/首页/事件处置/删除问题
   List<Widget>? _actionsBuilder(context) {
     if (_record == null) {
       return null;
@@ -185,7 +209,7 @@ class _ResidentProblemState extends State<ResidentProblem> {
                 ),
                 TextButton(
                   onPressed: () {
-                    service.delete(_record!.id).then((value) {
+                    _service.delete(_record!.id).then((value) {
                       navPop(context, 'OK');
                       navPop(context);
                     });
