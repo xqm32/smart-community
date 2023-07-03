@@ -116,7 +116,7 @@ class _RegisterFormState extends State<RegisterForm> {
             validator: notNullValidator('身份证号不能为空'),
           ),
           TextFormField(
-            controller: _controllers['name'],
+            controller: _controllers['phone'],
             decoration: const InputDecoration(
               labelText: '手机号',
               hintText: '请输入手机号',
