@@ -19,7 +19,7 @@ class PropertyProblems extends StatelessWidget {
     return Manage(
       title: const Text('事件处置'),
       fetchRecords: fetchRecords,
-      filter: keyFilter('name'),
+      filter: keyFilter('title'),
       toElement: toElement,
     );
   }

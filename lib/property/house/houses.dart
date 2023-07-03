@@ -19,7 +19,7 @@ class PropertyHouses extends StatelessWidget {
     return Manage(
       title: const Text('房屋审核'),
       fetchRecords: fetchRecords,
-      filter: keyFilter('name'),
+      filter: keyFilter('location'),
       toElement: toElement,
     );
   }
