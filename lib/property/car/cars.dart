@@ -25,10 +25,13 @@ class PropertyCars extends StatelessWidget {
   }
 
   Future<List<RecordModel>> fetchRecords() {
-    // 后端存在规则时可以移除「&& userId = "${pb.authStore.model!.id}"」
-    final String filter =
-        'communityId = "$communityId" && userId = "${pb.authStore.model!.id}"';
-    return pb.collection('cars').getFullList(filter: filter, sort: '-created');
+    final String filter = 'communityId = "$communityId"';
+    const String expand = 'userId';
+    return pb.collection('cars').getFullList(
+          expand: expand,
+          filter: filter,
+          sort: '-created',
+        );
   }
 
   Widget toElement(
@@ -36,9 +39,24 @@ class PropertyCars extends StatelessWidget {
     void Function() refreshRecords,
     RecordModel record,
   ) {
+    final user = record.expand['userId']!.first.getStringValue('name');
+
     return ListTile(
       title: Text(record.getStringValue('name')),
-      subtitle: Text(record.getStringValue('plate')),
+      subtitle: RichText(
+        text: TextSpan(
+          children: [
+            if (user.isNotEmpty)
+              TextSpan(
+                  text: '$user  ',
+                  style: TextStyle(color: Theme.of(context).primaryColor)),
+            TextSpan(
+              text: getDateTime(record.created),
+              style: const TextStyle(color: Colors.grey),
+            ),
+          ],
+        ),
+      ),
       trailing: _recordState(record),
       onTap: () {
         navPush(

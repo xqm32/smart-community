@@ -93,15 +93,15 @@ class _ResidentHouseState extends State<ResidentHouse> {
     );
   }
 
-  void _setRecord(RecordModel value) {
-    final state = value.getStringValue('state');
+  void _setRecord(RecordModel record) {
+    final state = record.getStringValue('state');
     for (final i in _controllers.entries) {
-      i.value.text = value.getStringValue(i.key);
+      i.value.text = record.getStringValue(i.key);
     }
 
-    String? building = value.getStringValue('building');
-    String? floor = value.getStringValue('floor');
-    String? room = value.getStringValue('room');
+    String? building = record.getStringValue('building');
+    String? floor = record.getStringValue('floor');
+    String? room = record.getStringValue('room');
     if (_struct == null || !_struct!.containsKey(building)) {
       building = null;
       floor = null;
@@ -114,7 +114,7 @@ class _ResidentHouseState extends State<ResidentHouse> {
     }
 
     setState(() {
-      _record = value;
+      _record = record;
       _index = _stateIndex[state] ?? 0;
       _building = building;
       _floor = floor;

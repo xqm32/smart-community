@@ -74,12 +74,12 @@ class _PropertyAnnouncementState extends State<PropertyAnnouncement> {
     );
   }
 
-  void _setRecord(RecordModel value) {
+  void _setRecord(RecordModel recprd) {
     for (final i in _controllers.entries) {
-      i.value.text = value.getStringValue(i.key);
+      i.value.text = recprd.getStringValue(i.key);
     }
     setState(() {
-      _record = value;
+      _record = recprd;
       _index = 1;
     });
   }

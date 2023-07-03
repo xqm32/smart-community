@@ -21,7 +21,7 @@ class PropertyCar extends StatefulWidget {
 class _PropertyCarState extends State<PropertyCar> {
   List<GlobalKey<FormState>> _formKeys = [];
 
-  final List<String> _fields = ['name', 'plate'];
+  final List<String> _fields = ['user', 'name', 'plate'];
   Map<String, TextEditingController> _controllers = {};
 
   final List<String> _steps = ['填写信息', '物业审核', '审核通过'];
@@ -32,7 +32,8 @@ class _PropertyCarState extends State<PropertyCar> {
   };
   int _index = 1;
 
-  final service = pb.collection('cars');
+  final _service = pb.collection('cars');
+  static const String _expand = 'userId';
 
   RecordModel? _record;
 
@@ -42,8 +43,9 @@ class _PropertyCarState extends State<PropertyCar> {
     _controllers = {
       for (final i in _fields) i: TextEditingController(),
     };
+
     if (widget.recordId != null) {
-      service.getOne(widget.recordId!).then(_setRecord);
+      _service.getOne(widget.recordId!, expand: _expand).then(_setRecord);
     }
     super.initState();
   }
@@ -79,91 +81,83 @@ class _PropertyCarState extends State<PropertyCar> {
     );
   }
 
-  void _setRecord(RecordModel value) {
-    final state = value.getStringValue('state');
+  void _setRecord(RecordModel record) {
     for (final i in _controllers.entries) {
-      i.value.text = value.getStringValue(i.key);
+      i.value.text = record.getStringValue(i.key);
     }
+    _controllers['user']!.text =
+        record.expand['userId']!.first.getStringValue('name');
+
+    final state = record.getStringValue('state');
     setState(() {
-      _record = value;
+      _record = record;
       _index = _stateIndex[state] ?? 0;
     });
   }
 
-  Map<String, dynamic> _getBody() {
-    final Map<String, dynamic> body = {
-      for (final i in _controllers.entries) i.key: i.value.text
+  void Function() _onPressed(String state) {
+    return () {
+      if (!_formKeys[_index].currentState!.validate()) {
+        return;
+      }
+
+      final Map<String, dynamic> body = {
+        'state': state,
+      };
+      _service
+          .update(_record!.id, body: body, expand: _expand)
+          .then(_setRecord)
+          .catchError((error) => showException(context, error));
     };
-    body.addAll({
-      'userId': pb.authStore.model!.id,
-      'communityId': widget.communityId,
-    });
-
-    return body;
-  }
-
-  void _onSubmitPressed() {
-    if (!_formKeys[_index].currentState!.validate()) {
-      return;
-    }
-
-    final body = _getBody();
-    body.addAll({'state': 'verified'});
-    service
-        .update(_record!.id, body: body)
-        .then(_setRecord)
-        .catchError((error) => showException(context, error));
-  }
-
-  void _onRejectPressed() {
-    if (!_formKeys[_index].currentState!.validate()) {
-      return;
-    }
-
-    final body = _getBody();
-    body.addAll({'state': 'rejected'});
-    service
-        .update(_record!.id, body: body)
-        .then(_setRecord)
-        .catchError((error) => showException(context, error));
   }
 
   // 物业端/首页/车辆审核/填写信息
   Widget _form({required int index}) {
+    const fieldTextStyle = TextStyle(color: Colors.black);
+    const fieldBorder = UnderlineInputBorder();
     return Form(
       key: _formKeys[index],
       child: Column(
         children: [
           TextFormField(
             enabled: false,
+            controller: _controllers['user'],
+            decoration: const InputDecoration(
+              labelText: '姓名',
+              labelStyle: fieldTextStyle,
+              disabledBorder: fieldBorder,
+            ),
+            style: fieldTextStyle,
+          ),
+          TextFormField(
+            enabled: false,
             controller: _controllers['name'],
             decoration: const InputDecoration(
               labelText: '名称',
-              hintText: '请填写车辆名称',
+              labelStyle: fieldTextStyle,
+              disabledBorder: fieldBorder,
             ),
-            validator: notNullValidator('名称不能为空'),
+            style: fieldTextStyle,
           ),
           TextFormField(
             enabled: false,
             controller: _controllers['plate'],
             decoration: const InputDecoration(
               labelText: '车牌号',
-              hintText: '请填写车牌号',
+              labelStyle: fieldTextStyle,
+              disabledBorder: fieldBorder,
             ),
-            validator: notNullValidator('车牌号不能为空'),
+            style: fieldTextStyle,
           ),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: _onSubmitPressed,
-            child: Text(['通过', '通过'].elementAt(_index - 1)),
+            onPressed: _onPressed('verified'),
+            child: const Text('通过'),
           ),
           const SizedBox(height: 8),
           TextButton(
-            onPressed: _onRejectPressed,
-            child: Text(
-              ['驳回', '驳回'].elementAt(_index - 1),
-              style: const TextStyle(color: Colors.red),
-            ),
+            onPressed: _onPressed('rejected'),
+            child: const Text('驳回', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -194,7 +188,7 @@ class _PropertyCarState extends State<PropertyCar> {
                 ),
                 TextButton(
                   onPressed: () {
-                    service.delete(_record!.id).then((value) {
+                    _service.delete(_record!.id).then((value) {
                       navPop(context, 'OK');
                       navPop(context);
                     });

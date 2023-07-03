@@ -79,9 +79,9 @@ class _ResidentAnnouncementState extends State<ResidentAnnouncement> {
     );
   }
 
-  void _setRecord(RecordModel value) {
+  void _setRecord(RecordModel record) {
     setState(() {
-      _record = value;
+      _record = record;
     });
   }
 }
