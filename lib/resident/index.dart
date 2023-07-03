@@ -38,11 +38,10 @@ class _ResidentIndexState extends State<ResidentIndex> {
 
     pb.collection('residents').getFullList(filter: residentsFilter).then(
       (value) {
-        if (value.isNotEmpty) {
-          setState(() {
-            _state = value.first.getStringValue('state');
-          });
-        }
+        setState(() {
+          _state =
+              value.isNotEmpty ? value.first.getStringValue('state') : null;
+        });
       },
     );
 
@@ -53,6 +52,19 @@ class _ResidentIndexState extends State<ResidentIndex> {
   void didUpdateWidget(covariant ResidentIndex oldWidget) {
     announcements = pb.collection('announcements').getFullList(
         filter: 'communityId = "${widget.communityId}"', sort: '-created');
+
+    final residentsFilter =
+        'communityId = "${widget.communityId}" && userId = "${pb.authStore.model!.id}"';
+
+    pb.collection('residents').getFullList(filter: residentsFilter).then(
+      (value) {
+        setState(() {
+          _state =
+              value.isNotEmpty ? value.first.getStringValue('state') : null;
+        });
+      },
+    );
+
     super.didUpdateWidget(oldWidget);
   }
 
