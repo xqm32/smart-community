@@ -39,16 +39,16 @@ class PropertyCars extends StatelessWidget {
     void Function() refreshRecords,
     RecordModel record,
   ) {
-    final user = record.expand['userId']!.first.getStringValue('name');
+    final userName = record.expand['userId']!.first.getStringValue('name');
 
     return ListTile(
       title: Text(record.getStringValue('name')),
       subtitle: RichText(
         text: TextSpan(
           children: [
-            if (user.isNotEmpty)
+            if (userName.isNotEmpty)
               TextSpan(
-                  text: '$user  ',
+                  text: '$userName  ',
                   style: TextStyle(color: Theme.of(context).primaryColor)),
             TextSpan(
               text: getDateTime(record.created),

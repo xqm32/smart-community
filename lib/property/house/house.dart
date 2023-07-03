@@ -21,13 +21,9 @@ class PropertyHouse extends StatefulWidget {
 class _PropertyHouseState extends State<PropertyHouse> {
   List<GlobalKey<FormState>> _formKeys = [];
 
-  final List<String> _fields = [
-    'user',
-    'location',
-    'building',
-    'floor',
-    'room'
-  ];
+  final List<String> _userFields = ['name'];
+  Map<String, TextEditingController> _userControllers = {};
+  final List<String> _fields = ['location', 'building', 'floor', 'room'];
   Map<String, TextEditingController> _controllers = {};
 
   final List<String> _steps = ['填写信息', '物业审核', '审核通过'];
@@ -46,6 +42,9 @@ class _PropertyHouseState extends State<PropertyHouse> {
   @override
   void initState() {
     _formKeys = List.generate(_steps.length, (index) => GlobalKey<FormState>());
+    _userControllers = {
+      for (final i in _userFields) i: TextEditingController(),
+    };
     _controllers = {
       for (final i in _fields) i: TextEditingController(),
     };
@@ -58,6 +57,9 @@ class _PropertyHouseState extends State<PropertyHouse> {
 
   @override
   void dispose() {
+    for (var i in _userControllers.values) {
+      i.dispose();
+    }
     for (var i in _controllers.values) {
       i.dispose();
     }
@@ -91,8 +93,9 @@ class _PropertyHouseState extends State<PropertyHouse> {
     for (final i in _controllers.entries) {
       i.value.text = record.getStringValue(i.key);
     }
-    _controllers['user']!.text =
-        record.expand['userId']!.first.getStringValue('name');
+    for (final i in _userControllers.entries) {
+      i.value.text = record.expand['userId']!.first.getStringValue(i.key);
+    }
 
     final state = record.getStringValue('state');
     setState(() {
@@ -127,7 +130,7 @@ class _PropertyHouseState extends State<PropertyHouse> {
         children: [
           TextFormField(
             enabled: false,
-            controller: _controllers['user'],
+            controller: _userControllers['name'],
             decoration: const InputDecoration(
               labelText: '姓名',
               labelStyle: fieldTextStyle,

@@ -6,6 +6,7 @@ import 'package:smart_community/property/announcement/Announcement.dart';
 import 'package:smart_community/property/announcement/announcements.dart';
 import 'package:smart_community/property/car/cars.dart';
 import 'package:smart_community/property/house/houses.dart';
+import 'package:smart_community/property/resident/residents.dart';
 
 import 'package:smart_community/utils.dart';
 
@@ -25,10 +26,26 @@ class PropertyIndex extends StatefulWidget {
 class _PropertyIndexState extends State<PropertyIndex> {
   late Future<List<RecordModel>> announcements;
 
+  String? _state;
+
   @override
   void initState() {
     announcements = pb.collection('announcements').getFullList(
         filter: 'communityId = "${widget.communityId}"', sort: '-created');
+
+    final residentsFilter =
+        'communityId = "${widget.communityId}" && userId = "${pb.authStore.model!.id}"';
+
+    pb.collection('propertys').getFullList(filter: residentsFilter).then(
+      (value) {
+        if (value.isNotEmpty) {
+          setState(() {
+            _state = value.first.getStringValue('state');
+          });
+        }
+      },
+    );
+
     super.initState();
   }
 
@@ -41,6 +58,38 @@ class _PropertyIndexState extends State<PropertyIndex> {
 
   @override
   Widget build(BuildContext context) {
+    if (_state == null) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '您没有管理该小区的权限',
+              style: TextStyle(color: Colors.red),
+            )
+          ],
+        ),
+      );
+    } else if (_state != 'verified') {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (_state == 'reviewing')
+              const Text(
+                '您的账号正在审核中，请耐心等待',
+                style: TextStyle(color: Colors.purple),
+              )
+            else if (_state == 'rejected')
+              const Text(
+                '您的账号未通过审核',
+                style: TextStyle(color: Colors.red),
+              )
+          ],
+        ),
+      );
+    }
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -140,7 +189,8 @@ class PropertyIndexService extends StatelessWidget {
         Row(
           children: [
             PropertyIndexServiceIcon(
-              onPressed: () {},
+              onPressed: () =>
+                  navPush(context, PropertyResidents(communityId: communityId)),
               icon: Icons.person,
               text: '居民管理',
               color: Colors.orange,

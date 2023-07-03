@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/components/manage.dart';
-import 'package:smart_community/property/house/house.dart';
+import 'package:smart_community/property/resident/resident.dart';
 import 'package:smart_community/utils.dart';
 
-// 物业端/首页/房屋审核
-class PropertyHouses extends StatelessWidget {
-  const PropertyHouses({
+// 物业端/首页/居民管理
+class PropertyResidents extends StatelessWidget {
+  const PropertyResidents({
     super.key,
     required this.communityId,
   });
@@ -17,7 +17,7 @@ class PropertyHouses extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Manage(
-      title: const Text('房屋审核'),
+      title: const Text('居民管理'),
       fetchRecords: fetchRecords,
       filter: keyFilter('name'),
       toElement: toElement,
@@ -27,7 +27,7 @@ class PropertyHouses extends StatelessWidget {
   Future<List<RecordModel>> fetchRecords() {
     final String filter = 'communityId = "$communityId"';
     const String expand = 'userId';
-    return pb.collection('houses').getFullList(
+    return pb.collection('residents').getFullList(
           expand: expand,
           filter: filter,
           sort: '-created',
@@ -40,15 +40,16 @@ class PropertyHouses extends StatelessWidget {
     RecordModel record,
   ) {
     final userName = record.expand['userId']!.first.getStringValue('name');
+    final userPhone = record.expand['userId']!.first.getStringValue('phone');
 
     return ListTile(
-      title: Text(record.getStringValue('location')),
+      title: Text(userName),
       subtitle: RichText(
         text: TextSpan(
           children: [
-            if (userName.isNotEmpty)
+            if (userPhone.isNotEmpty)
               TextSpan(
-                  text: '$userName  ',
+                  text: '$userPhone  ',
                   style: TextStyle(color: Theme.of(context).primaryColor)),
             TextSpan(
               text: getDateTime(record.created),
@@ -61,7 +62,7 @@ class PropertyHouses extends StatelessWidget {
       onTap: () {
         navPush(
           context,
-          PropertyHouse(communityId: communityId, recordId: record.id),
+          PropertyResident(communityId: communityId, recordId: record.id),
         ).then((value) => refreshRecords());
       },
     );

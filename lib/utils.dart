@@ -96,6 +96,16 @@ bool Function(RecordModel, String) keyFilter(String primaryKey) {
           return datetime != null
               ? DateTime.parse(record.created).toLocal().isBefore(datetime)
               : false;
+        } else if (key == 'userName') {
+          return record.expand['userId']?.first
+                  .getStringValue('name')
+                  .contains(value) ??
+              false;
+        } else if (key == 'userPhone') {
+          return record.expand['userId']?.first
+                  .getStringValue('phone')
+                  .contains(value) ??
+              false;
         } else {
           return record.getStringValue(key).contains(value);
         }

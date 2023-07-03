@@ -26,10 +26,26 @@ class ResidentIndex extends StatefulWidget {
 class _ResidentIndexState extends State<ResidentIndex> {
   late Future<List<RecordModel>> announcements;
 
+  String? _state;
+
   @override
   void initState() {
     announcements = pb.collection('announcements').getFullList(
         filter: 'communityId = "${widget.communityId}"', sort: '-created');
+
+    final residentsFilter =
+        'communityId = "${widget.communityId}" && userId = "${pb.authStore.model!.id}"';
+
+    pb.collection('residents').getFullList(filter: residentsFilter).then(
+      (value) {
+        if (value.isNotEmpty) {
+          setState(() {
+            _state = value.first.getStringValue('state');
+          });
+        }
+      },
+    );
+
     super.initState();
   }
 
@@ -42,6 +58,49 @@ class _ResidentIndexState extends State<ResidentIndex> {
 
   @override
   Widget build(BuildContext context) {
+    if (_state == null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('您还未入住该小区'),
+            TextButton(
+              onPressed: () {
+                pb.collection('residents').create(body: {
+                  'communityId': widget.communityId,
+                  'userId': pb.authStore.model!.id,
+                  'state': 'reviewing',
+                }).then((value) {
+                  setState(() {
+                    _state = 'reviewing';
+                  });
+                });
+              },
+              child: const Text('入住小区'),
+            ),
+          ],
+        ),
+      );
+    } else if (_state != 'verified') {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (_state == 'reviewing')
+              const Text(
+                '您的账号正在审核中，请耐心等待',
+                style: TextStyle(color: Colors.purple),
+              )
+            else if (_state == 'rejected')
+              const Text(
+                '您的账号未通过审核',
+                style: TextStyle(color: Colors.red),
+              )
+          ],
+        ),
+      );
+    }
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
