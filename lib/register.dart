@@ -38,6 +38,8 @@ class _RegisterFormState extends State<RegisterForm> {
 
   final List<String> _fields = [
     'name',
+    'identity',
+    'phone',
     'username',
     'password',
     'passwordConfirm'
@@ -104,6 +106,22 @@ class _RegisterFormState extends State<RegisterForm> {
               hintText: '请输入姓名',
             ),
             validator: notNullValidator('姓名不能为空'),
+          ),
+          TextFormField(
+            controller: _controllers['identity'],
+            decoration: const InputDecoration(
+              labelText: '身份证号',
+              hintText: '请输入身份证号',
+            ),
+            validator: notNullValidator('身份证号不能为空'),
+          ),
+          TextFormField(
+            controller: _controllers['name'],
+            decoration: const InputDecoration(
+              labelText: '手机号',
+              hintText: '请输入手机号',
+            ),
+            validator: notNullValidator('手机号不能为空'),
           ),
           TextFormField(
             controller: _controllers['username'],

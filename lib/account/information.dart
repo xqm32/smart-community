@@ -33,7 +33,7 @@ class _InformationForm extends StatefulWidget {
 class _LoginFormState extends State<_InformationForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  final List<String> _fields = ['name', 'phone'];
+  final List<String> _fields = ['name', 'phone', 'identity'];
   Map<String, TextEditingController> _controllers = {};
 
   @override
@@ -68,6 +68,15 @@ class _LoginFormState extends State<_InformationForm> {
               labelText: '姓名',
               hintText: '请输入姓名',
             ),
+            validator: notNullValidator('姓名不能为空'),
+          ),
+          TextFormField(
+            controller: _controllers['identity'],
+            decoration: const InputDecoration(
+              labelText: '身份证号',
+              hintText: '请输入身份证号',
+            ),
+            validator: notNullValidator('身份证号不能为空'),
           ),
           TextFormField(
             controller: _controllers['phone'],
@@ -75,6 +84,7 @@ class _LoginFormState extends State<_InformationForm> {
               labelText: '手机号',
               hintText: '请输入手机号',
             ),
+            validator: notNullValidator('手机号不能为空'),
           ),
           const SizedBox(height: 16),
           ElevatedButton(

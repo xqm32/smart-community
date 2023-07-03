@@ -21,7 +21,7 @@ class PropertyResident extends StatefulWidget {
 class _PropertyResidentState extends State<PropertyResident> {
   List<GlobalKey<FormState>> _formKeys = [];
 
-  final List<String> _userFields = ['name', 'phone'];
+  final List<String> _userFields = ['name', 'phone', 'identity'];
   Map<String, TextEditingController> _userControllers = {};
   final List<String> _fields = [];
   Map<String, TextEditingController> _controllers = {};
@@ -133,6 +133,16 @@ class _PropertyResidentState extends State<PropertyResident> {
             controller: _userControllers['name'],
             decoration: const InputDecoration(
               labelText: '姓名',
+              labelStyle: fieldTextStyle,
+              disabledBorder: fieldBorder,
+            ),
+            style: fieldTextStyle,
+          ),
+          TextFormField(
+            enabled: false,
+            controller: _userControllers['identity'],
+            decoration: const InputDecoration(
+              labelText: '身份证号',
               labelStyle: fieldTextStyle,
               disabledBorder: fieldBorder,
             ),
