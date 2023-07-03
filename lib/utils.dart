@@ -34,6 +34,13 @@ void showError(context, error) {
   ));
 }
 
+void showSuccess(context, error) {
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text('$error'),
+    backgroundColor: Colors.green,
+  ));
+}
+
 // 参见 https://docs.flutter.dev/cookbook/forms/validation
 String? usernameValidator(String? value) {
   if (value == null || value.isEmpty || value.length < 3) {

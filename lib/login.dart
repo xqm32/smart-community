@@ -141,7 +141,15 @@ class _LoginFormState extends State<LoginForm> {
     final role = record.record!.getListValue('role');
 
     if (!role.contains(selectedRole)) {
-      showError(context, '角色不匹配');
+      SharedPreferences.getInstance().then((prefs) {
+        if (prefs.containsKey('role')) {
+          prefs.clear();
+          showError(context, '角色令牌过期');
+        } else {
+          showError(context, '角色不匹配');
+        }
+      });
+
       return;
     }
 
@@ -159,13 +167,20 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   void _onError(error) {
-    if (error.statusCode == 0) {
-      showError(context, '网络错误');
-    } else if (error.statusCode == 400) {
-      showError(context, '用户名或密码错误');
-    } else {
-      showException(context, error);
-    }
+    SharedPreferences.getInstance().then((prefs) {
+      if (error.statusCode == 0) {
+        showError(context, '网络错误');
+      } else if (error.statusCode == 400) {
+        if (prefs.containsKey('username') || prefs.containsKey('password')) {
+          prefs.clear();
+          showError(context, '用户令牌过期');
+        } else {
+          showError(context, '用户名或密码错误');
+        }
+      } else {
+        showException(context, error);
+      }
+    });
   }
 
   Widget _roleChoice() {

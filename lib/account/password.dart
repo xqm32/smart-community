@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:smart_community/login.dart';
 import 'package:smart_community/utils.dart';
@@ -111,11 +112,16 @@ class _LoginFormState extends State<_PasswordForm> {
     }
 
     final body = {for (final i in _controllers.entries) i.key: i.value.text};
-    pb
-        .collection('users')
-        .update(pb.authStore.model.id, body: body)
-        .then((value) => navGoto(context, const Login()))
-        .catchError(_onError);
+    pb.collection('users').update(pb.authStore.model.id, body: body).then(
+      (value) {
+        return SharedPreferences.getInstance().then((prefs) {
+          pb.authStore.clear();
+          prefs.clear();
+          showSuccess(context, '修改成功');
+          return navGoto(context, const Login());
+        });
+      },
+    ).catchError(_onError);
   }
 
   void _onError(error) {
