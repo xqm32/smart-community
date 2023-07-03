@@ -3,9 +3,9 @@ import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
 
-// 物业端/首页/车辆审核
-class PropertyCar extends StatefulWidget {
-  const PropertyCar({
+// 物业端/首页/家人审核
+class PropertyFamily extends StatefulWidget {
+  const PropertyFamily({
     super.key,
     required this.communityId,
     this.recordId,
@@ -15,15 +15,15 @@ class PropertyCar extends StatefulWidget {
   final String? recordId;
 
   @override
-  State<PropertyCar> createState() => _PropertyCarState();
+  State<PropertyFamily> createState() => _PropertyFamilyState();
 }
 
-class _PropertyCarState extends State<PropertyCar> {
+class _PropertyFamilyState extends State<PropertyFamily> {
   List<GlobalKey<FormState>> _formKeys = [];
 
   final List<String> _userFields = ['name'];
   Map<String, TextEditingController> _userControllers = {};
-  final List<String> _fields = ['name', 'plate'];
+  final List<String> _fields = ['name', 'phone', 'relation'];
   Map<String, TextEditingController> _controllers = {};
 
   final List<String> _steps = ['填写信息', '物业审核', '审核通过'];
@@ -34,7 +34,7 @@ class _PropertyCarState extends State<PropertyCar> {
   };
   int _index = 1;
 
-  final _service = pb.collection('cars');
+  final _service = pb.collection('families');
   static const String _expand = 'userId';
 
   RecordModel? _record;
@@ -70,7 +70,7 @@ class _PropertyCarState extends State<PropertyCar> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('车辆审核'),
+        title: const Text('家人审核'),
         actions: _actionsBuilder(context),
       ),
       body: Stepper(
@@ -120,7 +120,7 @@ class _PropertyCarState extends State<PropertyCar> {
     };
   }
 
-  // 物业端/首页/车辆审核/填写信息
+  // 物业端/首页/家人审核/填写信息
   Widget _form({required int index}) {
     const fieldTextStyle = TextStyle(color: Colors.black);
     const fieldBorder = UnderlineInputBorder();
@@ -142,7 +142,7 @@ class _PropertyCarState extends State<PropertyCar> {
             enabled: false,
             controller: _controllers['name'],
             decoration: const InputDecoration(
-              labelText: '名称',
+              labelText: '家人姓名',
               labelStyle: fieldTextStyle,
               disabledBorder: fieldBorder,
             ),
@@ -150,9 +150,19 @@ class _PropertyCarState extends State<PropertyCar> {
           ),
           TextFormField(
             enabled: false,
-            controller: _controllers['plate'],
+            controller: _controllers['phone'],
             decoration: const InputDecoration(
-              labelText: '车牌号',
+              labelText: '手机号',
+              labelStyle: fieldTextStyle,
+              disabledBorder: fieldBorder,
+            ),
+            style: fieldTextStyle,
+          ),
+          TextFormField(
+            enabled: false,
+            controller: _controllers['relation'],
+            decoration: const InputDecoration(
+              labelText: '关系',
               labelStyle: fieldTextStyle,
               disabledBorder: fieldBorder,
             ),
@@ -173,7 +183,7 @@ class _PropertyCarState extends State<PropertyCar> {
     );
   }
 
-  // 物业端/首页/车辆审核/删除车辆
+  // 物业端/首页/家人审核/删除家人
   List<Widget>? _actionsBuilder(context) {
     if (_record == null) {
       return null;
@@ -186,8 +196,8 @@ class _PropertyCarState extends State<PropertyCar> {
           builder: (context) {
             return AlertDialog(
               surfaceTintColor: Theme.of(context).colorScheme.background,
-              title: const Text('删除车辆'),
-              content: const Text('确定要删除该车辆吗？'),
+              title: const Text('删除家人'),
+              content: const Text('确定要删除该家人吗？'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {

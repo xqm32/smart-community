@@ -21,7 +21,7 @@ class ResidentFamily extends StatefulWidget {
 class _ResidentFamilyState extends State<ResidentFamily> {
   List<GlobalKey<FormState>> _formKeys = [];
 
-  final List<String> _fields = ['name', 'relation'];
+  final List<String> _fields = ['name', 'identity', 'relation'];
   Map<String, TextEditingController> _controllers = {};
 
   final List<String> _steps = ['填写信息', '物业审核', '审核通过'];
@@ -130,6 +130,14 @@ class _ResidentFamilyState extends State<ResidentFamily> {
               hintText: '请填写家人姓名',
             ),
             validator: notNullValidator('姓名不能为空'),
+          ),
+          TextFormField(
+            controller: _controllers['identity'],
+            decoration: const InputDecoration(
+              labelText: '身份证号',
+              hintText: '请填写家人身份证号',
+            ),
+            validator: notNullValidator('身份证号不能为空'),
           ),
           TextFormField(
             controller: _controllers['relation'],
