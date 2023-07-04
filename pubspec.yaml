@@ -39,6 +39,7 @@ dependencies:
   shared_preferences: ^2.1.2
   file_selector: ^0.9.5
   http: ^0.13.6
+  flutter_markdown: ^0.6.15+1
 
 dev_dependencies:
   flutter_test:

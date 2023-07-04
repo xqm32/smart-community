@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
@@ -70,7 +71,12 @@ class _ResidentAnnouncementState extends State<ResidentAnnouncement> {
                       ],
                     ),
                     const SizedBox(height: 24),
-                    Text(_record!.getStringValue('content')),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: MarkdownBody(
+                        data: _record!.getStringValue('content'),
+                      ),
+                    ),
                   ],
                 ),
               ),
