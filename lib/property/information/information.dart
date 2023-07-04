@@ -171,32 +171,14 @@ class _PropertyInformationState extends State<PropertyInformation> {
               surfaceTintColor: Theme.of(context).colorScheme.background,
               children: [
                 SimpleDialogOption(
-                  onPressed: () async {
-                    const XTypeGroup typeGroup = XTypeGroup(
-                      label: 'JSON',
-                      extensions: <String>['json'],
-                    );
-                    final XFile? file = await openFile(
-                        acceptedTypeGroups: <XTypeGroup>[typeGroup]);
-                    if (file != null) {
-                      final string = await file.readAsString();
-                      _controllers['struct']!.text = string;
-                    }
+                  onPressed: () {
+                    onPressed('struct').then((value) => {navPop(context)});
                   },
                   child: const Text('导入小区架构'),
                 ),
                 SimpleDialogOption(
-                  onPressed: () async {
-                    const XTypeGroup typeGroup = XTypeGroup(
-                      label: 'JSON',
-                      extensions: <String>['json'],
-                    );
-                    final XFile? file = await openFile(
-                        acceptedTypeGroups: <XTypeGroup>[typeGroup]);
-                    if (file != null) {
-                      final string = await file.readAsString();
-                      _controllers['parking']!.text = string;
-                    }
+                  onPressed: () {
+                    onPressed('parking').then((value) => {navPop(context)});
                   },
                   child: const Text('导入车位架构'),
                 ),
@@ -207,5 +189,18 @@ class _PropertyInformationState extends State<PropertyInformation> {
         child: const Text('导入信息', style: TextStyle(color: Colors.green)),
       )
     ];
+  }
+
+  Future<void> onPressed(String field) async {
+    const XTypeGroup typeGroup = XTypeGroup(
+      label: 'JSON',
+      extensions: <String>['json'],
+    );
+    final XFile? file =
+        await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
+    if (file != null) {
+      final string = await file.readAsString();
+      _controllers[field]!.text = string;
+    }
   }
 }
