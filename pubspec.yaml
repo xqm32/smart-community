@@ -37,6 +37,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   pocketbase: ^0.10.2
   shared_preferences: ^2.1.2
+  file_selector: ^0.9.5
+  http: ^0.13.6
 
 dev_dependencies:
   flutter_test:

@@ -1,4 +1,7 @@
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:pocketbase/pocketbase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:smart_community/login.dart';
@@ -6,8 +9,15 @@ import 'package:smart_community/account/information.dart';
 import 'package:smart_community/account/password.dart';
 import 'package:smart_community/utils.dart';
 
-class Account extends StatelessWidget {
+class Account extends StatefulWidget {
   const Account({super.key});
+
+  @override
+  State<Account> createState() => _AccountState();
+}
+
+class _AccountState extends State<Account> {
+  RecordModel? record = pb.authStore.model;
 
   @override
   Widget build(BuildContext context) {
@@ -16,11 +26,40 @@ class Account extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            const AccountAvatar(),
+            if (record != null)
+              AccountAvatar(
+                record: record!,
+                onTap: () async {
+                  const XTypeGroup typeGroup = XTypeGroup(
+                    label: 'images',
+                    extensions: <String>['jpg', 'png'],
+                  );
+                  final XFile? file = await openFile(
+                      acceptedTypeGroups: <XTypeGroup>[typeGroup]);
+                  if (file != null) {
+                    final bytes = await file.readAsBytes();
+                    await pb.collection('users').update(record!.id, files: [
+                      MultipartFile.fromBytes(
+                        'avatar',
+                        bytes,
+                        filename: file.name,
+                      )
+                    ]);
+                    setState(() {
+                      record = pb.authStore.model;
+                    });
+                  }
+                },
+              ),
             const Divider(height: 0),
             ListTile(
               leading: const Icon(Icons.person),
-              onTap: () => navPush(context, const AccountInformation()),
+              onTap: () async {
+                await navPush(context, const AccountInformation());
+                setState(() {
+                  record = pb.authStore.model;
+                });
+              },
               title: const Text('修改信息'),
             ),
             const Divider(height: 0),
@@ -50,24 +89,30 @@ class Account extends StatelessWidget {
 }
 
 class AccountAvatar extends StatelessWidget {
-  const AccountAvatar({super.key});
+  const AccountAvatar({
+    super.key,
+    required this.record,
+    required this.onTap,
+  });
+
+  final RecordModel record;
+  final void Function() onTap;
 
   @override
   Widget build(BuildContext context) {
-    final String avatar = pb.authStore.model.getStringValue('avatar');
+    final String avatar = record.getStringValue('avatar');
 
     NetworkImage? image;
     Widget? avatarText;
 
     if (avatar.isNotEmpty) {
-      image =
-          NetworkImage(pb.getFileUrl(pb.authStore.model, avatar).toString());
+      image = NetworkImage(pb.getFileUrl(record, avatar).toString());
     } else {
       avatarText = const Text('头像');
     }
 
     return ListTile(
-      onTap: () => navPush(context, const AccountInformation()),
+      onTap: onTap,
       title: Row(
         children: [
           CircleAvatar(
@@ -80,14 +125,14 @@ class AccountAvatar extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                pb.authStore.model.getStringValue('name'),
+                record.getStringValue('name'),
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               Text(
-                '用户名：${pb.authStore.model.getStringValue('username')}',
+                '用户名：${record.getStringValue('username')}',
                 style: const TextStyle(
                   fontSize: 14,
                   color: Colors.grey,
@@ -97,7 +142,7 @@ class AccountAvatar extends StatelessWidget {
           ),
         ],
       ),
-      trailing: const Icon(Icons.navigate_next),
+      // trailing: const Icon(Icons.navigate_next),
     );
   }
 }
