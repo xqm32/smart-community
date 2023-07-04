@@ -74,12 +74,12 @@ class _PropertyAnnouncementState extends State<PropertyAnnouncement> {
     );
   }
 
-  void _setRecord(RecordModel recprd) {
+  void _setRecord(RecordModel record) {
     for (final i in _controllers.entries) {
-      i.value.text = recprd.getStringValue(i.key);
+      i.value.text = record.getStringValue(i.key);
     }
     setState(() {
-      _record = recprd;
+      _record = record;
       _index = 1;
     });
   }
@@ -91,7 +91,6 @@ class _PropertyAnnouncementState extends State<PropertyAnnouncement> {
     body.addAll({
       'userId': pb.authStore.model!.id,
       'communityId': widget.communityId,
-      'state': 'pending',
     });
 
     return body;

@@ -7,6 +7,7 @@ import 'package:smart_community/property/announcement/announcements.dart';
 import 'package:smart_community/property/car/cars.dart';
 import 'package:smart_community/property/family/families.dart';
 import 'package:smart_community/property/house/houses.dart';
+import 'package:smart_community/property/information/information.dart';
 import 'package:smart_community/property/problem/problems.dart';
 import 'package:smart_community/property/resident/residents.dart';
 
@@ -248,7 +249,8 @@ class PropertyIndexService extends StatelessWidget {
               color: Colors.indigo,
             ),
             PropertyIndexServiceIcon(
-              onPressed: () {},
+              onPressed: () => navPush(
+                  context, PropertyInformation(communityId: communityId)),
               icon: Icons.settings,
               text: '小区信息配置',
               color: Colors.lightGreen,
