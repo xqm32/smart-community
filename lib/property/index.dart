@@ -10,6 +10,7 @@ import 'package:smart_community/property/house/houses.dart';
 import 'package:smart_community/property/information/information.dart';
 import 'package:smart_community/property/problem/problems.dart';
 import 'package:smart_community/property/resident/residents.dart';
+import 'package:smart_community/property/vote/votes.dart';
 
 import 'package:smart_community/utils.dart';
 
@@ -240,7 +241,8 @@ class PropertyIndexService extends StatelessWidget {
               color: Colors.cyan,
             ),
             PropertyIndexServiceIcon(
-              onPressed: () {},
+              onPressed: () => navPush(
+                  context, PropertyVotes(communityId: communityId)),
               icon: Icons.how_to_vote,
               text: '支出投票管理',
               color: Colors.indigo,

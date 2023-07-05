@@ -1,31 +1,32 @@
-import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
 
-class PropertyInformation extends StatefulWidget {
-  const PropertyInformation({
+class PropertyVote extends StatefulWidget {
+  const PropertyVote({
     super.key,
     required this.communityId,
+    this.recordId,
   });
 
   final String communityId;
+  final String? recordId;
 
   @override
-  State<PropertyInformation> createState() => _PropertyInformationState();
+  State<PropertyVote> createState() => _PropertyVoteState();
 }
 
-class _PropertyInformationState extends State<PropertyInformation> {
+class _PropertyVoteState extends State<PropertyVote> {
   List<GlobalKey<FormState>> _formKeys = [];
 
-  final List<String> _fields = ['name', 'struct', 'parking'];
+  final List<String> _fields = ['title', 'content', 'options', 'start', 'end'];
   Map<String, TextEditingController> _controllers = {};
 
-  final List<String> _steps = ['配置信息', '修改信息'];
+  final List<String> _steps = ['发布投票', '修改投票'];
   int _index = 0;
 
-  final service = pb.collection('communities');
+  final service = pb.collection('votes');
 
   RecordModel? _record;
 
@@ -35,7 +36,9 @@ class _PropertyInformationState extends State<PropertyInformation> {
     _controllers = {
       for (final i in _fields) i: TextEditingController(),
     };
-    service.getOne(widget.communityId).then(_setRecord);
+    if (widget.recordId != null) {
+      service.getOne(widget.recordId!).then(_setRecord);
+    }
     super.initState();
   }
 
@@ -51,7 +54,7 @@ class _PropertyInformationState extends State<PropertyInformation> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('小区信息配置'),
+        title: const Text('支出投票管理'),
         actions: _actionsBuilder(context),
       ),
       body: Stepper(
@@ -71,16 +74,12 @@ class _PropertyInformationState extends State<PropertyInformation> {
   }
 
   void _setRecord(RecordModel record) {
-    final index = record.getStringValue('struct').isNotEmpty &&
-            record.getStringValue('parking').isNotEmpty
-        ? 1
-        : 0;
     for (final i in _controllers.entries) {
       i.value.text = record.getStringValue(i.key);
     }
     setState(() {
       _record = record;
-      _index = index;
+      _index = 1;
     });
   }
 
@@ -101,10 +100,17 @@ class _PropertyInformationState extends State<PropertyInformation> {
       return;
     }
 
-    service
-        .update(_record!.id, body: _getBody())
-        .then(_setRecord)
-        .catchError((error) => showException(context, error));
+    if (_index == 0) {
+      service
+          .create(body: _getBody())
+          .then(_setRecord)
+          .catchError((error) => showException(context, error));
+    } else {
+      service
+          .update(_record!.id, body: _getBody())
+          .then(_setRecord)
+          .catchError((error) => showException(context, error));
+    }
   }
 
   Widget _form({required int index}) {
@@ -113,36 +119,52 @@ class _PropertyInformationState extends State<PropertyInformation> {
       child: Column(
         children: [
           TextFormField(
-            controller: _controllers['name'],
+            controller: _controllers['title'],
             decoration: const InputDecoration(
-              labelText: '小区名',
-              hintText: '请填写小区名',
+              labelText: '标题',
+              hintText: '请填写投票标题',
             ),
-            validator: notNullValidator('小区名不能为空'),
+            validator: notNullValidator('标题不能为空'),
           ),
           const SizedBox(height: 16),
           TextFormField(
-            controller: _controllers['struct'],
+            controller: _controllers['content'],
             decoration: const InputDecoration(
-              labelText: '小区架构',
-              hintText: '请填写小区架构',
+              labelText: '内容',
+              hintText: '请填写投票内容',
               border: OutlineInputBorder(),
               floatingLabelBehavior: FloatingLabelBehavior.always,
             ),
-            validator: notNullValidator('小区架构不能为空'),
+            validator: notNullValidator('内容不能为空'),
             maxLines: null,
           ),
           const SizedBox(height: 16),
           TextFormField(
-            controller: _controllers['parking'],
+            controller: _controllers['options'],
             decoration: const InputDecoration(
-              labelText: '车位架构',
-              hintText: '请填写车位架构',
+              labelText: '选项',
+              hintText: '请填写投票选项',
               border: OutlineInputBorder(),
               floatingLabelBehavior: FloatingLabelBehavior.always,
             ),
-            validator: notNullValidator('车位架构不能为空'),
+            validator: notNullValidator('选项不能为空'),
             maxLines: null,
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _controllers['start'],
+            decoration: const InputDecoration(
+              labelText: '起始时间',
+              hintText: '请填写起始时间',
+            ),
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _controllers['end'],
+            decoration: const InputDecoration(
+              labelText: '结束时间',
+              hintText: '请填写结束时间',
+            ),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
@@ -160,44 +182,39 @@ class _PropertyInformationState extends State<PropertyInformation> {
     }
 
     return [
-      TextButton(
+      IconButton(
         onPressed: () => showDialog(
           context: context,
           builder: (context) {
-            return SimpleDialog(
+            return AlertDialog(
               surfaceTintColor: Theme.of(context).colorScheme.background,
-              children: [
-                SimpleDialogOption(
+              title: const Text('删除投票'),
+              content: const Text('确定要删除该投票吗？'),
+              actions: <Widget>[
+                TextButton(
                   onPressed: () {
-                    onPressed('struct').then((value) => {navPop(context)});
+                    navPop(context, 'Cancel');
                   },
-                  child: const Text('导入小区架构'),
+                  child: const Text('取消'),
                 ),
-                SimpleDialogOption(
+                TextButton(
                   onPressed: () {
-                    onPressed('parking').then((value) => {navPop(context)});
+                    service.delete(_record!.id).then((value) {
+                      navPop(context, 'OK');
+                      navPop(context);
+                    });
                   },
-                  child: const Text('导入车位架构'),
+                  child: const Text('确认'),
                 ),
               ],
             );
           },
         ),
-        child: const Text('导入信息', style: TextStyle(color: Colors.green)),
+        icon: const Icon(
+          Icons.delete_outline,
+          color: Colors.red,
+        ),
       )
     ];
-  }
-
-  Future<void> onPressed(String field) async {
-    const XTypeGroup typeGroup = XTypeGroup(
-      label: 'JSON',
-      extensions: <String>['json'],
-    );
-    final XFile? file =
-        await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
-    if (file != null) {
-      final string = await file.readAsString();
-      _controllers[field]!.text = string;
-    }
   }
 }
