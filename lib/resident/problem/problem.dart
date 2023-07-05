@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
@@ -27,6 +30,10 @@ class _ResidentProblemState extends State<ResidentProblem> {
   final Map<String, int> _stateIndex = {'pending': 1, 'finished': 2};
   int _index = 0;
 
+  final List<String> _fileFields = ['photo'];
+  Map<String, Uint8List?> _files = {};
+  Map<String, String?> _filenames = {};
+
   final service = pb.collection('problems');
 
   RecordModel? _record;
@@ -36,6 +43,12 @@ class _ResidentProblemState extends State<ResidentProblem> {
     _formKeys = List.generate(_steps.length, (index) => GlobalKey<FormState>());
     _controllers = {
       for (final i in _fields) i: TextEditingController(),
+    };
+    _files = {
+      for (final i in _fileFields) i: null,
+    };
+    _filenames = {
+      for (final i in _fileFields) i: null,
     };
     if (widget.recordId != null) {
       service.getOne(widget.recordId!).then(_setRecord);
@@ -74,13 +87,24 @@ class _ResidentProblemState extends State<ResidentProblem> {
     );
   }
 
-  void _setRecord(RecordModel record) {
+  void _setRecord(RecordModel record) async {
     final state = record.getStringValue('state');
     for (final i in _controllers.entries) {
       i.value.text = record.getStringValue(i.key);
     }
+    final images = {};
+    for (final i in _fileFields) {
+      final filename = record.getStringValue(i);
+      if (filename.isNotEmpty) {
+        final resp = await get(pb.getFileUrl(record, record.getStringValue(i)));
+        images[i] = resp.bodyBytes;
+      }
+    }
     setState(() {
       _record = record;
+      for (final i in images.keys) {
+        _files[i] = images[i];
+      }
       _index = _stateIndex[state] ?? 0;
     });
   }
@@ -103,17 +127,52 @@ class _ResidentProblemState extends State<ResidentProblem> {
       return;
     }
 
+    final files = [
+      for (final i in _files.entries)
+        if (i.value != null)
+          MultipartFile.fromBytes(i.key, i.value!, filename: _filenames[i.key])
+    ];
+
     if (_index == 0) {
       service
-          .create(body: _getBody())
+          .create(body: _getBody(), files: files)
           .then(_setRecord)
           .catchError((error) => showException(context, error));
     } else {
       service
-          .update(_record!.id, body: _getBody())
+          .update(_record!.id, body: _getBody(), files: files)
           .then(_setRecord)
           .catchError((error) => showException(context, error));
     }
+  }
+
+  Widget _imageForm(
+    String field,
+    String labelText,
+    String hintText,
+    void Function(String filename, Uint8List bytes) update,
+  ) {
+    return Column(
+      children: [
+        Container(
+          decoration: _files[field] != null
+              ? null
+              : BoxDecoration(border: Border.all(color: Colors.grey)),
+          height: 160,
+          child: _files[field] != null
+              ? Image.memory(
+                  _files[field]!,
+                )
+              : Center(child: Text(labelText)),
+        ),
+        TextButton(
+          onPressed: () {
+            pickImage(update: update);
+          },
+          child: Text(hintText),
+        ),
+      ],
+    );
   }
 
   Widget _form({required int index}) {
@@ -149,6 +208,13 @@ class _ResidentProblemState extends State<ResidentProblem> {
             validator: notNullValidator('内容不能为空'),
             maxLines: null,
           ),
+          const SizedBox(height: 16),
+          _imageForm('photo', '请上传问题照片', '选择问题照片', (filename, bytes) {
+            setState(() {
+              _files['photo'] = bytes;
+              _filenames['photo'] = filename;
+            });
+          }),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: _onSubmitPressed,
