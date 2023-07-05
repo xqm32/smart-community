@@ -3,7 +3,6 @@ import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
 
-
 class ResidentProblem extends StatefulWidget {
   const ResidentProblem({
     super.key,
@@ -117,7 +116,6 @@ class _ResidentProblemState extends State<ResidentProblem> {
     }
   }
 
-  
   Widget _form({required int index}) {
     return Form(
       key: _formKeys[index],
@@ -161,7 +159,6 @@ class _ResidentProblemState extends State<ResidentProblem> {
     );
   }
 
-  
   List<Widget>? _actionsBuilder(context) {
     if (_record == null) {
       return null;

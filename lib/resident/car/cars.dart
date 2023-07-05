@@ -5,7 +5,6 @@ import 'package:smart_community/components/manage.dart';
 import 'package:smart_community/resident/car/car.dart';
 import 'package:smart_community/utils.dart';
 
-
 class ResidentCars extends StatelessWidget {
   const ResidentCars({
     super.key,
@@ -26,7 +25,6 @@ class ResidentCars extends StatelessWidget {
   }
 
   Future<List<RecordModel>> fetchRecords() {
-    
     final String filter =
         'communityId = "$communityId" && userId = "${pb.authStore.model!.id}"';
     return pb.collection('cars').getFullList(filter: filter, sort: '-created');

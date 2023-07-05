@@ -5,7 +5,6 @@ import 'package:smart_community/components/manage.dart';
 import 'package:smart_community/property/problem/problem.dart';
 import 'package:smart_community/utils.dart';
 
-
 class PropertyProblems extends StatelessWidget {
   const PropertyProblems({
     super.key,

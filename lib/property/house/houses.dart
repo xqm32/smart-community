@@ -5,7 +5,6 @@ import 'package:smart_community/components/manage.dart';
 import 'package:smart_community/property/house/house.dart';
 import 'package:smart_community/utils.dart';
 
-
 class PropertyHouses extends StatelessWidget {
   const PropertyHouses({
     super.key,

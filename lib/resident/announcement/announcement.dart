@@ -4,7 +4,6 @@ import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
 
-
 class ResidentAnnouncement extends StatefulWidget {
   const ResidentAnnouncement({
     super.key,

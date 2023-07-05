@@ -7,7 +7,6 @@ import 'package:smart_community/register.dart';
 import 'package:smart_community/resident/resident.dart';
 import 'package:smart_community/utils.dart';
 
-
 class Login extends StatelessWidget {
   const Login({super.key});
 
@@ -28,7 +27,6 @@ class Login extends StatelessWidget {
     );
   }
 }
-
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});

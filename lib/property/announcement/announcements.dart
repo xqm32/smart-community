@@ -6,7 +6,6 @@ import 'package:smart_community/components/manage.dart';
 import 'package:smart_community/property/announcement/Announcement.dart';
 import 'package:smart_community/utils.dart';
 
-
 class PropertyAnnouncements extends StatelessWidget {
   const PropertyAnnouncements({
     super.key,

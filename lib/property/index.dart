@@ -13,7 +13,6 @@ import 'package:smart_community/property/resident/residents.dart';
 
 import 'package:smart_community/utils.dart';
 
-
 class PropertyIndex extends StatefulWidget {
   const PropertyIndex({
     super.key,
@@ -152,7 +151,6 @@ class _PropertyIndexState extends State<PropertyIndex> {
   }
 }
 
-
 class PropertyIndexAnnouncement extends StatelessWidget {
   const PropertyIndexAnnouncement({
     super.key,
@@ -187,7 +185,6 @@ class PropertyIndexAnnouncement extends StatelessWidget {
     );
   }
 }
-
 
 class PropertyIndexService extends StatelessWidget {
   const PropertyIndexService({
@@ -269,7 +266,6 @@ class PropertyIndexService extends StatelessWidget {
   }
 }
 
-
 class PropertyIndexServiceIcon extends StatelessWidget {
   const PropertyIndexServiceIcon({
     super.key,
@@ -302,7 +298,6 @@ class PropertyIndexServiceIcon extends StatelessWidget {
   }
 }
 
-
 class PropertyIndexAnnouncements extends StatelessWidget {
   const PropertyIndexAnnouncements({
     super.key,
@@ -316,7 +311,7 @@ class PropertyIndexAnnouncements extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 参见 https://stackoverflow.com/questions/45669202/how-to-add-a-listview-to-a-column-in-flutter
-    
+
     return Expanded(
       child: Column(
         children: [

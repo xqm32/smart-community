@@ -1,10 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
 
-class ResidentFamily extends StatefulWidget {
-  const ResidentFamily({
+class ResidentVerify extends StatefulWidget {
+  const ResidentVerify({
     super.key,
     required this.communityId,
     this.recordId,
@@ -14,20 +17,28 @@ class ResidentFamily extends StatefulWidget {
   final String? recordId;
 
   @override
-  State<ResidentFamily> createState() => _ResidentFamilyState();
+  State<ResidentVerify> createState() => _ResidentVerifyState();
 }
 
-class _ResidentFamilyState extends State<ResidentFamily> {
+class _ResidentVerifyState extends State<ResidentVerify> {
   List<GlobalKey<FormState>> _formKeys = [];
 
-  final List<String> _fields = ['name', 'identity', 'relation'];
+  final List<String> _fields = [];
   Map<String, TextEditingController> _controllers = {};
 
   final List<String> _steps = ['填写信息', '物业审核', '审核通过'];
-  final Map<String, int> _stateIndex = {'reviewing': 1, 'verified': 2};
+  final Map<String, int> _stateIndex = {
+    'reviewing': 1,
+    'rejected': 1,
+    'verified': 2,
+  };
   int _index = 0;
 
-  final service = pb.collection('families');
+  final List<String> _fileFields = ['idCard'];
+  Map<String, Uint8List?> _files = {};
+  Map<String, String?> _filenames = {};
+
+  final service = pb.collection('residents');
 
   RecordModel? _record;
 
@@ -37,9 +48,21 @@ class _ResidentFamilyState extends State<ResidentFamily> {
     _controllers = {
       for (final i in _fields) i: TextEditingController(),
     };
-    if (widget.recordId != null) {
-      service.getOne(widget.recordId!).then(_setRecord);
-    }
+    _files = {
+      for (final i in _fileFields) i: null,
+    };
+    _filenames = {
+      for (final i in _fileFields) i: null,
+    };
+    final residentsFilter =
+        'communityId = "${widget.communityId}" && userId = "${pb.authStore.model!.id}"';
+    pb.collection('residents').getFullList(filter: residentsFilter).then(
+      (value) {
+        if (value.isNotEmpty) {
+          _setRecord(value.first);
+        }
+      },
+    );
     super.initState();
   }
 
@@ -55,7 +78,7 @@ class _ResidentFamilyState extends State<ResidentFamily> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('家人管理'),
+        title: const Text('实名认证'),
         actions: _actionsBuilder(context),
       ),
       body: Stepper(
@@ -74,13 +97,24 @@ class _ResidentFamilyState extends State<ResidentFamily> {
     );
   }
 
-  void _setRecord(RecordModel record) {
+  void _setRecord(RecordModel record) async {
     final state = record.getStringValue('state');
     for (final i in _controllers.entries) {
       i.value.text = record.getStringValue(i.key);
     }
+    final images = {};
+    for (final i in _fileFields) {
+      final filename = record.getStringValue(i);
+      if (filename.isNotEmpty) {
+        final resp = await get(pb.getFileUrl(record, record.getStringValue(i)));
+        images[i] = resp.bodyBytes;
+      }
+    }
     setState(() {
       _record = record;
+      for (final i in images.keys) {
+        _files[i] = images[i];
+      }
       _index = _stateIndex[state] ?? 0;
     });
   }
@@ -103,56 +137,23 @@ class _ResidentFamilyState extends State<ResidentFamily> {
       return;
     }
 
+    final files = [
+      for (final i in _files.entries)
+        if (i.value != null)
+          MultipartFile.fromBytes(i.key, i.value!, filename: _filenames[i.key])
+    ];
+
     if (_index == 0) {
       service
-          .create(body: _getBody())
+          .create(body: _getBody(), files: files)
           .then(_setRecord)
           .catchError((error) => showException(context, error));
     } else {
       service
-          .update(_record!.id, body: _getBody())
+          .update(_record!.id, body: _getBody(), files: files)
           .then(_setRecord)
           .catchError((error) => showException(context, error));
     }
-  }
-
-  Widget _form({required int index}) {
-    return Form(
-      key: _formKeys[index],
-      child: Column(
-        children: [
-          TextFormField(
-            controller: _controllers['name'],
-            decoration: const InputDecoration(
-              labelText: '姓名',
-              hintText: '请填写家人姓名',
-            ),
-            validator: notNullValidator('姓名不能为空'),
-          ),
-          TextFormField(
-            controller: _controllers['identity'],
-            decoration: const InputDecoration(
-              labelText: '身份证号',
-              hintText: '请填写家人身份证号',
-            ),
-            validator: notNullValidator('身份证号不能为空'),
-          ),
-          TextFormField(
-            controller: _controllers['relation'],
-            decoration: const InputDecoration(
-              labelText: '关系',
-              hintText: '请填写关系',
-            ),
-            validator: notNullValidator('关系不能为空'),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _onSubmitPressed,
-            child: Text(['提交', '修改信息', '修改信息'].elementAt(_index)),
-          )
-        ],
-      ),
-    );
   }
 
   List<Widget>? _actionsBuilder(context) {
@@ -167,8 +168,8 @@ class _ResidentFamilyState extends State<ResidentFamily> {
           builder: (context) {
             return AlertDialog(
               surfaceTintColor: Theme.of(context).colorScheme.background,
-              title: const Text('删除家人'),
-              content: const Text('确定要删除该家人吗？'),
+              title: const Text('删除认证'),
+              content: const Text('确定要删除该认证吗？'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
@@ -195,5 +196,55 @@ class _ResidentFamilyState extends State<ResidentFamily> {
         ),
       )
     ];
+  }
+
+  Widget _imageForm(
+    String field,
+    String labelText,
+    String hintText,
+    void Function(String filename, Uint8List bytes) update,
+  ) {
+    return Column(
+      children: [
+        Container(
+          decoration: _files[field] != null
+              ? null
+              : BoxDecoration(border: Border.all(color: Colors.grey)),
+          height: 160,
+          child: _files[field] != null
+              ? Image.memory(
+                  _files[field]!,
+                )
+              : Center(child: Text(labelText)),
+        ),
+        TextButton(
+          onPressed: () {
+            pickImage(update: update);
+          },
+          child: Text(hintText),
+        ),
+      ],
+    );
+  }
+
+  Widget _form({required int index}) {
+    return Form(
+      key: _formKeys[index],
+      child: Column(
+        children: [
+          _imageForm('idCard', '请上传身份证照片', '选择身份证照片', (filename, bytes) {
+            setState(() {
+              _files['idCard'] = bytes;
+              _filenames['idCard'] = filename;
+            });
+          }),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: _onSubmitPressed,
+            child: Text(['提交', '修改信息', '修改信息'].elementAt(_index)),
+          )
+        ],
+      ),
+    );
   }
 }

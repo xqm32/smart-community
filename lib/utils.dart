@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:smart_community/config.dart';
 
-
 final pb = PocketBase(baseUrl);
 
 Future<dynamic> navPush(context, widget) {
@@ -120,9 +119,6 @@ bool Function(RecordModel, String) keyFilter(String primaryKey) {
 }
 
 void pickImage({
-  required String collection,
-  
-  
   required void Function(String filename, Uint8List bytes) update,
 }) async {
   const XTypeGroup typeGroup = XTypeGroup(
@@ -133,13 +129,7 @@ void pickImage({
       await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
   if (file != null) {
     final bytes = await file.readAsBytes();
-    
-    
-    
-    
-    
-    
-    
+
     update(file.name, bytes);
   }
 }

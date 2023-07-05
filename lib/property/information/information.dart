@@ -4,7 +4,6 @@ import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
 
-
 class PropertyInformation extends StatefulWidget {
   const PropertyInformation({
     super.key,
@@ -108,7 +107,6 @@ class _PropertyInformationState extends State<PropertyInformation> {
         .catchError((error) => showException(context, error));
   }
 
-  
   Widget _form({required int index}) {
     return Form(
       key: _formKeys[index],
@@ -156,7 +154,6 @@ class _PropertyInformationState extends State<PropertyInformation> {
     );
   }
 
-  
   List<Widget>? _actionsBuilder(context) {
     if (_record == null) {
       return null;

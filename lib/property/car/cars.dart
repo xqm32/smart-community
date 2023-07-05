@@ -5,7 +5,6 @@ import 'package:smart_community/components/manage.dart';
 import 'package:smart_community/property/car/car.dart';
 import 'package:smart_community/utils.dart';
 
-
 class PropertyCars extends StatelessWidget {
   const PropertyCars({
     super.key,

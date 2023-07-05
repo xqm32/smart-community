@@ -7,7 +7,6 @@ import 'package:smart_community/account/account.dart';
 import 'package:smart_community/property/index.dart';
 import 'package:smart_community/utils.dart';
 
-
 class Property extends StatefulWidget {
   const Property({super.key});
 
@@ -16,14 +15,12 @@ class Property extends StatefulWidget {
 }
 
 class _PropertyState extends State<Property> {
-  
   late Future<List<RecordModel>> communities;
-  
+
   late Future<RecordModel> community;
 
-  
   String? communityId;
-  
+
   int _index = 0;
 
   @override
@@ -42,7 +39,6 @@ class _PropertyState extends State<Property> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('物业端'), actions: [
-        
         FutureBuilder(
           future: communities,
           builder: (context, snapshot) {
@@ -66,7 +62,6 @@ class _PropertyState extends State<Property> {
         )
       ]),
       body: [
-        
         communityId != null
             ? PropertyIndex(communityId: communityId!)
             : FutureBuilder(
@@ -87,8 +82,6 @@ class _PropertyState extends State<Property> {
                   return Container();
                 },
               ),
-
-        
         const Account(),
       ].elementAt(_index),
       bottomNavigationBar: BottomNavigationBar(
@@ -112,7 +105,6 @@ class _PropertyState extends State<Property> {
     );
   }
 
-  
   void fetchCommunity(String id) {
     SharedPreferences.getInstance().then((prefs) {
       prefs.setString('communityId', id);
@@ -125,11 +117,9 @@ class _PropertyState extends State<Property> {
     });
   }
 
-  
   Widget _searchActionBuilder(context, controller) {
     return TextButton(
       onPressed: () => controller.openView(),
-      
       child: communityId != null
           ? FutureBuilder(
               future: community,

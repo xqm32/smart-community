@@ -3,7 +3,6 @@ import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
 
-
 class PropertyFamily extends StatefulWidget {
   const PropertyFamily({
     super.key,
@@ -120,7 +119,6 @@ class _PropertyFamilyState extends State<PropertyFamily> {
     };
   }
 
-  
   Widget _form({required int index}) {
     const fieldTextStyle = TextStyle(color: Colors.black);
     const fieldBorder = UnderlineInputBorder();
@@ -183,7 +181,6 @@ class _PropertyFamilyState extends State<PropertyFamily> {
     );
   }
 
-  
   List<Widget>? _actionsBuilder(context) {
     if (_record == null) {
       return null;

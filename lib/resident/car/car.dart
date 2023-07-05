@@ -201,7 +201,9 @@ class _ResidentCarState extends State<ResidentCar> {
     return Column(
       children: [
         Container(
-          decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
+          decoration: _files[field] != null
+              ? null
+              : BoxDecoration(border: Border.all(color: Colors.grey)),
           height: 160,
           child: _files[field] != null
               ? Image.memory(
@@ -211,7 +213,7 @@ class _ResidentCarState extends State<ResidentCar> {
         ),
         TextButton(
           onPressed: () {
-            pickImage(collection: 'residents', update: update);
+            pickImage(update: update);
           },
           child: Text(hintText),
         ),

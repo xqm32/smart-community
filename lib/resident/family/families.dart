@@ -5,7 +5,6 @@ import 'package:smart_community/components/manage.dart';
 import 'package:smart_community/resident/family/family.dart';
 import 'package:smart_community/utils.dart';
 
-
 class ResidentFamilies extends StatelessWidget {
   const ResidentFamilies({
     super.key,
@@ -26,7 +25,6 @@ class ResidentFamilies extends StatelessWidget {
   }
 
   Future<List<RecordModel>> fetchRecords() {
-    
     final String filter =
         'communityId = "$communityId" && userId = "${pb.authStore.model!.id}"';
     return pb

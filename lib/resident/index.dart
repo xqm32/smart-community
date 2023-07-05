@@ -8,8 +8,8 @@ import 'package:smart_community/resident/car/cars.dart';
 import 'package:smart_community/resident/family/families.dart';
 import 'package:smart_community/resident/house/houses.dart';
 import 'package:smart_community/resident/problem/problems.dart';
+import 'package:smart_community/resident/verify/verify.dart';
 import 'package:smart_community/utils.dart';
-
 
 class ResidentIndex extends StatefulWidget {
   const ResidentIndex({
@@ -32,19 +32,7 @@ class _ResidentIndexState extends State<ResidentIndex> {
   void initState() {
     announcements = pb.collection('announcements').getFullList(
         filter: 'communityId = "${widget.communityId}"', sort: '-created');
-
-    final residentsFilter =
-        'communityId = "${widget.communityId}" && userId = "${pb.authStore.model!.id}"';
-
-    pb.collection('residents').getFullList(filter: residentsFilter).then(
-      (value) {
-        setState(() {
-          _state =
-              value.isNotEmpty ? value.first.getStringValue('state') : null;
-        });
-      },
-    );
-
+    fetchRecord();
     super.initState();
   }
 
@@ -52,62 +40,43 @@ class _ResidentIndexState extends State<ResidentIndex> {
   void didUpdateWidget(covariant ResidentIndex oldWidget) {
     announcements = pb.collection('announcements').getFullList(
         filter: 'communityId = "${widget.communityId}"', sort: '-created');
-
-    final residentsFilter =
-        'communityId = "${widget.communityId}" && userId = "${pb.authStore.model!.id}"';
-
-    pb.collection('residents').getFullList(filter: residentsFilter).then(
-      (value) {
-        setState(() {
-          _state =
-              value.isNotEmpty ? value.first.getStringValue('state') : null;
-        });
-      },
-    );
-
+    fetchRecord();
     super.didUpdateWidget(oldWidget);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_state == null) {
+    final label = {
+      'verified': const Text('您还未入住该小区'),
+      'reviewing': const Text(
+        '您的账号正在审核中，请耐心等待',
+        style: TextStyle(color: Colors.purple),
+      ),
+      'rejected': const Text(
+        '您的账号未通过审核',
+        style: TextStyle(color: Colors.red),
+      ),
+    };
+    final hint = {
+      'verified': const Text('入住小区'),
+      'reviewing': const Text('查看状态'),
+      'rejected': const Text('查看状态'),
+    };
+
+    if (_state != 'verified') {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('您还未入住该小区'),
+            label[_state]!,
             TextButton(
-              onPressed: () {
-                pb.collection('residents').create(body: {
-                  'communityId': widget.communityId,
-                  'userId': pb.authStore.model!.id,
-                  'state': 'reviewing',
-                }).then((value) {
-                  setState(() {
-                    _state = 'reviewing';
-                  });
-                });
+              onPressed: () async {
+                await navPush(
+                    context, ResidentVerify(communityId: widget.communityId));
+                fetchRecord();
               },
-              child: const Text('入住小区'),
+              child: hint[_state]!,
             ),
-          ],
-        ),
-      );
-    } else if (_state != 'verified') {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (_state == 'reviewing')
-              const Text(
-                '您的账号正在审核中，请耐心等待',
-                style: TextStyle(color: Colors.purple),
-              )
-            else if (_state == 'rejected')
-              const Text(
-                '您的账号未通过审核',
-                style: TextStyle(color: Colors.red),
-              )
           ],
         ),
       );
@@ -154,8 +123,21 @@ class _ResidentIndexState extends State<ResidentIndex> {
       ),
     );
   }
-}
 
+  void fetchRecord() {
+    final residentsFilter =
+        'communityId = "${widget.communityId}" && userId = "${pb.authStore.model!.id}"';
+
+    pb.collection('residents').getFullList(filter: residentsFilter).then(
+      (value) {
+        setState(() {
+          _state =
+              value.isNotEmpty ? value.first.getStringValue('state') : null;
+        });
+      },
+    );
+  }
+}
 
 class ResidentIndexAnnouncement extends StatelessWidget {
   const ResidentIndexAnnouncement({
@@ -187,7 +169,6 @@ class ResidentIndexAnnouncement extends StatelessWidget {
   }
 }
 
-
 class ResidentIndexService extends StatelessWidget {
   const ResidentIndexService({
     super.key,
@@ -203,7 +184,8 @@ class ResidentIndexService extends StatelessWidget {
         Row(
           children: [
             ResidentIndexServiceIcon(
-              onPressed: () {},
+              onPressed: () =>
+                  navPush(context, ResidentVerify(communityId: communityId)),
               icon: Icons.person,
               text: '实名认证',
               color: Colors.orange,
@@ -266,7 +248,6 @@ class ResidentIndexService extends StatelessWidget {
   }
 }
 
-
 class ResidentIndexServiceIcon extends StatelessWidget {
   const ResidentIndexServiceIcon({
     super.key,
@@ -299,7 +280,6 @@ class ResidentIndexServiceIcon extends StatelessWidget {
   }
 }
 
-
 class ResidentIndexAnnouncements extends StatelessWidget {
   const ResidentIndexAnnouncements({
     super.key,
@@ -313,7 +293,7 @@ class ResidentIndexAnnouncements extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 参见 https://stackoverflow.com/questions/45669202/how-to-add-a-listview-to-a-column-in-flutter
-    
+
     return Expanded(
       child: Column(
         children: [

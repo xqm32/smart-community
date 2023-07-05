@@ -142,7 +142,6 @@ class AccountAvatar extends StatelessWidget {
           ),
         ],
       ),
-      
     );
   }
 }
