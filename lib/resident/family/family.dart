@@ -3,7 +3,7 @@ import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
 
-// 居民端/首页/家人管理
+
 class ResidentFamily extends StatefulWidget {
   const ResidentFamily({
     super.key,
@@ -117,7 +117,7 @@ class _ResidentFamilyState extends State<ResidentFamily> {
     }
   }
 
-  // 居民端/首页/家人管理/填写信息
+  
   Widget _form({required int index}) {
     return Form(
       key: _formKeys[index],
@@ -157,7 +157,7 @@ class _ResidentFamilyState extends State<ResidentFamily> {
     );
   }
 
-  // 居民端/首页/家人管理/删除家人
+  
   List<Widget>? _actionsBuilder(context) {
     if (_record == null) {
       return null;

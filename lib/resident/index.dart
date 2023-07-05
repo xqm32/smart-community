@@ -10,7 +10,7 @@ import 'package:smart_community/resident/house/houses.dart';
 import 'package:smart_community/resident/problem/problems.dart';
 import 'package:smart_community/utils.dart';
 
-// 居民端/首页
+
 class ResidentIndex extends StatefulWidget {
   const ResidentIndex({
     super.key,
@@ -156,7 +156,7 @@ class _ResidentIndexState extends State<ResidentIndex> {
   }
 }
 
-// 居民端/首页/通知
+
 class ResidentIndexAnnouncement extends StatelessWidget {
   const ResidentIndexAnnouncement({
     super.key,
@@ -187,7 +187,7 @@ class ResidentIndexAnnouncement extends StatelessWidget {
   }
 }
 
-// 居民端/首页/服务
+
 class ResidentIndexService extends StatelessWidget {
   const ResidentIndexService({
     super.key,
@@ -266,7 +266,7 @@ class ResidentIndexService extends StatelessWidget {
   }
 }
 
-// 居民端/首页/服务/图标
+
 class ResidentIndexServiceIcon extends StatelessWidget {
   const ResidentIndexServiceIcon({
     super.key,
@@ -299,7 +299,7 @@ class ResidentIndexServiceIcon extends StatelessWidget {
   }
 }
 
-// 居民端/首页/新闻
+
 class ResidentIndexAnnouncements extends StatelessWidget {
   const ResidentIndexAnnouncements({
     super.key,
@@ -313,7 +313,7 @@ class ResidentIndexAnnouncements extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 参见 https://stackoverflow.com/questions/45669202/how-to-add-a-listview-to-a-column-in-flutter
-    // ListView 在 Column 中需要有确定的高度
+    
     return Expanded(
       child: Column(
         children: [

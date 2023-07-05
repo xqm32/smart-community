@@ -5,7 +5,7 @@ import 'package:smart_community/components/manage.dart';
 import 'package:smart_community/property/problem/problem.dart';
 import 'package:smart_community/utils.dart';
 
-// 物业端/首页/事件处置
+
 class PropertyProblems extends StatelessWidget {
   const PropertyProblems({
     super.key,

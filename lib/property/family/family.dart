@@ -3,7 +3,7 @@ import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
 
-// 物业端/首页/家人审核
+
 class PropertyFamily extends StatefulWidget {
   const PropertyFamily({
     super.key,
@@ -120,7 +120,7 @@ class _PropertyFamilyState extends State<PropertyFamily> {
     };
   }
 
-  // 物业端/首页/家人审核/填写信息
+  
   Widget _form({required int index}) {
     const fieldTextStyle = TextStyle(color: Colors.black);
     const fieldBorder = UnderlineInputBorder();
@@ -183,7 +183,7 @@ class _PropertyFamilyState extends State<PropertyFamily> {
     );
   }
 
-  // 物业端/首页/家人审核/删除家人
+  
   List<Widget>? _actionsBuilder(context) {
     if (_record == null) {
       return null;

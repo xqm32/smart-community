@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:smart_community/utils.dart';
 import 'package:smart_community/login.dart';
 
-// 注册
+
 class Register extends StatelessWidget {
   const Register({super.key});
 
@@ -25,7 +25,7 @@ class Register extends StatelessWidget {
   }
 }
 
-// 注册/表单
+
 class RegisterForm extends StatefulWidget {
   const RegisterForm({super.key});
 

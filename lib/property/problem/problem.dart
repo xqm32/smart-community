@@ -3,7 +3,7 @@ import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
 
-// 物业端/首页/事件处置
+
 class PropertyProblem extends StatefulWidget {
   const PropertyProblem({
     super.key,
@@ -120,7 +120,7 @@ class _PropertyProblemState extends State<PropertyProblem> {
     };
   }
 
-  // 物业端/首页/事件处置/填写信息
+  
   Widget _form({required int index}) {
     const fieldTextStyle = TextStyle(color: Colors.black);
     const fieldBorder = UnderlineInputBorder();
@@ -185,7 +185,7 @@ class _PropertyProblemState extends State<PropertyProblem> {
     );
   }
 
-  // 物业端/首页/事件处置/删除问题
+  
   List<Widget>? _actionsBuilder(context) {
     if (_record == null) {
       return null;

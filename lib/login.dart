@@ -7,7 +7,7 @@ import 'package:smart_community/register.dart';
 import 'package:smart_community/resident/resident.dart';
 import 'package:smart_community/utils.dart';
 
-// 登陆
+
 class Login extends StatelessWidget {
   const Login({super.key});
 
@@ -29,7 +29,7 @@ class Login extends StatelessWidget {
   }
 }
 
-// 登陆/表单
+
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
 

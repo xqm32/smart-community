@@ -5,7 +5,7 @@ import 'package:smart_community/components/manage.dart';
 import 'package:smart_community/property/house/house.dart';
 import 'package:smart_community/utils.dart';
 
-// 物业端/首页/房屋审核
+
 class PropertyHouses extends StatelessWidget {
   const PropertyHouses({
     super.key,

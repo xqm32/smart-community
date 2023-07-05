@@ -6,7 +6,6 @@ import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
 
-// 居民端/首页/车辆管理
 class ResidentCar extends StatefulWidget {
   const ResidentCar({
     super.key,
@@ -24,7 +23,6 @@ class ResidentCar extends StatefulWidget {
 class _ResidentCarState extends State<ResidentCar> {
   List<GlobalKey<FormState>> _formKeys = [];
 
-  // @文字表单配置
   final List<String> _fields = ['name', 'plate'];
   Map<String, TextEditingController> _controllers = {};
 
@@ -36,7 +34,6 @@ class _ResidentCarState extends State<ResidentCar> {
   };
   int _index = 0;
 
-  // @图片表单配置
   final List<String> _fileFields = ['photo'];
   Map<String, Uint8List?> _files = {};
   Map<String, String?> _filenames = {};
@@ -153,63 +150,6 @@ class _ResidentCarState extends State<ResidentCar> {
     }
   }
 
-  // 居民端/首页/车辆管理/填写信息
-  Widget _form({required int index}) {
-    return Form(
-      key: _formKeys[index],
-      child: Column(
-        children: [
-          TextFormField(
-            controller: _controllers['name'],
-            decoration: const InputDecoration(
-              labelText: '名称',
-              hintText: '请填写车辆名称',
-            ),
-            validator: notNullValidator('名称不能为空'),
-          ),
-          TextFormField(
-            controller: _controllers['plate'],
-            decoration: const InputDecoration(
-              labelText: '车牌号',
-              hintText: '请填写车牌号',
-            ),
-            validator: notNullValidator('车牌号不能为空'),
-          ),
-          const SizedBox(height: 16),
-          Container(
-            decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
-            height: 160,
-            child: _files['photo'] != null
-                ? Image.memory(
-                    _files['photo']!,
-                  )
-                : const Center(child: Text('请上传车辆照片')),
-          ),
-          TextButton(
-            onPressed: () {
-              pickImage(
-                collection: 'cars',
-                update: (filename, bytes) {
-                  setState(() {
-                    _filenames['photo'] = filename;
-                    _files['photo'] = bytes;
-                  });
-                },
-              );
-            },
-            child: const Text('选择车辆照片'),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _onSubmitPressed,
-            child: Text(['提交', '修改信息', '修改信息'].elementAt(_index)),
-          )
-        ],
-      ),
-    );
-  }
-
-  // 居民端/首页/车辆管理/删除车辆
   List<Widget>? _actionsBuilder(context) {
     if (_record == null) {
       return null;
@@ -250,5 +190,70 @@ class _ResidentCarState extends State<ResidentCar> {
         ),
       )
     ];
+  }
+
+  Widget _imageForm(
+    String field,
+    String labelText,
+    String hintText,
+    void Function(String filename, Uint8List bytes) update,
+  ) {
+    return Column(
+      children: [
+        Container(
+          decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
+          height: 160,
+          child: _files[field] != null
+              ? Image.memory(
+                  _files[field]!,
+                )
+              : Center(child: Text(labelText)),
+        ),
+        TextButton(
+          onPressed: () {
+            pickImage(collection: 'residents', update: update);
+          },
+          child: Text(hintText),
+        ),
+      ],
+    );
+  }
+
+  Widget _form({required int index}) {
+    return Form(
+      key: _formKeys[index],
+      child: Column(
+        children: [
+          TextFormField(
+            controller: _controllers['name'],
+            decoration: const InputDecoration(
+              labelText: '名称',
+              hintText: '请填写车辆名称',
+            ),
+            validator: notNullValidator('名称不能为空'),
+          ),
+          TextFormField(
+            controller: _controllers['plate'],
+            decoration: const InputDecoration(
+              labelText: '车牌号',
+              hintText: '请填写车牌号',
+            ),
+            validator: notNullValidator('车牌号不能为空'),
+          ),
+          const SizedBox(height: 16),
+          _imageForm('photo', '请上传车辆照片', '选择车辆照片', (filename, bytes) {
+            setState(() {
+              _files['photo'] = bytes;
+              _filenames['photo'] = filename;
+            });
+          }),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: _onSubmitPressed,
+            child: Text(['提交', '修改信息', '修改信息'].elementAt(_index)),
+          )
+        ],
+      ),
+    );
   }
 }

@@ -7,7 +7,7 @@ import 'package:smart_community/account/account.dart';
 import 'package:smart_community/property/index.dart';
 import 'package:smart_community/utils.dart';
 
-// 物业端
+
 class Property extends StatefulWidget {
   const Property({super.key});
 
@@ -16,14 +16,14 @@ class Property extends StatefulWidget {
 }
 
 class _PropertyState extends State<Property> {
-  // 小区列表
+  
   late Future<List<RecordModel>> communities;
-  // 当前选择的小区
+  
   late Future<RecordModel> community;
 
-  // 当前选择的小区 ID
+  
   String? communityId;
-  // 底部导航栏索引
+  
   int _index = 0;
 
   @override
@@ -42,7 +42,7 @@ class _PropertyState extends State<Property> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('物业端'), actions: [
-        // 右上角选择小区按钮
+        
         FutureBuilder(
           future: communities,
           builder: (context, snapshot) {
@@ -66,7 +66,7 @@ class _PropertyState extends State<Property> {
         )
       ]),
       body: [
-        // 物业端/首页
+        
         communityId != null
             ? PropertyIndex(communityId: communityId!)
             : FutureBuilder(
@@ -88,7 +88,7 @@ class _PropertyState extends State<Property> {
                 },
               ),
 
-        // 物业端/我的
+        
         const Account(),
       ].elementAt(_index),
       bottomNavigationBar: BottomNavigationBar(
@@ -112,7 +112,7 @@ class _PropertyState extends State<Property> {
     );
   }
 
-  // 选择小区
+  
   void fetchCommunity(String id) {
     SharedPreferences.getInstance().then((prefs) {
       prefs.setString('communityId', id);
@@ -125,11 +125,11 @@ class _PropertyState extends State<Property> {
     });
   }
 
-  // 右上角选择小区按钮
+  
   Widget _searchActionBuilder(context, controller) {
     return TextButton(
       onPressed: () => controller.openView(),
-      // 没有选择小区时显示「请选择小区」，有小区时显示小区名
+      
       child: communityId != null
           ? FutureBuilder(
               future: community,

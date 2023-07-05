@@ -6,7 +6,7 @@ import 'package:smart_community/components/manage.dart';
 import 'package:smart_community/property/announcement/Announcement.dart';
 import 'package:smart_community/utils.dart';
 
-// 物业端/首页/通知公告
+
 class PropertyAnnouncements extends StatelessWidget {
   const PropertyAnnouncements({
     super.key,

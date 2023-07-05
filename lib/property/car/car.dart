@@ -3,7 +3,7 @@ import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
 
-// 物业端/首页/车辆审核
+
 class PropertyCar extends StatefulWidget {
   const PropertyCar({
     super.key,
@@ -120,7 +120,7 @@ class _PropertyCarState extends State<PropertyCar> {
     };
   }
 
-  // 物业端/首页/车辆审核/填写信息
+  
   Widget _form({required int index}) {
     const fieldTextStyle = TextStyle(color: Colors.black);
     const fieldBorder = UnderlineInputBorder();
@@ -173,7 +173,7 @@ class _PropertyCarState extends State<PropertyCar> {
     );
   }
 
-  // 物业端/首页/车辆审核/删除车辆
+  
   List<Widget>? _actionsBuilder(context) {
     if (_record == null) {
       return null;

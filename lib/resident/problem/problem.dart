@@ -3,7 +3,7 @@ import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
 
-// 居民端/首页/问题上报
+
 class ResidentProblem extends StatefulWidget {
   const ResidentProblem({
     super.key,
@@ -117,7 +117,7 @@ class _ResidentProblemState extends State<ResidentProblem> {
     }
   }
 
-  // 居民端/首页/问题上报/填写信息
+  
   Widget _form({required int index}) {
     return Form(
       key: _formKeys[index],
@@ -161,7 +161,7 @@ class _ResidentProblemState extends State<ResidentProblem> {
     );
   }
 
-  // 居民端/首页/问题上报/删除问题
+  
   List<Widget>? _actionsBuilder(context) {
     if (_record == null) {
       return null;

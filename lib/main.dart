@@ -6,14 +6,14 @@ void main() {
   runApp(const App());
 }
 
-// 智慧社区
+
 class App extends StatelessWidget {
   const App({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // 不显示 Debug 横幅
+      
       debugShowCheckedModeBanner: false,
       title: 'Smart Community',
       theme: ThemeData(

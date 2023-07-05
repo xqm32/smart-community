@@ -5,7 +5,7 @@ import 'package:smart_community/components/manage.dart';
 import 'package:smart_community/property/family/family.dart';
 import 'package:smart_community/utils.dart';
 
-// 物业端/首页/家人审核
+
 class PropertyFamilies extends StatelessWidget {
   const PropertyFamilies({
     super.key,

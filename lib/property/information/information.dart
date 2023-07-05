@@ -4,7 +4,7 @@ import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
 
-// 物业端/首页/小区信息配置
+
 class PropertyInformation extends StatefulWidget {
   const PropertyInformation({
     super.key,
@@ -108,7 +108,7 @@ class _PropertyInformationState extends State<PropertyInformation> {
         .catchError((error) => showException(context, error));
   }
 
-  // 物业端/首页/小区信息配置/填写信息
+  
   Widget _form({required int index}) {
     return Form(
       key: _formKeys[index],
@@ -156,7 +156,7 @@ class _PropertyInformationState extends State<PropertyInformation> {
     );
   }
 
-  // 物业端/首页/通知公告/删除公告
+  
   List<Widget>? _actionsBuilder(context) {
     if (_record == null) {
       return null;

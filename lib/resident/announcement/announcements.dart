@@ -6,7 +6,7 @@ import 'package:smart_community/components/manage.dart';
 import 'package:smart_community/resident/announcement/announcement.dart';
 import 'package:smart_community/utils.dart';
 
-// 居民端/首页/通知公告
+
 class ResidentAnnouncements extends StatelessWidget {
   const ResidentAnnouncements({
     super.key,

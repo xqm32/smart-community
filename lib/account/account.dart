@@ -142,7 +142,7 @@ class AccountAvatar extends StatelessWidget {
           ),
         ],
       ),
-      // trailing: const Icon(Icons.navigate_next),
+      
     );
   }
 }

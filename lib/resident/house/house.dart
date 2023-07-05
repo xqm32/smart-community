@@ -5,7 +5,7 @@ import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
 
-// 居民端/首页/房屋管理
+
 class ResidentHouse extends StatefulWidget {
   const ResidentHouse({
     super.key,
@@ -156,7 +156,7 @@ class _ResidentHouseState extends State<ResidentHouse> {
     }
   }
 
-  // 居民端/首页/房屋管理/填写信息
+  
   Widget _form({required int index}) {
     return Form(
       key: _formKeys[index],
@@ -243,7 +243,7 @@ class _ResidentHouseState extends State<ResidentHouse> {
     );
   }
 
-  // 居民端/首页/房屋管理/删除房屋
+  
   List<Widget>? _actionsBuilder(context) {
     if (_record == null) {
       return null;

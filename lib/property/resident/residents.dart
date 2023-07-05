@@ -5,7 +5,7 @@ import 'package:smart_community/components/manage.dart';
 import 'package:smart_community/property/resident/resident.dart';
 import 'package:smart_community/utils.dart';
 
-// 物业端/首页/居民管理
+
 class PropertyResidents extends StatelessWidget {
   const PropertyResidents({
     super.key,

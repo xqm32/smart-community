@@ -5,7 +5,7 @@ import 'package:smart_community/components/manage.dart';
 import 'package:smart_community/resident/family/family.dart';
 import 'package:smart_community/utils.dart';
 
-// 居民端/首页/家人管理
+
 class ResidentFamilies extends StatelessWidget {
   const ResidentFamilies({
     super.key,
@@ -26,7 +26,7 @@ class ResidentFamilies extends StatelessWidget {
   }
 
   Future<List<RecordModel>> fetchRecords() {
-    // 后端存在规则时可以移除「&& userId = "${pb.authStore.model!.id}"」
+    
     final String filter =
         'communityId = "$communityId" && userId = "${pb.authStore.model!.id}"';
     return pb

@@ -5,7 +5,7 @@ import 'package:smart_community/components/manage.dart';
 import 'package:smart_community/property/car/car.dart';
 import 'package:smart_community/utils.dart';
 
-// 物业端/首页/车辆审核
+
 class PropertyCars extends StatelessWidget {
   const PropertyCars({
     super.key,
