@@ -47,7 +47,7 @@ class _ResidentIndexState extends State<ResidentIndex> {
   @override
   Widget build(BuildContext context) {
     final label = {
-      'verified': const Text('您还未入住该小区'),
+      null: const Text('您还未入住该小区'),
       'reviewing': const Text(
         '您的账号正在审核中，请耐心等待',
         style: TextStyle(color: Colors.purple),
@@ -58,7 +58,7 @@ class _ResidentIndexState extends State<ResidentIndex> {
       ),
     };
     final hint = {
-      'verified': const Text('入住小区'),
+      null: const Text('入住小区'),
       'reviewing': const Text('查看状态'),
       'rejected': const Text('查看状态'),
     };
