@@ -121,20 +121,20 @@ class _PropertyAnnouncementState extends State<PropertyAnnouncement> {
       child: Column(
         children: [
           TextFormField(
-            controller: _controllers['author'],
-            decoration: const InputDecoration(
-              labelText: '作者',
-              hintText: '请填写公告作者',
-            ),
-            validator: notNullValidator('作者不能为空'),
-          ),
-          TextFormField(
             controller: _controllers['title'],
             decoration: const InputDecoration(
               labelText: '标题',
               hintText: '请填写公告标题',
             ),
             validator: notNullValidator('标题不能为空'),
+          ),
+          TextFormField(
+            controller: _controllers['author'],
+            decoration: const InputDecoration(
+              labelText: '作者',
+              hintText: '请填写公告作者',
+            ),
+            validator: notNullValidator('作者不能为空'),
           ),
           const SizedBox(height: 16),
           TextFormField(

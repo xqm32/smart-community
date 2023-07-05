@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
@@ -21,12 +24,22 @@ class ResidentCar extends StatefulWidget {
 class _ResidentCarState extends State<ResidentCar> {
   List<GlobalKey<FormState>> _formKeys = [];
 
+  // @文字表单配置
   final List<String> _fields = ['name', 'plate'];
   Map<String, TextEditingController> _controllers = {};
 
   final List<String> _steps = ['填写信息', '物业审核', '审核通过'];
-  final Map<String, int> _stateIndex = {'reviewing': 1, 'verified': 2};
+  final Map<String, int> _stateIndex = {
+    'reviewing': 1,
+    'rejected': 1,
+    'verified': 2,
+  };
   int _index = 0;
+
+  // @图片表单配置
+  final List<String> _fileFields = ['photo'];
+  Map<String, Uint8List?> _files = {};
+  Map<String, String?> _filenames = {};
 
   final service = pb.collection('cars');
 
@@ -37,6 +50,12 @@ class _ResidentCarState extends State<ResidentCar> {
     _formKeys = List.generate(_steps.length, (index) => GlobalKey<FormState>());
     _controllers = {
       for (final i in _fields) i: TextEditingController(),
+    };
+    _files = {
+      for (final i in _fileFields) i: null,
+    };
+    _filenames = {
+      for (final i in _fileFields) i: null,
     };
     if (widget.recordId != null) {
       service.getOne(widget.recordId!).then(_setRecord);
@@ -75,13 +94,24 @@ class _ResidentCarState extends State<ResidentCar> {
     );
   }
 
-  void _setRecord(RecordModel record) {
+  void _setRecord(RecordModel record) async {
     final state = record.getStringValue('state');
     for (final i in _controllers.entries) {
       i.value.text = record.getStringValue(i.key);
     }
+    final images = {};
+    for (final i in _fileFields) {
+      final filename = record.getStringValue(i);
+      if (filename.isNotEmpty) {
+        final resp = await get(pb.getFileUrl(record, record.getStringValue(i)));
+        images[i] = resp.bodyBytes;
+      }
+    }
     setState(() {
       _record = record;
+      for (final i in images.keys) {
+        _files[i] = images[i];
+      }
       _index = _stateIndex[state] ?? 0;
     });
   }
@@ -104,14 +134,20 @@ class _ResidentCarState extends State<ResidentCar> {
       return;
     }
 
+    final files = [
+      for (final i in _files.entries)
+        if (i.value != null)
+          MultipartFile.fromBytes(i.key, i.value!, filename: _filenames[i.key])
+    ];
+
     if (_index == 0) {
       service
-          .create(body: _getBody())
+          .create(body: _getBody(), files: files)
           .then(_setRecord)
           .catchError((error) => showException(context, error));
     } else {
       service
-          .update(_record!.id, body: _getBody())
+          .update(_record!.id, body: _getBody(), files: files)
           .then(_setRecord)
           .catchError((error) => showException(context, error));
     }
@@ -138,6 +174,30 @@ class _ResidentCarState extends State<ResidentCar> {
               hintText: '请填写车牌号',
             ),
             validator: notNullValidator('车牌号不能为空'),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
+            height: 160,
+            child: _files['photo'] != null
+                ? Image.memory(
+                    _files['photo']!,
+                  )
+                : const Center(child: Text('请上传车辆照片')),
+          ),
+          TextButton(
+            onPressed: () {
+              pickImage(
+                collection: 'cars',
+                update: (filename, bytes) {
+                  setState(() {
+                    _filenames['photo'] = filename;
+                    _files['photo'] = bytes;
+                  });
+                },
+              );
+            },
+            child: const Text('选择车辆照片'),
           ),
           const SizedBox(height: 16),
           ElevatedButton(

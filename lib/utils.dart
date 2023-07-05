@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:smart_community/config.dart';
@@ -114,4 +117,29 @@ bool Function(RecordModel, String) keyFilter(String primaryKey) {
       }
     });
   };
+}
+
+void pickImage({
+  required String collection,
+  // required String id,
+  // required String field,
+  required void Function(String filename, Uint8List bytes) update,
+}) async {
+  const XTypeGroup typeGroup = XTypeGroup(
+    label: 'images',
+    extensions: <String>['jpg', 'png'],
+  );
+  final XFile? file =
+      await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
+  if (file != null) {
+    final bytes = await file.readAsBytes();
+    // await pb.collection(collection).update(id, files: [
+    //   MultipartFile.fromBytes(
+    //     field,
+    //     bytes,
+    //     filename: file.name,
+    //   )
+    // ]);
+    update(file.name, bytes);
+  }
 }
