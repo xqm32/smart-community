@@ -9,6 +9,7 @@ import 'package:smart_community/resident/family/families.dart';
 import 'package:smart_community/resident/house/houses.dart';
 import 'package:smart_community/resident/problem/problems.dart';
 import 'package:smart_community/resident/verify/verify.dart';
+import 'package:smart_community/resident/vote/votes.dart';
 import 'package:smart_community/utils.dart';
 
 class ResidentIndex extends StatefulWidget {
@@ -223,7 +224,8 @@ class ResidentIndexService extends StatelessWidget {
               color: Colors.cyan,
             ),
             ResidentIndexServiceIcon(
-              onPressed: () {},
+              onPressed: () =>
+                  navPush(context, ResidentVotes(communityId: communityId)),
               icon: Icons.how_to_vote,
               text: '预算支出投票',
               color: Colors.indigo,

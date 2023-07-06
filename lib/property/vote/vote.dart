@@ -22,6 +22,7 @@ class _PropertyVoteState extends State<PropertyVote> {
 
   final List<String> _fields = ['title', 'content', 'options', 'start', 'end'];
   Map<String, TextEditingController> _controllers = {};
+  Map<String, int>? counts = {};
 
   final List<String> _steps = ['发布投票', '修改投票'];
   int _index = 0;
@@ -73,10 +74,20 @@ class _PropertyVoteState extends State<PropertyVote> {
     );
   }
 
-  void _setRecord(RecordModel record) {
+  void _setRecord(RecordModel record) async {
     for (final i in _controllers.entries) {
       i.value.text = record.getStringValue(i.key);
     }
+
+    final options = record.getStringValue('options').split('\n');
+    final resultsFilter = 'voteId = "${record.id}"';
+    final results =
+        await pb.collection('results').getFullList(filter: resultsFilter);
+    ;
+    for (final i in options) {
+      counts![i] = results.where((e) => e.getStringValue('option') == i).length;
+    }
+
     setState(() {
       _record = record;
       _index = 1;
@@ -140,18 +151,6 @@ class _PropertyVoteState extends State<PropertyVote> {
           ),
           const SizedBox(height: 16),
           TextFormField(
-            controller: _controllers['options'],
-            decoration: const InputDecoration(
-              labelText: '选项',
-              hintText: '请填写投票选项',
-              border: OutlineInputBorder(),
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-            ),
-            validator: notNullValidator('选项不能为空'),
-            maxLines: null,
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
             controller: _controllers['start'],
             decoration: const InputDecoration(
               labelText: '起始时间',
@@ -166,6 +165,37 @@ class _PropertyVoteState extends State<PropertyVote> {
               hintText: '请填写结束时间',
             ),
           ),
+          const SizedBox(height: 16),
+          if (_index == 0)
+            TextFormField(
+              controller: _controllers['options'],
+              decoration: const InputDecoration(
+                labelText: '选项',
+                hintText: '请填写投票选项',
+                border: OutlineInputBorder(),
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+              ),
+              validator: notNullValidator('选项不能为空'),
+              maxLines: null,
+            )
+          else
+            Container(
+              decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(8)),
+              child: Column(
+                children: [
+                  const SizedBox(height: 8),
+                  const Text('投票结果'),
+                  for (final i in counts!.entries)
+                    ListTile(
+                      title: Text(i.key),
+                      trailing: Text('${i.value} 票',
+                          style: const TextStyle(fontSize: 16)),
+                    )
+                ],
+              ),
+            ),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: _onSubmitPressed,
