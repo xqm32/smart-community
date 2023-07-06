@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pocketbase/src/dtos/record_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:smart_community/login.dart';
@@ -41,14 +42,14 @@ class _LoginFormState extends State<_PasswordForm> {
   @override
   void initState() {
     _controllers = {
-      for (final i in _fields) i: TextEditingController(),
+      for (final String i in _fields) i: TextEditingController(),
     };
     super.initState();
   }
 
   @override
   void dispose() {
-    for (var element in _controllers.values) {
+    for (TextEditingController element in _controllers.values) {
       element.dispose();
     }
     super.dispose();
@@ -84,8 +85,8 @@ class _LoginFormState extends State<_PasswordForm> {
               labelText: '确认密码',
               hintText: '请再次输入新密码',
             ),
-            validator: (value) {
-              final result = passwordValidator(value);
+            validator: (String? value) {
+              final String? result = passwordValidator(value);
               if (result != null) {
                 return result;
               }
@@ -111,10 +112,14 @@ class _LoginFormState extends State<_PasswordForm> {
       return;
     }
 
-    final body = {for (final i in _controllers.entries) i.key: i.value.text};
+    final Map<String, String> body = {
+      for (final MapEntry<String, TextEditingController> i
+          in _controllers.entries)
+        i.key: i.value.text
+    };
     pb.collection('users').update(pb.authStore.model.id, body: body).then(
-      (value) {
-        return SharedPreferences.getInstance().then((prefs) {
+      (RecordModel value) {
+        return SharedPreferences.getInstance().then((SharedPreferences prefs) {
           pb.authStore.clear();
           prefs.clear();
           showSuccess(context, '修改成功');

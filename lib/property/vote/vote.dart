@@ -5,8 +5,8 @@ import 'package:smart_community/utils.dart';
 
 class PropertyVote extends StatefulWidget {
   const PropertyVote({
-    super.key,
     required this.communityId,
+    super.key,
     this.recordId,
   });
 
@@ -27,15 +27,16 @@ class _PropertyVoteState extends State<PropertyVote> {
   final List<String> _steps = ['发布投票', '修改投票'];
   int _index = 0;
 
-  final service = pb.collection('votes');
+  final RecordService service = pb.collection('votes');
 
   RecordModel? _record;
 
   @override
   void initState() {
-    _formKeys = List.generate(_steps.length, (index) => GlobalKey<FormState>());
+    _formKeys =
+        List.generate(_steps.length, (int index) => GlobalKey<FormState>());
     _controllers = {
-      for (final i in _fields) i: TextEditingController(),
+      for (final String i in _fields) i: TextEditingController(),
     };
     if (widget.recordId != null) {
       service.getOne(widget.recordId!).then(_setRecord);
@@ -45,7 +46,7 @@ class _PropertyVoteState extends State<PropertyVote> {
 
   @override
   void dispose() {
-    for (var i in _controllers.values) {
+    for (TextEditingController i in _controllers.values) {
       i.dispose();
     }
     super.dispose();
@@ -61,7 +62,8 @@ class _PropertyVoteState extends State<PropertyVote> {
       body: Stepper(
         type: StepperType.horizontal,
         currentStep: _index,
-        controlsBuilder: (context, details) => Container(),
+        controlsBuilder: (BuildContext context, ControlsDetails details) =>
+            Container(),
         steps: [
           for (int i = 0; i < _steps.length; ++i)
             Step(
@@ -75,17 +77,19 @@ class _PropertyVoteState extends State<PropertyVote> {
   }
 
   void _setRecord(RecordModel record) async {
-    for (final i in _controllers.entries) {
+    for (final MapEntry<String, TextEditingController> i
+        in _controllers.entries) {
       i.value.text = record.getStringValue(i.key);
     }
 
-    final options = record.getStringValue('options').split('\n');
-    final resultsFilter = 'voteId = "${record.id}"';
-    final results =
+    final List<String> options = record.getStringValue('options').split('\n');
+    final String resultsFilter = 'voteId = "${record.id}"';
+    final List<RecordModel> results =
         await pb.collection('results').getFullList(filter: resultsFilter);
-    ;
-    for (final i in options) {
-      counts![i] = results.where((e) => e.getStringValue('option') == i).length;
+    for (final String i in options) {
+      counts![i] = results
+          .where((RecordModel e) => e.getStringValue('option') == i)
+          .length;
     }
 
     setState(() {
@@ -96,7 +100,9 @@ class _PropertyVoteState extends State<PropertyVote> {
 
   Map<String, dynamic> _getBody() {
     final Map<String, dynamic> body = {
-      for (final i in _controllers.entries) i.key: i.value.text
+      for (final MapEntry<String, TextEditingController> i
+          in _controllers.entries)
+        i.key: i.value.text
     };
     body.addAll({
       'userId': pb.authStore.model!.id,
@@ -179,19 +185,22 @@ class _PropertyVoteState extends State<PropertyVote> {
               maxLines: null,
             )
           else
-            Container(
+            DecoratedBox(
               decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(8)),
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(8),
+              ),
               child: Column(
                 children: [
                   const SizedBox(height: 8),
                   const Text('投票结果'),
-                  for (final i in counts!.entries)
+                  for (final MapEntry<String, int> i in counts!.entries)
                     ListTile(
                       title: Text(i.key),
-                      trailing: Text('${i.value} 票',
-                          style: const TextStyle(fontSize: 16)),
+                      trailing: Text(
+                        '${i.value} 票',
+                        style: const TextStyle(fontSize: 16),
+                      ),
                     )
                 ],
               ),
@@ -215,7 +224,7 @@ class _PropertyVoteState extends State<PropertyVote> {
       IconButton(
         onPressed: () => showDialog(
           context: context,
-          builder: (context) {
+          builder: (BuildContext context) {
             return AlertDialog(
               surfaceTintColor: Theme.of(context).colorScheme.background,
               title: const Text('删除投票'),

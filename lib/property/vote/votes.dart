@@ -7,8 +7,8 @@ import 'package:smart_community/utils.dart';
 
 class PropertyVotes extends StatelessWidget {
   const PropertyVotes({
-    super.key,
     required this.communityId,
+    super.key,
   });
 
   final String communityId;
@@ -64,8 +64,8 @@ class PropertyVotes extends StatelessWidget {
   }
 
   Widget _recordState(RecordModel record) {
-    final start = record.getStringValue('start');
-    final end = record.getStringValue('end');
+    final String start = record.getStringValue('start');
+    final String end = record.getStringValue('end');
     const double fontSize = 16;
 
     if (start.isNotEmpty &&

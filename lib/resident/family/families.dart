@@ -7,8 +7,8 @@ import 'package:smart_community/utils.dart';
 
 class ResidentFamilies extends StatelessWidget {
   const ResidentFamilies({
-    super.key,
     required this.communityId,
+    super.key,
   });
 
   final String communityId;
@@ -58,7 +58,7 @@ class ResidentFamilies extends StatelessWidget {
   }
 
   Widget _recordState(RecordModel record) {
-    final state = record.getStringValue('state');
+    final String state = record.getStringValue('state');
     const double fontSize = 16;
 
     if (state == 'reviewing') {

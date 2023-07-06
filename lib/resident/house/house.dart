@@ -7,8 +7,8 @@ import 'package:smart_community/utils.dart';
 
 class ResidentHouse extends StatefulWidget {
   const ResidentHouse({
-    super.key,
     required this.communityId,
+    super.key,
     this.recordId,
   });
 
@@ -29,7 +29,7 @@ class _ResidentHouseState extends State<ResidentHouse> {
   final Map<String, int> _stateIndex = {'reviewing': 1, 'verified': 2};
   int _index = 0;
 
-  final service = pb.collection('houses');
+  final RecordService service = pb.collection('houses');
 
   RecordModel? _record;
   Map<String, dynamic>? _struct;
@@ -39,13 +39,17 @@ class _ResidentHouseState extends State<ResidentHouse> {
 
   @override
   void initState() {
-    _formKeys = List.generate(_steps.length, (index) => GlobalKey<FormState>());
+    _formKeys =
+        List.generate(_steps.length, (int index) => GlobalKey<FormState>());
     _controllers = {
-      for (final i in _fields) i: TextEditingController(),
+      for (final String i in _fields) i: TextEditingController(),
     };
 
-    pb.collection('communities').getOne(widget.communityId).then((value) {
-      final struct = value.getStringValue('struct');
+    pb
+        .collection('communities')
+        .getOne(widget.communityId)
+        .then((RecordModel value) {
+      final String struct = value.getStringValue('struct');
 
       setState(() {
         _struct = struct.isNotEmpty
@@ -63,7 +67,7 @@ class _ResidentHouseState extends State<ResidentHouse> {
 
   @override
   void dispose() {
-    for (var i in _controllers.values) {
+    for (TextEditingController i in _controllers.values) {
       i.dispose();
     }
     super.dispose();
@@ -79,7 +83,8 @@ class _ResidentHouseState extends State<ResidentHouse> {
       body: Stepper(
         type: StepperType.horizontal,
         currentStep: _index,
-        controlsBuilder: (context, details) => Container(),
+        controlsBuilder: (BuildContext context, ControlsDetails details) =>
+            Container(),
         steps: [
           for (int i = 0; i < _steps.length; ++i)
             Step(
@@ -93,8 +98,9 @@ class _ResidentHouseState extends State<ResidentHouse> {
   }
 
   void _setRecord(RecordModel record) {
-    final state = record.getStringValue('state');
-    for (final i in _controllers.entries) {
+    final String state = record.getStringValue('state');
+    for (final MapEntry<String, TextEditingController> i
+        in _controllers.entries) {
       i.value.text = record.getStringValue(i.key);
     }
 
@@ -123,7 +129,9 @@ class _ResidentHouseState extends State<ResidentHouse> {
 
   Map<String, dynamic> _getBody() {
     final Map<String, dynamic> body = {
-      for (final i in _controllers.entries) i.key: i.value.text
+      for (final MapEntry<String, TextEditingController> i
+          in _controllers.entries)
+        i.key: i.value.text
     };
     body.addAll({
       'userId': pb.authStore.model!.id,
@@ -177,12 +185,14 @@ class _ResidentHouseState extends State<ResidentHouse> {
                   decoration: const InputDecoration(labelText: '楼幢'),
                   value: _building,
                   items: _struct?.keys
-                      .map((e) => DropdownMenuItem(
-                            value: e,
-                            child: Text(e),
-                          ))
+                      .map(
+                        (String e) => DropdownMenuItem(
+                          value: e,
+                          child: Text(e),
+                        ),
+                      )
                       .toList(),
-                  onChanged: (value) {
+                  onChanged: (String? value) {
                     setState(() {
                       _building = value;
                       _floor = null;
@@ -199,12 +209,14 @@ class _ResidentHouseState extends State<ResidentHouse> {
                   value: _floor,
                   items: (_struct?[_building] as Map<String, dynamic>?)
                       ?.keys
-                      .map((e) => DropdownMenuItem(
-                            value: e,
-                            child: Text(e),
-                          ))
+                      .map(
+                        (String e) => DropdownMenuItem(
+                          value: e,
+                          child: Text(e),
+                        ),
+                      )
                       .toList(),
-                  onChanged: (value) {
+                  onChanged: (String? value) {
                     setState(() {
                       _floor = value;
                       _room = null;
@@ -219,12 +231,14 @@ class _ResidentHouseState extends State<ResidentHouse> {
             decoration: const InputDecoration(labelText: '房间号'),
             value: _room,
             items: (_struct?[_building]?[_floor] as List?)
-                ?.map((e) => DropdownMenuItem(
-                      value: e as String,
-                      child: Text(e),
-                    ))
+                ?.map(
+                  (e) => DropdownMenuItem(
+                    value: e as String,
+                    child: Text(e),
+                  ),
+                )
                 .toList(),
-            onChanged: (value) {
+            onChanged: (String? value) {
               setState(() {
                 _room = value;
               });
@@ -250,7 +264,7 @@ class _ResidentHouseState extends State<ResidentHouse> {
       IconButton(
         onPressed: () => showDialog(
           context: context,
-          builder: (context) {
+          builder: (BuildContext context) {
             return AlertDialog(
               surfaceTintColor: Theme.of(context).colorScheme.background,
               title: const Text('删除房屋'),

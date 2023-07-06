@@ -5,8 +5,8 @@ import 'package:smart_community/utils.dart';
 
 class PropertyCar extends StatefulWidget {
   const PropertyCar({
-    super.key,
     required this.communityId,
+    super.key,
     this.recordId,
   });
 
@@ -22,7 +22,7 @@ class _PropertyCarState extends State<PropertyCar> {
 
   final List<String> _userFields = ['name'];
   Map<String, TextEditingController> _userControllers = {};
-  final List<String> _fields = ['name', 'plate'];
+  final List<String> _fields = ['name', 'plate', 'area', 'zone', 'position'];
   Map<String, TextEditingController> _controllers = {};
 
   final List<String> _steps = ['填写信息', '物业审核', '审核通过'];
@@ -33,19 +33,20 @@ class _PropertyCarState extends State<PropertyCar> {
   };
   int _index = 1;
 
-  final _service = pb.collection('cars');
-  static const String _expand = 'userId';
+  final RecordService _service = pb.collection('cars');
+  static const String _expand = 'userId,houseId';
 
   RecordModel? _record;
 
   @override
   void initState() {
-    _formKeys = List.generate(_steps.length, (index) => GlobalKey<FormState>());
+    _formKeys =
+        List.generate(_steps.length, (int index) => GlobalKey<FormState>());
     _userControllers = {
-      for (final i in _userFields) i: TextEditingController(),
+      for (final String i in _userFields) i: TextEditingController(),
     };
     _controllers = {
-      for (final i in _fields) i: TextEditingController(),
+      for (final String i in _fields) i: TextEditingController(),
     };
 
     if (widget.recordId != null) {
@@ -56,10 +57,10 @@ class _PropertyCarState extends State<PropertyCar> {
 
   @override
   void dispose() {
-    for (var i in _userControllers.values) {
+    for (TextEditingController i in _userControllers.values) {
       i.dispose();
     }
-    for (var i in _controllers.values) {
+    for (TextEditingController i in _controllers.values) {
       i.dispose();
     }
     super.dispose();
@@ -75,7 +76,8 @@ class _PropertyCarState extends State<PropertyCar> {
       body: Stepper(
         type: StepperType.horizontal,
         currentStep: _index,
-        controlsBuilder: (context, details) => Container(),
+        controlsBuilder: (BuildContext context, ControlsDetails details) =>
+            Container(),
         steps: [
           for (int i = 0; i < _steps.length; ++i)
             Step(
@@ -89,14 +91,16 @@ class _PropertyCarState extends State<PropertyCar> {
   }
 
   void _setRecord(RecordModel record) {
-    for (final i in _controllers.entries) {
+    for (final MapEntry<String, TextEditingController> i
+        in _controllers.entries) {
       i.value.text = record.getStringValue(i.key);
     }
-    for (final i in _userControllers.entries) {
+    for (final MapEntry<String, TextEditingController> i
+        in _userControllers.entries) {
       i.value.text = record.expand['userId']!.first.getStringValue(i.key);
     }
 
-    final state = record.getStringValue('state');
+    final String state = record.getStringValue('state');
     setState(() {
       _record = record;
       _index = _stateIndex[state] ?? 0;
@@ -120,41 +124,68 @@ class _PropertyCarState extends State<PropertyCar> {
   }
 
   Widget _form({required int index}) {
-    const fieldTextStyle = TextStyle(color: Colors.black);
-    const fieldBorder = UnderlineInputBorder();
     return Form(
       key: _formKeys[index],
       child: Column(
         children: [
           TextFormField(
-            enabled: false,
+            readOnly: true,
             controller: _userControllers['name'],
             decoration: const InputDecoration(
               labelText: '姓名',
-              labelStyle: fieldTextStyle,
-              disabledBorder: fieldBorder,
             ),
-            style: fieldTextStyle,
           ),
           TextFormField(
-            enabled: false,
+            readOnly: true,
             controller: _controllers['name'],
             decoration: const InputDecoration(
               labelText: '名称',
-              labelStyle: fieldTextStyle,
-              disabledBorder: fieldBorder,
             ),
-            style: fieldTextStyle,
           ),
           TextFormField(
-            enabled: false,
+            readOnly: true,
             controller: _controllers['plate'],
             decoration: const InputDecoration(
               labelText: '车牌号',
-              labelStyle: fieldTextStyle,
-              disabledBorder: fieldBorder,
             ),
-            style: fieldTextStyle,
+          ),
+          Row(
+            children: [
+              Flexible(
+                child: TextFormField(
+                  readOnly: true,
+                  controller: _controllers['area'],
+                  decoration: const InputDecoration(
+                    labelText: '区域',
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Flexible(
+                child: TextFormField(
+                  readOnly: true,
+                  controller: _controllers['zone'],
+                  decoration: const InputDecoration(
+                    labelText: '分区',
+                  ),
+                ),
+              ),
+            ],
+          ),
+          TextFormField(
+            readOnly: true,
+            controller: _controllers['position'],
+            decoration: const InputDecoration(
+              labelText: '车位',
+            ),
+          ),
+          TextFormField(
+            readOnly: true,
+            initialValue:
+                _record?.expand['houseId']?.first.getStringValue('location'),
+            decoration: const InputDecoration(
+              labelText: '房屋',
+            ),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
@@ -180,7 +211,7 @@ class _PropertyCarState extends State<PropertyCar> {
       IconButton(
         onPressed: () => showDialog(
           context: context,
-          builder: (context) {
+          builder: (BuildContext context) {
             return AlertDialog(
               surfaceTintColor: Theme.of(context).colorScheme.background,
               title: const Text('删除车辆'),

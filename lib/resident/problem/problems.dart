@@ -7,8 +7,8 @@ import 'package:smart_community/utils.dart';
 
 class ResidentProblems extends StatelessWidget {
   const ResidentProblems({
-    super.key,
     required this.communityId,
+    super.key,
   });
 
   final String communityId;
@@ -44,7 +44,7 @@ class ResidentProblems extends StatelessWidget {
     void Function() refreshRecords,
     RecordModel record,
   ) {
-    final remark = record.getStringValue('remark');
+    final String remark = record.getStringValue('remark');
 
     return ListTile(
       title: Text(record.getStringValue('title')),
@@ -74,7 +74,7 @@ class ResidentProblems extends StatelessWidget {
   }
 
   Widget _recordState(RecordModel record) {
-    final state = record.getStringValue('state');
+    final String state = record.getStringValue('state');
     const double fontSize = 16;
 
     if (state == 'pending') {

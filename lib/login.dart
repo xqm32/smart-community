@@ -46,13 +46,13 @@ class _LoginFormState extends State<LoginForm> {
   @override
   void initState() {
     _controllers = {
-      for (final i in _fields) i: TextEditingController(),
+      for (final String i in _fields) i: TextEditingController(),
     };
 
-    SharedPreferences.getInstance().then((prefs) {
-      final username = prefs.getString('username');
-      final password = prefs.getString('password');
-      final selectedRole = prefs.getString('role');
+    SharedPreferences.getInstance().then((SharedPreferences prefs) {
+      final String? username = prefs.getString('username');
+      final String? password = prefs.getString('password');
+      final String? selectedRole = prefs.getString('role');
 
       if (username == null || password == null || selectedRole == null) {
         return;
@@ -66,7 +66,7 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   void dispose() {
-    for (var i in _controllers.values) {
+    for (TextEditingController i in _controllers.values) {
       i.dispose();
     }
     super.dispose();
@@ -126,7 +126,10 @@ class _LoginFormState extends State<LoginForm> {
     pb
         .collection('users')
         .authWithPassword(username, password)
-        .then((record) => _didLogin(record, username, password, selectedRole))
+        .then(
+          (RecordAuth record) =>
+              _didLogin(record, username, password, selectedRole),
+        )
         .catchError(_onError);
   }
 
@@ -136,10 +139,10 @@ class _LoginFormState extends State<LoginForm> {
     String password,
     String selectedRole,
   ) {
-    final role = record.record!.getListValue('role');
+    final List role = record.record!.getListValue('role');
 
     if (!role.contains(selectedRole)) {
-      SharedPreferences.getInstance().then((prefs) {
+      SharedPreferences.getInstance().then((SharedPreferences prefs) {
         if (prefs.containsKey('role')) {
           prefs.clear();
           showError(context, '角色令牌过期');
@@ -151,7 +154,7 @@ class _LoginFormState extends State<LoginForm> {
       return;
     }
 
-    SharedPreferences.getInstance().then((prefs) {
+    SharedPreferences.getInstance().then((SharedPreferences prefs) {
       prefs.setString('username', username);
       prefs.setString('password', password);
       prefs.setString('role', selectedRole);
@@ -165,7 +168,7 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   void _onError(error) {
-    SharedPreferences.getInstance().then((prefs) {
+    SharedPreferences.getInstance().then((SharedPreferences prefs) {
       if (error.statusCode == 0) {
         showError(context, '网络错误');
       } else if (error.statusCode == 400) {
@@ -194,7 +197,8 @@ class _LoginFormState extends State<LoginForm> {
         ),
       ],
       selected: {_role},
-      onSelectionChanged: (value) => setState(() => _role = value.first),
+      onSelectionChanged: (Set<String> value) =>
+          setState(() => _role = value.first),
     );
   }
 }

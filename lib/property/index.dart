@@ -16,8 +16,8 @@ import 'package:smart_community/utils.dart';
 
 class PropertyIndex extends StatefulWidget {
   const PropertyIndex({
-    super.key,
     required this.communityId,
+    super.key,
   });
 
   final String communityId;
@@ -34,13 +34,15 @@ class _PropertyIndexState extends State<PropertyIndex> {
   @override
   void initState() {
     announcements = pb.collection('announcements').getFullList(
-        filter: 'communityId = "${widget.communityId}"', sort: '-created');
+          filter: 'communityId = "${widget.communityId}"',
+          sort: '-created',
+        );
 
-    final residentsFilter =
+    final String residentsFilter =
         'communityId = "${widget.communityId}" && userId = "${pb.authStore.model!.id}"';
 
     pb.collection('propertys').getFullList(filter: residentsFilter).then(
-      (value) {
+      (List<RecordModel> value) {
         setState(() {
           _state =
               value.isNotEmpty ? value.first.getStringValue('state') : null;
@@ -54,13 +56,15 @@ class _PropertyIndexState extends State<PropertyIndex> {
   @override
   void didUpdateWidget(covariant PropertyIndex oldWidget) {
     announcements = pb.collection('announcements').getFullList(
-        filter: 'communityId = "${widget.communityId}"', sort: '-created');
+          filter: 'communityId = "${widget.communityId}"',
+          sort: '-created',
+        );
 
-    final residentsFilter =
+    final String residentsFilter =
         'communityId = "${widget.communityId}" && userId = "${pb.authStore.model!.id}"';
 
     pb.collection('propertys').getFullList(filter: residentsFilter).then(
-      (value) {
+      (List<RecordModel> value) {
         setState(() {
           _state =
               value.isNotEmpty ? value.first.getStringValue('state') : null;
@@ -112,7 +116,10 @@ class _PropertyIndexState extends State<PropertyIndex> {
           children: [
             FutureBuilder(
               future: announcements,
-              builder: (context, snapshot) {
+              builder: (
+                BuildContext context,
+                AsyncSnapshot<List<RecordModel>> snapshot,
+              ) {
                 if (snapshot.hasData) {
                   return PropertyIndexAnnouncement(
                     communityId: widget.communityId,
@@ -132,7 +139,10 @@ class _PropertyIndexState extends State<PropertyIndex> {
             const Divider(height: 8),
             FutureBuilder(
               future: announcements,
-              builder: (context, snapshot) {
+              builder: (
+                BuildContext context,
+                AsyncSnapshot<List<RecordModel>> snapshot,
+              ) {
                 if (snapshot.hasData) {
                   return PropertyIndexAnnouncements(
                     communityId: widget.communityId,
@@ -154,9 +164,9 @@ class _PropertyIndexState extends State<PropertyIndex> {
 
 class PropertyIndexAnnouncement extends StatelessWidget {
   const PropertyIndexAnnouncement({
-    super.key,
     required this.communityId,
     required this.announcements,
+    super.key,
   });
 
   final String communityId;
@@ -189,8 +199,8 @@ class PropertyIndexAnnouncement extends StatelessWidget {
 
 class PropertyIndexService extends StatelessWidget {
   const PropertyIndexService({
-    super.key,
     required this.communityId,
+    super.key,
   });
 
   final String communityId;
@@ -241,15 +251,17 @@ class PropertyIndexService extends StatelessWidget {
               color: Colors.cyan,
             ),
             PropertyIndexServiceIcon(
-              onPressed: () => navPush(
-                  context, PropertyVotes(communityId: communityId)),
+              onPressed: () =>
+                  navPush(context, PropertyVotes(communityId: communityId)),
               icon: Icons.how_to_vote,
               text: '支出投票管理',
               color: Colors.indigo,
             ),
             PropertyIndexServiceIcon(
               onPressed: () => navPush(
-                  context, PropertyInformation(communityId: communityId)),
+                context,
+                PropertyInformation(communityId: communityId),
+              ),
               icon: Icons.settings,
               text: '小区信息配置',
               color: Colors.lightGreen,
@@ -270,10 +282,10 @@ class PropertyIndexService extends StatelessWidget {
 
 class PropertyIndexServiceIcon extends StatelessWidget {
   const PropertyIndexServiceIcon({
-    super.key,
     required this.onPressed,
     required this.icon,
     required this.text,
+    super.key,
     this.color,
   });
 
@@ -302,9 +314,9 @@ class PropertyIndexServiceIcon extends StatelessWidget {
 
 class PropertyIndexAnnouncements extends StatelessWidget {
   const PropertyIndexAnnouncements({
-    super.key,
     required this.communityId,
     required this.announcements,
+    super.key,
   });
 
   final String communityId;
@@ -331,15 +343,17 @@ class PropertyIndexAnnouncements extends StatelessWidget {
           Expanded(
             child: ListView.builder(
               itemCount: announcements.length,
-              itemBuilder: (context, index) {
-                final record = announcements[index];
+              itemBuilder: (BuildContext context, int index) {
+                final RecordModel record = announcements[index];
                 return Announcement(
                   record: record,
                   onTap: () {
                     navPush(
                       context,
                       PropertyAnnouncement(
-                          communityId: communityId, recordId: record.id),
+                        communityId: communityId,
+                        recordId: record.id,
+                      ),
                     );
                   },
                 );

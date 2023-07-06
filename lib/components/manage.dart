@@ -5,11 +5,11 @@ import 'package:smart_community/components/search.dart';
 
 class Manage extends StatefulWidget {
   const Manage({
-    super.key,
     required this.title,
     required this.fetchRecords,
     required this.toElement,
     required this.filter,
+    super.key,
     this.onAddPressed,
   });
 
@@ -54,12 +54,15 @@ class _ManageState extends State<Manage> {
           ),
           FutureBuilder(
             future: _records,
-            builder: (context, snapshot) {
+            builder: (
+              BuildContext context,
+              AsyncSnapshot<List<RecordModel>> snapshot,
+            ) {
               if (snapshot.hasData) {
                 return SearchAction(
                   records: snapshot.data!,
                   filter: widget.filter,
-                  toElement: (record) =>
+                  toElement: (RecordModel record) =>
                       widget.toElement(context, refreshRecords, record),
                 );
               }
@@ -70,14 +73,16 @@ class _ManageState extends State<Manage> {
       ),
       body: FutureBuilder(
         future: _records,
-        builder: (context, snapshot) {
+        builder:
+            (BuildContext context, AsyncSnapshot<List<RecordModel>> snapshot) {
           if (snapshot.hasData) {
             return RecordList(
-                records: snapshot.data!,
-                itemBuilder: (context, index) {
-                  final record = snapshot.data!.elementAt(index);
-                  return widget.toElement(context, refreshRecords, record);
-                });
+              records: snapshot.data!,
+              itemBuilder: (BuildContext context, int index) {
+                final RecordModel record = snapshot.data!.elementAt(index);
+                return widget.toElement(context, refreshRecords, record);
+              },
+            );
           }
           return const LinearProgressIndicator();
         },

@@ -5,8 +5,8 @@ import 'package:smart_community/utils.dart';
 
 class ResidentFamily extends StatefulWidget {
   const ResidentFamily({
-    super.key,
     required this.communityId,
+    super.key,
     this.recordId,
   });
 
@@ -27,15 +27,16 @@ class _ResidentFamilyState extends State<ResidentFamily> {
   final Map<String, int> _stateIndex = {'reviewing': 1, 'verified': 2};
   int _index = 0;
 
-  final service = pb.collection('families');
+  final RecordService service = pb.collection('families');
 
   RecordModel? _record;
 
   @override
   void initState() {
-    _formKeys = List.generate(_steps.length, (index) => GlobalKey<FormState>());
+    _formKeys =
+        List.generate(_steps.length, (int index) => GlobalKey<FormState>());
     _controllers = {
-      for (final i in _fields) i: TextEditingController(),
+      for (final String i in _fields) i: TextEditingController(),
     };
     if (widget.recordId != null) {
       service.getOne(widget.recordId!).then(_setRecord);
@@ -45,7 +46,7 @@ class _ResidentFamilyState extends State<ResidentFamily> {
 
   @override
   void dispose() {
-    for (var i in _controllers.values) {
+    for (TextEditingController i in _controllers.values) {
       i.dispose();
     }
     super.dispose();
@@ -61,7 +62,8 @@ class _ResidentFamilyState extends State<ResidentFamily> {
       body: Stepper(
         type: StepperType.horizontal,
         currentStep: _index,
-        controlsBuilder: (context, details) => Container(),
+        controlsBuilder: (BuildContext context, ControlsDetails details) =>
+            Container(),
         steps: [
           for (int i = 0; i < _steps.length; ++i)
             Step(
@@ -75,8 +77,9 @@ class _ResidentFamilyState extends State<ResidentFamily> {
   }
 
   void _setRecord(RecordModel record) {
-    final state = record.getStringValue('state');
-    for (final i in _controllers.entries) {
+    final String state = record.getStringValue('state');
+    for (final MapEntry<String, TextEditingController> i
+        in _controllers.entries) {
       i.value.text = record.getStringValue(i.key);
     }
     setState(() {
@@ -87,7 +90,9 @@ class _ResidentFamilyState extends State<ResidentFamily> {
 
   Map<String, dynamic> _getBody() {
     final Map<String, dynamic> body = {
-      for (final i in _controllers.entries) i.key: i.value.text
+      for (final MapEntry<String, TextEditingController> i
+          in _controllers.entries)
+        i.key: i.value.text
     };
     body.addAll({
       'userId': pb.authStore.model!.id,
@@ -164,7 +169,7 @@ class _ResidentFamilyState extends State<ResidentFamily> {
       IconButton(
         onPressed: () => showDialog(
           context: context,
-          builder: (context) {
+          builder: (BuildContext context) {
             return AlertDialog(
               surfaceTintColor: Theme.of(context).colorScheme.background,
               title: const Text('删除家人'),

@@ -5,9 +5,9 @@ import 'package:smart_community/utils.dart';
 
 class Announcement extends StatelessWidget {
   const Announcement({
-    super.key,
     required this.record,
     required this.onTap,
+    super.key,
   });
 
   final RecordModel record;
@@ -15,7 +15,7 @@ class Announcement extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final author = record.getStringValue('author');
+    final String author = record.getStringValue('author');
 
     return ListTile(
       title: Text(record.getStringValue('title')),

@@ -6,8 +6,8 @@ import 'package:smart_community/utils.dart';
 
 class PropertyInformation extends StatefulWidget {
   const PropertyInformation({
-    super.key,
     required this.communityId,
+    super.key,
   });
 
   final String communityId;
@@ -25,15 +25,16 @@ class _PropertyInformationState extends State<PropertyInformation> {
   final List<String> _steps = ['配置信息', '修改信息'];
   int _index = 0;
 
-  final service = pb.collection('communities');
+  final RecordService service = pb.collection('communities');
 
   RecordModel? _record;
 
   @override
   void initState() {
-    _formKeys = List.generate(_steps.length, (index) => GlobalKey<FormState>());
+    _formKeys =
+        List.generate(_steps.length, (int index) => GlobalKey<FormState>());
     _controllers = {
-      for (final i in _fields) i: TextEditingController(),
+      for (final String i in _fields) i: TextEditingController(),
     };
     service.getOne(widget.communityId).then(_setRecord);
     super.initState();
@@ -41,7 +42,7 @@ class _PropertyInformationState extends State<PropertyInformation> {
 
   @override
   void dispose() {
-    for (var i in _controllers.values) {
+    for (TextEditingController i in _controllers.values) {
       i.dispose();
     }
     super.dispose();
@@ -57,7 +58,8 @@ class _PropertyInformationState extends State<PropertyInformation> {
       body: Stepper(
         type: StepperType.horizontal,
         currentStep: _index,
-        controlsBuilder: (context, details) => Container(),
+        controlsBuilder: (BuildContext context, ControlsDetails details) =>
+            Container(),
         steps: [
           for (int i = 0; i < _steps.length; ++i)
             Step(
@@ -71,11 +73,12 @@ class _PropertyInformationState extends State<PropertyInformation> {
   }
 
   void _setRecord(RecordModel record) {
-    final index = record.getStringValue('struct').isNotEmpty &&
+    final int index = record.getStringValue('struct').isNotEmpty &&
             record.getStringValue('parking').isNotEmpty
         ? 1
         : 0;
-    for (final i in _controllers.entries) {
+    for (final MapEntry<String, TextEditingController> i
+        in _controllers.entries) {
       i.value.text = record.getStringValue(i.key);
     }
     setState(() {
@@ -86,7 +89,9 @@ class _PropertyInformationState extends State<PropertyInformation> {
 
   Map<String, dynamic> _getBody() {
     final Map<String, dynamic> body = {
-      for (final i in _controllers.entries) i.key: i.value.text
+      for (final MapEntry<String, TextEditingController> i
+          in _controllers.entries)
+        i.key: i.value.text
     };
     body.addAll({
       'userId': pb.authStore.model!.id,
@@ -163,7 +168,7 @@ class _PropertyInformationState extends State<PropertyInformation> {
       TextButton(
         onPressed: () => showDialog(
           context: context,
-          builder: (context) {
+          builder: (BuildContext context) {
             return SimpleDialog(
               surfaceTintColor: Theme.of(context).colorScheme.background,
               children: [
@@ -196,7 +201,7 @@ class _PropertyInformationState extends State<PropertyInformation> {
     final XFile? file =
         await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
     if (file != null) {
-      final string = await file.readAsString();
+      final String string = await file.readAsString();
       _controllers[field]!.text = string;
     }
   }

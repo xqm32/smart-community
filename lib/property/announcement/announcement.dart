@@ -5,8 +5,8 @@ import 'package:smart_community/utils.dart';
 
 class PropertyAnnouncement extends StatefulWidget {
   const PropertyAnnouncement({
-    super.key,
     required this.communityId,
+    super.key,
     this.recordId,
   });
 
@@ -26,15 +26,16 @@ class _PropertyAnnouncementState extends State<PropertyAnnouncement> {
   final List<String> _steps = ['发布公告', '修改公告'];
   int _index = 0;
 
-  final service = pb.collection('announcements');
+  final RecordService service = pb.collection('announcements');
 
   RecordModel? _record;
 
   @override
   void initState() {
-    _formKeys = List.generate(_steps.length, (index) => GlobalKey<FormState>());
+    _formKeys =
+        List.generate(_steps.length, (int index) => GlobalKey<FormState>());
     _controllers = {
-      for (final i in _fields) i: TextEditingController(),
+      for (final String i in _fields) i: TextEditingController(),
     };
     if (widget.recordId != null) {
       service.getOne(widget.recordId!).then(_setRecord);
@@ -44,7 +45,7 @@ class _PropertyAnnouncementState extends State<PropertyAnnouncement> {
 
   @override
   void dispose() {
-    for (var i in _controllers.values) {
+    for (TextEditingController i in _controllers.values) {
       i.dispose();
     }
     super.dispose();
@@ -60,7 +61,8 @@ class _PropertyAnnouncementState extends State<PropertyAnnouncement> {
       body: Stepper(
         type: StepperType.horizontal,
         currentStep: _index,
-        controlsBuilder: (context, details) => Container(),
+        controlsBuilder: (BuildContext context, ControlsDetails details) =>
+            Container(),
         steps: [
           for (int i = 0; i < _steps.length; ++i)
             Step(
@@ -74,7 +76,8 @@ class _PropertyAnnouncementState extends State<PropertyAnnouncement> {
   }
 
   void _setRecord(RecordModel record) {
-    for (final i in _controllers.entries) {
+    for (final MapEntry<String, TextEditingController> i
+        in _controllers.entries) {
       i.value.text = record.getStringValue(i.key);
     }
     setState(() {
@@ -85,7 +88,9 @@ class _PropertyAnnouncementState extends State<PropertyAnnouncement> {
 
   Map<String, dynamic> _getBody() {
     final Map<String, dynamic> body = {
-      for (final i in _controllers.entries) i.key: i.value.text
+      for (final MapEntry<String, TextEditingController> i
+          in _controllers.entries)
+        i.key: i.value.text
     };
     body.addAll({
       'userId': pb.authStore.model!.id,
@@ -165,7 +170,7 @@ class _PropertyAnnouncementState extends State<PropertyAnnouncement> {
       IconButton(
         onPressed: () => showDialog(
           context: context,
-          builder: (context) {
+          builder: (BuildContext context) {
             return AlertDialog(
               surfaceTintColor: Theme.of(context).colorScheme.background,
               title: const Text('删除公告'),

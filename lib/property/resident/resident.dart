@@ -5,8 +5,8 @@ import 'package:smart_community/utils.dart';
 
 class PropertyResident extends StatefulWidget {
   const PropertyResident({
-    super.key,
     required this.communityId,
+    super.key,
     this.recordId,
   });
 
@@ -33,19 +33,20 @@ class _PropertyResidentState extends State<PropertyResident> {
   };
   int _index = 1;
 
-  final _service = pb.collection('residents');
+  final RecordService _service = pb.collection('residents');
   static const String _expand = 'userId';
 
   RecordModel? _record;
 
   @override
   void initState() {
-    _formKeys = List.generate(_steps.length, (index) => GlobalKey<FormState>());
+    _formKeys =
+        List.generate(_steps.length, (int index) => GlobalKey<FormState>());
     _userControllers = {
-      for (final i in _userFields) i: TextEditingController(),
+      for (final String i in _userFields) i: TextEditingController(),
     };
     _controllers = {
-      for (final i in _fields) i: TextEditingController(),
+      for (final String i in _fields) i: TextEditingController(),
     };
 
     if (widget.recordId != null) {
@@ -56,10 +57,10 @@ class _PropertyResidentState extends State<PropertyResident> {
 
   @override
   void dispose() {
-    for (var i in _userControllers.values) {
+    for (TextEditingController i in _userControllers.values) {
       i.dispose();
     }
-    for (var i in _controllers.values) {
+    for (TextEditingController i in _controllers.values) {
       i.dispose();
     }
     super.dispose();
@@ -75,7 +76,8 @@ class _PropertyResidentState extends State<PropertyResident> {
       body: Stepper(
         type: StepperType.horizontal,
         currentStep: _index,
-        controlsBuilder: (context, details) => Container(),
+        controlsBuilder: (BuildContext context, ControlsDetails details) =>
+            Container(),
         steps: [
           for (int i = 0; i < _steps.length; ++i)
             Step(
@@ -89,14 +91,16 @@ class _PropertyResidentState extends State<PropertyResident> {
   }
 
   void _setRecord(RecordModel record) {
-    for (final i in _controllers.entries) {
+    for (final MapEntry<String, TextEditingController> i
+        in _controllers.entries) {
       i.value.text = record.getStringValue(i.key);
     }
-    for (final i in _userControllers.entries) {
+    for (final MapEntry<String, TextEditingController> i
+        in _userControllers.entries) {
       i.value.text = record.expand['userId']!.first.getStringValue(i.key);
     }
 
-    final state = record.getStringValue('state');
+    final String state = record.getStringValue('state');
     setState(() {
       _record = record;
       _index = _stateIndex[state] ?? 0;
@@ -120,41 +124,30 @@ class _PropertyResidentState extends State<PropertyResident> {
   }
 
   Widget _form({required int index}) {
-    const fieldTextStyle = TextStyle(color: Colors.black);
-    const fieldBorder = UnderlineInputBorder();
     return Form(
       key: _formKeys[index],
       child: Column(
         children: [
           TextFormField(
-            enabled: false,
+            readOnly: true,
             controller: _userControllers['name'],
             decoration: const InputDecoration(
               labelText: '姓名',
-              labelStyle: fieldTextStyle,
-              disabledBorder: fieldBorder,
             ),
-            style: fieldTextStyle,
           ),
           TextFormField(
-            enabled: false,
+            readOnly: true,
             controller: _userControllers['identity'],
             decoration: const InputDecoration(
               labelText: '身份证号',
-              labelStyle: fieldTextStyle,
-              disabledBorder: fieldBorder,
             ),
-            style: fieldTextStyle,
           ),
           TextFormField(
-            enabled: false,
+            readOnly: true,
             controller: _userControllers['phone'],
             decoration: const InputDecoration(
               labelText: '手机号',
-              labelStyle: fieldTextStyle,
-              disabledBorder: fieldBorder,
             ),
-            style: fieldTextStyle,
           ),
           const SizedBox(height: 16),
           Container(
@@ -195,7 +188,7 @@ class _PropertyResidentState extends State<PropertyResident> {
       IconButton(
         onPressed: () => showDialog(
           context: context,
-          builder: (context) {
+          builder: (BuildContext context) {
             return AlertDialog(
               surfaceTintColor: Theme.of(context).colorScheme.background,
               title: const Text('删除居民'),

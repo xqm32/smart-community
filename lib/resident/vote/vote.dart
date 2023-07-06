@@ -6,9 +6,9 @@ import 'package:smart_community/utils.dart';
 
 class ResidentVote extends StatefulWidget {
   const ResidentVote({
-    super.key,
     required this.communityId,
     required this.recordId,
+    super.key,
   });
 
   final String communityId;
@@ -27,7 +27,7 @@ class _ResidentVoteState extends State<ResidentVote> {
   final List<String> _steps = ['投票', '查看投票'];
   int _index = 0;
 
-  final service = pb.collection('votes');
+  final RecordService service = pb.collection('votes');
 
   RecordModel? _record;
   RecordModel? _result;
@@ -35,9 +35,10 @@ class _ResidentVoteState extends State<ResidentVote> {
 
   @override
   void initState() {
-    _formKeys = List.generate(_steps.length, (index) => GlobalKey<FormState>());
+    _formKeys =
+        List.generate(_steps.length, (int index) => GlobalKey<FormState>());
     _controllers = {
-      for (final i in _fields) i: TextEditingController(),
+      for (final String i in _fields) i: TextEditingController(),
     };
     service.getOne(widget.recordId).then(_setRecord);
     super.initState();
@@ -45,7 +46,7 @@ class _ResidentVoteState extends State<ResidentVote> {
 
   @override
   void dispose() {
-    for (var i in _controllers.values) {
+    for (TextEditingController i in _controllers.values) {
       i.dispose();
     }
     super.dispose();
@@ -61,7 +62,8 @@ class _ResidentVoteState extends State<ResidentVote> {
       body: Stepper(
         type: StepperType.horizontal,
         currentStep: _index,
-        controlsBuilder: (context, details) => Container(),
+        controlsBuilder: (BuildContext context, ControlsDetails details) =>
+            Container(),
         steps: [
           for (int i = 0; i < _steps.length; ++i)
             Step(
@@ -78,16 +80,17 @@ class _ResidentVoteState extends State<ResidentVote> {
     int index = 0;
     RecordModel? result;
 
-    final resultsFilter =
+    final String resultsFilter =
         'voteId = "${widget.recordId}" && userId = "${pb.authStore.model!.id}"';
-    final results =
+    final List<RecordModel> results =
         await pb.collection('results').getFullList(filter: resultsFilter);
     if (results.isNotEmpty) {
       result = results.first;
       index = 1;
     }
 
-    for (final i in _controllers.entries) {
+    for (final MapEntry<String, TextEditingController> i
+        in _controllers.entries) {
       i.value.text = record.getStringValue(i.key);
     }
     setState(() {
@@ -122,13 +125,19 @@ class _ResidentVoteState extends State<ResidentVote> {
       pb
           .collection('results')
           .create(body: _getBody())
-          .then((value) => service.getOne(widget.recordId).then(_setRecord))
+          .then(
+            (RecordModel value) =>
+                service.getOne(widget.recordId).then(_setRecord),
+          )
           .catchError((error) => showException(context, error));
     } else {
       pb
           .collection('results')
           .update(_result!.id, body: _getBody())
-          .then((value) => service.getOne(widget.recordId).then(_setRecord))
+          .then(
+            (RecordModel value) =>
+                service.getOne(widget.recordId).then(_setRecord),
+          )
           .catchError((error) => showException(context, error));
     }
   }
@@ -139,10 +148,11 @@ class _ResidentVoteState extends State<ResidentVote> {
       child: Column(
         children: [
           if (_record != null)
-            Container(
+            DecoratedBox(
               decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(8)),
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(8),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
@@ -213,12 +223,14 @@ class _ResidentVoteState extends State<ResidentVote> {
             items: _record
                 ?.getStringValue('options')
                 .split('\n')
-                .map((e) => DropdownMenuItem(
-                      value: e,
-                      child: Text(e),
-                    ))
+                .map(
+                  (String e) => DropdownMenuItem(
+                    value: e,
+                    child: Text(e),
+                  ),
+                )
                 .toList(),
-            onChanged: (value) {
+            onChanged: (String? value) {
               setState(() {
                 _option = value;
               });
@@ -260,7 +272,7 @@ class _ResidentVoteState extends State<ResidentVote> {
       IconButton(
         onPressed: () => showDialog(
           context: context,
-          builder: (context) {
+          builder: (BuildContext context) {
             return AlertDialog(
               surfaceTintColor: Theme.of(context).colorScheme.background,
               title: const Text('删除投票'),

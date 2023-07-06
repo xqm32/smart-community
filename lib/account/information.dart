@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pocketbase/src/dtos/record_model.dart';
 
 import 'package:smart_community/utils.dart';
 
@@ -39,10 +40,11 @@ class _LoginFormState extends State<_InformationForm> {
   @override
   void initState() {
     _controllers = {
-      for (final i in _fields) i: TextEditingController(),
+      for (final String i in _fields) i: TextEditingController(),
     };
 
-    for (final i in _controllers.entries) {
+    for (final MapEntry<String, TextEditingController> i
+        in _controllers.entries) {
       i.value.text = pb.authStore.model.getStringValue(i.key);
     }
     super.initState();
@@ -50,7 +52,7 @@ class _LoginFormState extends State<_InformationForm> {
 
   @override
   void dispose() {
-    for (var element in _controllers.values) {
+    for (TextEditingController element in _controllers.values) {
       element.dispose();
     }
     super.dispose();
@@ -101,11 +103,15 @@ class _LoginFormState extends State<_InformationForm> {
       return;
     }
 
-    final body = {for (final i in _controllers.entries) i.key: i.value.text};
+    final Map<String, String> body = {
+      for (final MapEntry<String, TextEditingController> i
+          in _controllers.entries)
+        i.key: i.value.text
+    };
     pb
         .collection('users')
         .update(pb.authStore.model.id, body: body)
-        .then((value) => navPop(context))
+        .then((RecordModel value) => navPop(context))
         .catchError((error) => showException(context, error));
   }
 }

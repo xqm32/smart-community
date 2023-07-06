@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -35,16 +37,20 @@ class _AccountState extends State<Account> {
                     extensions: <String>['jpg', 'png'],
                   );
                   final XFile? file = await openFile(
-                      acceptedTypeGroups: <XTypeGroup>[typeGroup]);
+                    acceptedTypeGroups: <XTypeGroup>[typeGroup],
+                  );
                   if (file != null) {
-                    final bytes = await file.readAsBytes();
-                    await pb.collection('users').update(record!.id, files: [
-                      MultipartFile.fromBytes(
-                        'avatar',
-                        bytes,
-                        filename: file.name,
-                      )
-                    ]);
+                    final Uint8List bytes = await file.readAsBytes();
+                    await pb.collection('users').update(
+                      record!.id,
+                      files: [
+                        MultipartFile.fromBytes(
+                          'avatar',
+                          bytes,
+                          filename: file.name,
+                        )
+                      ],
+                    );
                     setState(() {
                       record = pb.authStore.model;
                     });
@@ -73,10 +79,10 @@ class _AccountState extends State<Account> {
               leading: const Icon(Icons.logout, color: Colors.red),
               onTap: () {
                 pb.authStore.clear();
-                SharedPreferences.getInstance().then((prefs) {
+                SharedPreferences.getInstance().then((SharedPreferences prefs) {
                   prefs
                       .clear()
-                      .then((value) => navGoto(context, const Login()));
+                      .then((bool value) => navGoto(context, const Login()));
                 });
               },
               title: const Text('退出登陆', style: TextStyle(color: Colors.red)),
@@ -90,9 +96,9 @@ class _AccountState extends State<Account> {
 
 class AccountAvatar extends StatelessWidget {
   const AccountAvatar({
-    super.key,
     required this.record,
     required this.onTap,
+    super.key,
   });
 
   final RecordModel record;

@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:smart_community/config.dart';
 
-final pb = PocketBase(baseUrl);
+final PocketBase pb = PocketBase(baseUrl);
 
 Future<dynamic> navPush(context, widget) {
-  return Navigator.of(context).push(MaterialPageRoute(
-    builder: (context) => widget,
-  ));
+  return Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (BuildContext context) => widget,
+    ),
+  );
 }
 
 void navPop(context, [dynamic result]) {
@@ -19,8 +21,8 @@ void navPop(context, [dynamic result]) {
 
 Future<dynamic> navGoto(context, widget) {
   return Navigator.of(context).pushAndRemoveUntil(
-    MaterialPageRoute(builder: (context) => widget),
-    (route) => false,
+    MaterialPageRoute(builder: (BuildContext context) => widget),
+    (Route route) => false,
   );
 }
 
@@ -30,17 +32,21 @@ void showException(context, error) {
 
 // 参见 https://api.flutter.dev/flutter/material/SnackBar-class.html
 void showError(context, error) {
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    content: Text('$error'),
-    backgroundColor: Theme.of(context).colorScheme.error,
-  ));
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text('$error'),
+      backgroundColor: Theme.of(context).colorScheme.error,
+    ),
+  );
 }
 
 void showSuccess(context, error) {
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    content: Text('$error'),
-    backgroundColor: Colors.green,
-  ));
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text('$error'),
+      backgroundColor: Colors.green,
+    ),
+  );
 }
 
 // 参见 https://docs.flutter.dev/cookbook/forms/validation
@@ -71,30 +77,30 @@ String? Function(String?) notNullValidator(String message) {
 }
 
 String getDate(String formattedString) {
-  final datetime = DateTime.parse(formattedString).toLocal();
+  final DateTime datetime = DateTime.parse(formattedString).toLocal();
   return datetime.toIso8601String().split('T')[0];
 }
 
 String getDateTime(String formattedString) {
-  final datetime = DateTime.parse(formattedString).toLocal();
+  final DateTime datetime = DateTime.parse(formattedString).toLocal();
   return datetime.toIso8601String().replaceAll('T', ' ').split('.')[0];
 }
 
 bool Function(RecordModel, String) keyFilter(String primaryKey) {
-  return (record, input) {
-    return input.split(' ').every((element) {
+  return (RecordModel record, String input) {
+    return input.split(' ').every((String element) {
       if (element.contains(':')) {
-        final elements = element.replaceFirst(':', ' ').split(' ');
-        final key = elements.first;
-        final value = elements.last;
+        final List<String> elements = element.replaceFirst(':', ' ').split(' ');
+        final String key = elements.first;
+        final String value = elements.last;
 
         if (key == 'after') {
-          final datetime = DateTime.tryParse(value);
+          final DateTime? datetime = DateTime.tryParse(value);
           return datetime != null
               ? DateTime.parse(record.created).toLocal().isAfter(datetime)
               : false;
         } else if (key == 'before') {
-          final datetime = DateTime.tryParse(value);
+          final DateTime? datetime = DateTime.tryParse(value);
           return datetime != null
               ? DateTime.parse(record.created).toLocal().isBefore(datetime)
               : false;
@@ -128,7 +134,7 @@ void pickImage({
   final XFile? file =
       await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
   if (file != null) {
-    final bytes = await file.readAsBytes();
+    final Uint8List bytes = await file.readAsBytes();
 
     update(file.name, bytes);
   }

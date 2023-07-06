@@ -17,7 +17,7 @@ class ResidentAnnouncement extends StatefulWidget {
 }
 
 class _ResidentAnnouncementState extends State<ResidentAnnouncement> {
-  final service = pb.collection('announcements');
+  final RecordService service = pb.collection('announcements');
 
   RecordModel? _record;
 

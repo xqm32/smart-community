@@ -26,7 +26,7 @@ class _PropertyState extends State<Property> {
   @override
   void initState() {
     communities = pb.collection('communities').getFullList();
-    SharedPreferences.getInstance().then((prefs) {
+    SharedPreferences.getInstance().then((SharedPreferences prefs) {
       if (prefs.containsKey('communityId')) {
         fetchCommunity(prefs.getString('communityId')!);
       }
@@ -38,40 +38,50 @@ class _PropertyState extends State<Property> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('物业端'), actions: [
-        FutureBuilder(
-          future: communities,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return SearchAction(
-                builder: _searchActionBuilder,
-                records: snapshot.data!,
-                filter: (element, input) =>
-                    element.getStringValue('name').contains(input),
-                toElement: (element) => ListTile(
-                  title: Text(element.getStringValue('name')),
-                  onTap: () {
-                    fetchCommunity(element.id);
-                    navPop(context);
-                  },
-                ),
-              );
-            }
-            return Container();
-          },
-        )
-      ]),
+      appBar: AppBar(
+        title: const Text('物业端'),
+        actions: [
+          FutureBuilder(
+            future: communities,
+            builder: (
+              BuildContext context,
+              AsyncSnapshot<List<RecordModel>> snapshot,
+            ) {
+              if (snapshot.hasData) {
+                return SearchAction(
+                  builder: _searchActionBuilder,
+                  records: snapshot.data!,
+                  filter: (RecordModel element, String input) =>
+                      element.getStringValue('name').contains(input),
+                  toElement: (RecordModel element) => ListTile(
+                    title: Text(element.getStringValue('name')),
+                    onTap: () {
+                      fetchCommunity(element.id);
+                      navPop(context);
+                    },
+                  ),
+                );
+              }
+              return Container();
+            },
+          )
+        ],
+      ),
       body: [
         communityId != null
             ? PropertyIndex(communityId: communityId!)
             : FutureBuilder(
                 future: communities,
-                builder: (context, snapshot) {
+                builder: (
+                  BuildContext context,
+                  AsyncSnapshot<List<RecordModel>> snapshot,
+                ) {
                   if (snapshot.hasData) {
                     return RecordList(
                       records: snapshot.data!,
-                      itemBuilder: (context, index) {
-                        final element = snapshot.data!.elementAt(index);
+                      itemBuilder: (BuildContext context, int index) {
+                        final RecordModel element =
+                            snapshot.data!.elementAt(index);
                         return ListTile(
                           title: Text(element.getStringValue('name')),
                           onTap: () => fetchCommunity(element.id),
@@ -96,7 +106,7 @@ class _PropertyState extends State<Property> {
           ),
         ],
         currentIndex: _index,
-        onTap: (index) {
+        onTap: (int index) {
           setState(() {
             _index = index;
           });
@@ -106,7 +116,7 @@ class _PropertyState extends State<Property> {
   }
 
   void fetchCommunity(String id) {
-    SharedPreferences.getInstance().then((prefs) {
+    SharedPreferences.getInstance().then((SharedPreferences prefs) {
       prefs.setString('communityId', id);
       setState(
         () {
@@ -123,7 +133,8 @@ class _PropertyState extends State<Property> {
       child: communityId != null
           ? FutureBuilder(
               future: community,
-              builder: (context, snapshot) {
+              builder:
+                  (BuildContext context, AsyncSnapshot<RecordModel> snapshot) {
                 if (snapshot.hasData) {
                   return Text(snapshot.data!.getStringValue('name'));
                 }

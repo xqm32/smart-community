@@ -8,8 +8,8 @@ import 'package:smart_community/utils.dart';
 
 class ResidentAnnouncements extends StatelessWidget {
   const ResidentAnnouncements({
-    super.key,
     required this.communityId,
+    super.key,
   });
 
   final String communityId;

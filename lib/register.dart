@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pocketbase/src/dtos/record_model.dart';
 
 import 'package:smart_community/utils.dart';
 import 'package:smart_community/login.dart';
@@ -52,13 +53,15 @@ class _RegisterFormState extends State<RegisterForm> {
     }
 
     final Map<String, dynamic> body = {
-      for (final i in _controllers.entries) i.key: i.value.text
+      for (final MapEntry<String, TextEditingController> i
+          in _controllers.entries)
+        i.key: i.value.text
     };
     body.addAll({
       'role': ['resident']
     });
 
-    pb.collection('users').create(body: body).then((value) {
+    pb.collection('users').create(body: body).then((RecordModel value) {
       navGoto(context, const Login());
     }).catchError((error) {
       if (error.statusCode == 400) {
@@ -76,7 +79,7 @@ class _RegisterFormState extends State<RegisterForm> {
   @override
   void initState() {
     _controllers = {
-      for (final i in _fields) i: TextEditingController(),
+      for (final String i in _fields) i: TextEditingController(),
     };
 
     super.initState();
@@ -84,7 +87,7 @@ class _RegisterFormState extends State<RegisterForm> {
 
   @override
   void dispose() {
-    for (var i in _controllers.values) {
+    for (TextEditingController i in _controllers.values) {
       i.dispose();
     }
 
@@ -145,8 +148,8 @@ class _RegisterFormState extends State<RegisterForm> {
               labelText: '确认密码',
               hintText: '请再次输入密码',
             ),
-            validator: (value) {
-              final result = passwordValidator(value);
+            validator: (String? value) {
+              final String? result = passwordValidator(value);
               if (result != null) {
                 return result;
               }

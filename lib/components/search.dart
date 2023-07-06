@@ -3,10 +3,10 @@ import 'package:pocketbase/pocketbase.dart';
 
 class SearchAction extends StatelessWidget {
   const SearchAction({
-    super.key,
     required this.records,
     required this.filter,
     required this.toElement,
+    super.key,
     this.builder,
   });
 
@@ -19,27 +19,29 @@ class SearchAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SearchAnchor(
-        viewSurfaceTintColor: Theme.of(context).colorScheme.background,
-        isFullScreen: true,
-        builder: builder ??
-            (context, controller) => IconButton(
+      viewSurfaceTintColor: Theme.of(context).colorScheme.background,
+      isFullScreen: true,
+      builder: builder ??
+          (BuildContext context, SearchController controller) => IconButton(
                 onPressed: () => controller.openView(),
-                icon: const Icon(Icons.search)),
-        suggestionsBuilder: (context, controller) {
-          final String input = controller.value.text;
-          return records
-              .where((record) => filter(record, input))
-              .map(toElement)
-              .toList();
-        });
+                icon: const Icon(Icons.search),
+              ),
+      suggestionsBuilder: (BuildContext context, SearchController controller) {
+        final String input = controller.value.text;
+        return records
+            .where((RecordModel record) => filter(record, input))
+            .map(toElement)
+            .toList();
+      },
+    );
   }
 }
 
 class RecordList extends StatelessWidget {
   const RecordList({
-    super.key,
     required this.records,
     required this.itemBuilder,
+    super.key,
   });
 
   final List<RecordModel> records;

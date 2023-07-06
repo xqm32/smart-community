@@ -8,8 +8,8 @@ import 'package:smart_community/utils.dart';
 
 class ResidentVerify extends StatefulWidget {
   const ResidentVerify({
-    super.key,
     required this.communityId,
+    super.key,
     this.recordId,
   });
 
@@ -38,26 +38,27 @@ class _ResidentVerifyState extends State<ResidentVerify> {
   Map<String, Uint8List?> _files = {};
   Map<String, String?> _filenames = {};
 
-  final service = pb.collection('residents');
+  final RecordService service = pb.collection('residents');
 
   RecordModel? _record;
 
   @override
   void initState() {
-    _formKeys = List.generate(_steps.length, (index) => GlobalKey<FormState>());
+    _formKeys =
+        List.generate(_steps.length, (int index) => GlobalKey<FormState>());
     _controllers = {
-      for (final i in _fields) i: TextEditingController(),
+      for (final String i in _fields) i: TextEditingController(),
     };
     _files = {
-      for (final i in _fileFields) i: null,
+      for (final String i in _fileFields) i: null,
     };
     _filenames = {
-      for (final i in _fileFields) i: null,
+      for (final String i in _fileFields) i: null,
     };
-    final residentsFilter =
+    final String residentsFilter =
         'communityId = "${widget.communityId}" && userId = "${pb.authStore.model!.id}"';
     pb.collection('residents').getFullList(filter: residentsFilter).then(
-      (value) {
+      (List<RecordModel> value) {
         if (value.isNotEmpty) {
           _setRecord(value.first);
         }
@@ -68,7 +69,7 @@ class _ResidentVerifyState extends State<ResidentVerify> {
 
   @override
   void dispose() {
-    for (var i in _controllers.values) {
+    for (TextEditingController i in _controllers.values) {
       i.dispose();
     }
     super.dispose();
@@ -84,7 +85,8 @@ class _ResidentVerifyState extends State<ResidentVerify> {
       body: Stepper(
         type: StepperType.horizontal,
         currentStep: _index,
-        controlsBuilder: (context, details) => Container(),
+        controlsBuilder: (BuildContext context, ControlsDetails details) =>
+            Container(),
         steps: [
           for (int i = 0; i < _steps.length; ++i)
             Step(
@@ -98,15 +100,17 @@ class _ResidentVerifyState extends State<ResidentVerify> {
   }
 
   void _setRecord(RecordModel record) async {
-    final state = record.getStringValue('state');
-    for (final i in _controllers.entries) {
+    final String state = record.getStringValue('state');
+    for (final MapEntry<String, TextEditingController> i
+        in _controllers.entries) {
       i.value.text = record.getStringValue(i.key);
     }
-    final images = {};
-    for (final i in _fileFields) {
-      final filename = record.getStringValue(i);
+    final Map images = {};
+    for (final String i in _fileFields) {
+      final String filename = record.getStringValue(i);
       if (filename.isNotEmpty) {
-        final resp = await get(pb.getFileUrl(record, record.getStringValue(i)));
+        final Response resp =
+            await get(pb.getFileUrl(record, record.getStringValue(i)));
         images[i] = resp.bodyBytes;
       }
     }
@@ -121,7 +125,9 @@ class _ResidentVerifyState extends State<ResidentVerify> {
 
   Map<String, dynamic> _getBody() {
     final Map<String, dynamic> body = {
-      for (final i in _controllers.entries) i.key: i.value.text
+      for (final MapEntry<String, TextEditingController> i
+          in _controllers.entries)
+        i.key: i.value.text
     };
     body.addAll({
       'userId': pb.authStore.model!.id,
@@ -137,8 +143,8 @@ class _ResidentVerifyState extends State<ResidentVerify> {
       return;
     }
 
-    final files = [
-      for (final i in _files.entries)
+    final List<MultipartFile> files = [
+      for (final MapEntry<String, Uint8List?> i in _files.entries)
         if (i.value != null && _filenames[i.key] != null)
           MultipartFile.fromBytes(i.key, i.value!, filename: _filenames[i.key])
     ];
@@ -165,7 +171,7 @@ class _ResidentVerifyState extends State<ResidentVerify> {
       IconButton(
         onPressed: () => showDialog(
           context: context,
-          builder: (context) {
+          builder: (BuildContext context) {
             return AlertDialog(
               surfaceTintColor: Theme.of(context).colorScheme.background,
               title: const Text('删除认证'),
@@ -232,7 +238,8 @@ class _ResidentVerifyState extends State<ResidentVerify> {
       key: _formKeys[index],
       child: Column(
         children: [
-          _imageForm('idCard', '请上传身份证照片', '选择身份证照片', (filename, bytes) {
+          _imageForm('idCard', '请上传身份证照片', '选择身份证照片',
+              (String filename, Uint8List bytes) {
             setState(() {
               _files['idCard'] = bytes;
               _filenames['idCard'] = filename;

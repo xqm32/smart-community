@@ -7,8 +7,8 @@ import 'package:smart_community/utils.dart';
 
 class ResidentVotes extends StatelessWidget {
   const ResidentVotes({
-    super.key,
     required this.communityId,
+    super.key,
   });
 
   final String communityId;
@@ -61,13 +61,14 @@ class ResidentVotes extends StatelessWidget {
               filter:
                   'voteId = "${record.id}" && userId = "${pb.authStore.model!.id}"',
             );
-    final start = record.getStringValue('start');
-    final end = record.getStringValue('end');
+    final String start = record.getStringValue('start');
+    final String end = record.getStringValue('end');
     const double fontSize = 16;
 
     return FutureBuilder(
       future: result,
-      builder: (context, snapshot) {
+      builder:
+          (BuildContext context, AsyncSnapshot<List<RecordModel>> snapshot) {
         if (snapshot.hasData) {
           if (snapshot.data!.isEmpty) {
             return _recordStateText(start, end, fontSize);

@@ -7,8 +7,8 @@ import 'package:smart_community/utils.dart';
 
 class PropertyResidents extends StatelessWidget {
   const PropertyResidents({
-    super.key,
     required this.communityId,
+    super.key,
   });
 
   final String communityId;
@@ -38,8 +38,10 @@ class PropertyResidents extends StatelessWidget {
     void Function() refreshRecords,
     RecordModel record,
   ) {
-    final userName = record.expand['userId']!.first.getStringValue('name');
-    final userPhone = record.expand['userId']!.first.getStringValue('phone');
+    final String userName =
+        record.expand['userId']!.first.getStringValue('name');
+    final String userPhone =
+        record.expand['userId']!.first.getStringValue('phone');
 
     return ListTile(
       title: Text(userName),
@@ -48,8 +50,9 @@ class PropertyResidents extends StatelessWidget {
           children: [
             if (userPhone.isNotEmpty)
               TextSpan(
-                  text: '$userPhone  ',
-                  style: TextStyle(color: Theme.of(context).primaryColor)),
+                text: '$userPhone  ',
+                style: TextStyle(color: Theme.of(context).primaryColor),
+              ),
             TextSpan(
               text: getDateTime(record.created),
               style: const TextStyle(color: Colors.grey),
@@ -68,7 +71,7 @@ class PropertyResidents extends StatelessWidget {
   }
 
   Widget _recordState(RecordModel record) {
-    final state = record.getStringValue('state');
+    final String state = record.getStringValue('state');
     const double fontSize = 16;
 
     if (state == 'reviewing') {

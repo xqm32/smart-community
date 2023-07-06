@@ -14,8 +14,8 @@ import 'package:smart_community/utils.dart';
 
 class ResidentIndex extends StatefulWidget {
   const ResidentIndex({
-    super.key,
     required this.communityId,
+    super.key,
   });
 
   final String communityId;
@@ -32,7 +32,9 @@ class _ResidentIndexState extends State<ResidentIndex> {
   @override
   void initState() {
     announcements = pb.collection('announcements').getFullList(
-        filter: 'communityId = "${widget.communityId}"', sort: '-created');
+          filter: 'communityId = "${widget.communityId}"',
+          sort: '-created',
+        );
     fetchRecord();
     super.initState();
   }
@@ -40,14 +42,16 @@ class _ResidentIndexState extends State<ResidentIndex> {
   @override
   void didUpdateWidget(covariant ResidentIndex oldWidget) {
     announcements = pb.collection('announcements').getFullList(
-        filter: 'communityId = "${widget.communityId}"', sort: '-created');
+          filter: 'communityId = "${widget.communityId}"',
+          sort: '-created',
+        );
     fetchRecord();
     super.didUpdateWidget(oldWidget);
   }
 
   @override
   Widget build(BuildContext context) {
-    final label = {
+    final Map<String?, Text> label = {
       null: const Text('您还未入住该小区'),
       'reviewing': const Text(
         '您的账号正在审核中，请耐心等待',
@@ -58,7 +62,7 @@ class _ResidentIndexState extends State<ResidentIndex> {
         style: TextStyle(color: Colors.red),
       ),
     };
-    final hint = {
+    final Map<String?, Text> hint = {
       null: const Text('入住小区'),
       'reviewing': const Text('查看状态'),
       'rejected': const Text('查看状态'),
@@ -73,7 +77,9 @@ class _ResidentIndexState extends State<ResidentIndex> {
             TextButton(
               onPressed: () async {
                 await navPush(
-                    context, ResidentVerify(communityId: widget.communityId));
+                  context,
+                  ResidentVerify(communityId: widget.communityId),
+                );
                 fetchRecord();
               },
               child: hint[_state]!,
@@ -90,7 +96,10 @@ class _ResidentIndexState extends State<ResidentIndex> {
           children: [
             FutureBuilder(
               future: announcements,
-              builder: (context, snapshot) {
+              builder: (
+                BuildContext context,
+                AsyncSnapshot<List<RecordModel>> snapshot,
+              ) {
                 if (snapshot.hasData) {
                   return ResidentIndexAnnouncement(
                     announcements: snapshot.data!,
@@ -106,7 +115,10 @@ class _ResidentIndexState extends State<ResidentIndex> {
             const Divider(height: 8),
             FutureBuilder(
               future: announcements,
-              builder: (context, snapshot) {
+              builder: (
+                BuildContext context,
+                AsyncSnapshot<List<RecordModel>> snapshot,
+              ) {
                 if (snapshot.hasData) {
                   return ResidentIndexAnnouncements(
                     communityId: widget.communityId,
@@ -126,11 +138,11 @@ class _ResidentIndexState extends State<ResidentIndex> {
   }
 
   void fetchRecord() {
-    final residentsFilter =
+    final String residentsFilter =
         'communityId = "${widget.communityId}" && userId = "${pb.authStore.model!.id}"';
 
     pb.collection('residents').getFullList(filter: residentsFilter).then(
-      (value) {
+      (List<RecordModel> value) {
         setState(() {
           _state =
               value.isNotEmpty ? value.first.getStringValue('state') : null;
@@ -142,8 +154,8 @@ class _ResidentIndexState extends State<ResidentIndex> {
 
 class ResidentIndexAnnouncement extends StatelessWidget {
   const ResidentIndexAnnouncement({
-    super.key,
     required this.announcements,
+    super.key,
   });
 
   final List<RecordModel> announcements;
@@ -172,8 +184,8 @@ class ResidentIndexAnnouncement extends StatelessWidget {
 
 class ResidentIndexService extends StatelessWidget {
   const ResidentIndexService({
-    super.key,
     required this.communityId,
+    super.key,
   });
 
   final String communityId;
@@ -252,10 +264,10 @@ class ResidentIndexService extends StatelessWidget {
 
 class ResidentIndexServiceIcon extends StatelessWidget {
   const ResidentIndexServiceIcon({
-    super.key,
     required this.onPressed,
     required this.icon,
     required this.text,
+    super.key,
     this.color,
   });
 
@@ -284,9 +296,9 @@ class ResidentIndexServiceIcon extends StatelessWidget {
 
 class ResidentIndexAnnouncements extends StatelessWidget {
   const ResidentIndexAnnouncements({
-    super.key,
     required this.communityId,
     required this.announcements,
+    super.key,
   });
 
   final String communityId;
@@ -313,8 +325,8 @@ class ResidentIndexAnnouncements extends StatelessWidget {
           Expanded(
             child: ListView.builder(
               itemCount: announcements.length,
-              itemBuilder: (context, index) {
-                final record = announcements[index];
+              itemBuilder: (BuildContext context, int index) {
+                final RecordModel record = announcements[index];
                 return Announcement(
                   record: record,
                   onTap: () {

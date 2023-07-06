@@ -9,8 +9,8 @@ import 'package:smart_community/utils.dart';
 
 class ResidentCar extends StatefulWidget {
   const ResidentCar({
-    super.key,
     required this.communityId,
+    super.key,
     this.recordId,
   });
 
@@ -39,30 +39,48 @@ class _ResidentCarState extends State<ResidentCar> {
   String? _area;
   String? _zone;
   String? _position;
+  String? _houseId;
+  List<RecordModel>? _houses;
 
   final List<String> _fileFields = ['photo'];
   Map<String, Uint8List?> _files = {};
   Map<String, String?> _filenames = {};
 
-  final service = pb.collection('cars');
+  final RecordService service = pb.collection('cars');
 
   RecordModel? _record;
 
   @override
   void initState() {
-    _formKeys = List.generate(_steps.length, (index) => GlobalKey<FormState>());
+    _formKeys =
+        List.generate(_steps.length, (int index) => GlobalKey<FormState>());
     _controllers = {
-      for (final i in _fields) i: TextEditingController(),
+      for (final String i in _fields) i: TextEditingController(),
     };
     _files = {
-      for (final i in _fileFields) i: null,
+      for (final String i in _fileFields) i: null,
     };
     _filenames = {
-      for (final i in _fileFields) i: null,
+      for (final String i in _fileFields) i: null,
     };
 
-    pb.collection('communities').getOne(widget.communityId).then((value) {
-      final struct = value.getStringValue('parking');
+    pb
+        .collection('houses')
+        .getFullList(
+          filter:
+              'communityId = "${widget.communityId}" && userId = "${pb.authStore.model!.id}"',
+        )
+        .then((List<RecordModel> value) {
+      setState(() {
+        _houses = value;
+      });
+    });
+
+    pb
+        .collection('communities')
+        .getOne(widget.communityId)
+        .then((RecordModel value) {
+      final String struct = value.getStringValue('parking');
 
       setState(() {
         _struct = struct.isNotEmpty
@@ -80,7 +98,7 @@ class _ResidentCarState extends State<ResidentCar> {
 
   @override
   void dispose() {
-    for (var i in _controllers.values) {
+    for (TextEditingController i in _controllers.values) {
       i.dispose();
     }
     super.dispose();
@@ -96,7 +114,8 @@ class _ResidentCarState extends State<ResidentCar> {
       body: Stepper(
         type: StepperType.horizontal,
         currentStep: _index,
-        controlsBuilder: (context, details) => Container(),
+        controlsBuilder: (BuildContext context, ControlsDetails details) =>
+            Container(),
         steps: [
           for (int i = 0; i < _steps.length; ++i)
             Step(
@@ -110,15 +129,17 @@ class _ResidentCarState extends State<ResidentCar> {
   }
 
   void _setRecord(RecordModel record) async {
-    final state = record.getStringValue('state');
-    for (final i in _controllers.entries) {
+    final String state = record.getStringValue('state');
+    for (final MapEntry<String, TextEditingController> i
+        in _controllers.entries) {
       i.value.text = record.getStringValue(i.key);
     }
-    final images = {};
-    for (final i in _fileFields) {
-      final filename = record.getStringValue(i);
+    final Map images = {};
+    for (final String i in _fileFields) {
+      final String filename = record.getStringValue(i);
       if (filename.isNotEmpty) {
-        final resp = await get(pb.getFileUrl(record, record.getStringValue(i)));
+        final Response resp =
+            await get(pb.getFileUrl(record, record.getStringValue(i)));
         images[i] = resp.bodyBytes;
       }
     }
@@ -135,7 +156,9 @@ class _ResidentCarState extends State<ResidentCar> {
     } else if (!_struct![area]![zone]!.contains(position)) {
       position = null;
     }
+    String houseId = record.getStringValue('houseId');
     setState(() {
+      _houseId = houseId.isEmpty ? null : houseId;
       _record = record;
       for (final i in images.keys) {
         _files[i] = images[i];
@@ -149,7 +172,9 @@ class _ResidentCarState extends State<ResidentCar> {
 
   Map<String, dynamic> _getBody() {
     final Map<String, dynamic> body = {
-      for (final i in _controllers.entries) i.key: i.value.text
+      for (final MapEntry<String, TextEditingController> i
+          in _controllers.entries)
+        i.key: i.value.text
     };
     body.addAll({
       'userId': pb.authStore.model!.id,
@@ -158,6 +183,7 @@ class _ResidentCarState extends State<ResidentCar> {
       'area': _area,
       'zone': _zone,
       'position': _position,
+      'houseId': _houseId,
     });
 
     return body;
@@ -168,8 +194,8 @@ class _ResidentCarState extends State<ResidentCar> {
       return;
     }
 
-    final files = [
-      for (final i in _files.entries)
+    final List<MultipartFile> files = [
+      for (final MapEntry<String, Uint8List?> i in _files.entries)
         if (i.value != null && _filenames[i.key] != null)
           MultipartFile.fromBytes(i.key, i.value!, filename: _filenames[i.key])
     ];
@@ -196,7 +222,7 @@ class _ResidentCarState extends State<ResidentCar> {
       IconButton(
         onPressed: () => showDialog(
           context: context,
-          builder: (context) {
+          builder: (BuildContext context) {
             return AlertDialog(
               surfaceTintColor: Theme.of(context).colorScheme.background,
               title: const Text('删除车辆'),
@@ -279,7 +305,6 @@ class _ResidentCarState extends State<ResidentCar> {
             ),
             validator: notNullValidator('车牌号不能为空'),
           ),
-          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -288,12 +313,14 @@ class _ResidentCarState extends State<ResidentCar> {
                   decoration: const InputDecoration(labelText: '区域'),
                   value: _area,
                   items: _struct?.keys
-                      .map((e) => DropdownMenuItem(
-                            value: e,
-                            child: Text(e),
-                          ))
+                      .map(
+                        (String e) => DropdownMenuItem(
+                          value: e,
+                          child: Text(e),
+                        ),
+                      )
                       .toList(),
-                  onChanged: (value) {
+                  onChanged: (String? value) {
                     setState(() {
                       _area = value;
                       _zone = null;
@@ -310,12 +337,14 @@ class _ResidentCarState extends State<ResidentCar> {
                   value: _zone,
                   items: (_struct?[_area] as Map<String, dynamic>?)
                       ?.keys
-                      .map((e) => DropdownMenuItem(
-                            value: e,
-                            child: Text(e),
-                          ))
+                      .map(
+                        (String e) => DropdownMenuItem(
+                          value: e,
+                          child: Text(e),
+                        ),
+                      )
                       .toList(),
-                  onChanged: (value) {
+                  onChanged: (String? value) {
                     setState(() {
                       _zone = value;
                       _position = null;
@@ -330,19 +359,39 @@ class _ResidentCarState extends State<ResidentCar> {
             decoration: const InputDecoration(labelText: '车位'),
             value: _position,
             items: (_struct?[_area]?[_zone] as List?)
-                ?.map((e) => DropdownMenuItem(
-                      value: e as String,
-                      child: Text(e),
-                    ))
+                ?.map(
+                  (e) => DropdownMenuItem(
+                    value: e as String,
+                    child: Text(e),
+                  ),
+                )
                 .toList(),
-            onChanged: (value) {
+            onChanged: (String? value) {
               setState(() {
                 _position = value;
               });
             },
           ),
+          DropdownButtonFormField(
+            decoration: const InputDecoration(labelText: '房屋绑定'),
+            value: _houseId,
+            items: _houses
+                ?.map(
+                  (RecordModel e) => DropdownMenuItem(
+                    value: e.id,
+                    child: Text(e.getStringValue('location')),
+                  ),
+                )
+                .toList(),
+            onChanged: (String? value) {
+              setState(() {
+                _houseId = value;
+              });
+            },
+          ),
           const SizedBox(height: 16),
-          _imageForm('photo', '请上传车辆照片', '选择车辆照片', (filename, bytes) {
+          _imageForm('photo', '请上传车辆照片', '选择车辆照片',
+              (String filename, Uint8List bytes) {
             setState(() {
               _files['photo'] = bytes;
               _filenames['photo'] = filename;

@@ -7,8 +7,8 @@ import 'package:smart_community/utils.dart';
 
 class PropertyFamilies extends StatelessWidget {
   const PropertyFamilies({
-    super.key,
     required this.communityId,
+    super.key,
   });
 
   final String communityId;
@@ -38,7 +38,8 @@ class PropertyFamilies extends StatelessWidget {
     void Function() refreshRecords,
     RecordModel record,
   ) {
-    final userName = record.expand['userId']!.first.getStringValue('name');
+    final String userName =
+        record.expand['userId']!.first.getStringValue('name');
 
     return ListTile(
       title: Text(record.getStringValue('name')),
@@ -47,8 +48,9 @@ class PropertyFamilies extends StatelessWidget {
           children: [
             if (userName.isNotEmpty)
               TextSpan(
-                  text: '$userName  ',
-                  style: TextStyle(color: Theme.of(context).primaryColor)),
+                text: '$userName  ',
+                style: TextStyle(color: Theme.of(context).primaryColor),
+              ),
             TextSpan(
               text: getDateTime(record.created),
               style: const TextStyle(color: Colors.grey),
@@ -67,7 +69,7 @@ class PropertyFamilies extends StatelessWidget {
   }
 
   Widget _recordState(RecordModel record) {
-    final state = record.getStringValue('state');
+    final String state = record.getStringValue('state');
     const double fontSize = 16;
 
     if (state == 'reviewing') {
