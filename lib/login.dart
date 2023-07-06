@@ -11,8 +11,7 @@ class Login extends StatelessWidget {
   const Login({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
+  Widget build(final BuildContext context) => const Scaffold(
       body: Center(
         child: Padding(
           padding: EdgeInsets.all(16.0),
@@ -25,7 +24,6 @@ class Login extends StatelessWidget {
         ),
       ),
     );
-  }
 }
 
 class LoginForm extends StatefulWidget {
@@ -49,7 +47,7 @@ class _LoginFormState extends State<LoginForm> {
       for (final String i in _fields) i: TextEditingController(),
     };
 
-    SharedPreferences.getInstance().then((SharedPreferences prefs) {
+    SharedPreferences.getInstance().then((final SharedPreferences prefs) {
       final String? username = prefs.getString('username');
       final String? password = prefs.getString('password');
       final String? selectedRole = prefs.getString('role');
@@ -66,15 +64,14 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   void dispose() {
-    for (TextEditingController i in _controllers.values) {
+    for (final TextEditingController i in _controllers.values) {
       i.dispose();
     }
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Form(
+  Widget build(final BuildContext context) => Form(
       key: _formKey,
       child: Column(
         children: [
@@ -109,7 +106,6 @@ class _LoginFormState extends State<LoginForm> {
         ],
       ),
     );
-  }
 
   void _onLoginPressed() {
     if (!_formKey.currentState!.validate()) {
@@ -122,27 +118,27 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  void _login(String username, String password, String selectedRole) {
+  void _login(final String username, final String password, final String selectedRole) {
     pb
         .collection('users')
         .authWithPassword(username, password)
         .then(
-          (RecordAuth record) =>
+          (final RecordAuth record) =>
               _didLogin(record, username, password, selectedRole),
         )
         .catchError(_onError);
   }
 
   void _didLogin(
-    RecordAuth record,
-    String username,
-    String password,
-    String selectedRole,
+    final RecordAuth record,
+    final String username,
+    final String password,
+    final String selectedRole,
   ) {
     final List role = record.record!.getListValue('role');
 
     if (!role.contains(selectedRole)) {
-      SharedPreferences.getInstance().then((SharedPreferences prefs) {
+      SharedPreferences.getInstance().then((final SharedPreferences prefs) {
         if (prefs.containsKey('role')) {
           prefs.clear();
           showError(context, '角色令牌过期');
@@ -154,7 +150,7 @@ class _LoginFormState extends State<LoginForm> {
       return;
     }
 
-    SharedPreferences.getInstance().then((SharedPreferences prefs) {
+    SharedPreferences.getInstance().then((final SharedPreferences prefs) {
       prefs.setString('username', username);
       prefs.setString('password', password);
       prefs.setString('role', selectedRole);
@@ -167,8 +163,8 @@ class _LoginFormState extends State<LoginForm> {
     }
   }
 
-  void _onError(error) {
-    SharedPreferences.getInstance().then((SharedPreferences prefs) {
+  void _onError(final error) {
+    SharedPreferences.getInstance().then((final SharedPreferences prefs) {
       if (error.statusCode == 0) {
         showError(context, '网络错误');
       } else if (error.statusCode == 400) {
@@ -184,8 +180,7 @@ class _LoginFormState extends State<LoginForm> {
     });
   }
 
-  Widget _roleChoice() {
-    return SegmentedButton(
+  Widget _roleChoice() => SegmentedButton(
       segments: const [
         ButtonSegment(
           value: 'resident',
@@ -197,8 +192,7 @@ class _LoginFormState extends State<LoginForm> {
         ),
       ],
       selected: {_role},
-      onSelectionChanged: (Set<String> value) =>
+      onSelectionChanged: (final Set<String> value) =>
           setState(() => _role = value.first),
     );
-  }
 }

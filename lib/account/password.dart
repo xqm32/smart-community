@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pocketbase/src/dtos/record_model.dart';
+import 'package:pocketbase/pocketbase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:smart_community/login.dart';
@@ -9,8 +9,7 @@ class AccountPassword extends StatelessWidget {
   const AccountPassword({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(final BuildContext context) => Scaffold(
       appBar: AppBar(title: const Text('修改密码')),
       body: const Center(
         child: Padding(
@@ -23,7 +22,6 @@ class AccountPassword extends StatelessWidget {
         ),
       ),
     );
-  }
 }
 
 class _PasswordForm extends StatefulWidget {
@@ -49,15 +47,14 @@ class _LoginFormState extends State<_PasswordForm> {
 
   @override
   void dispose() {
-    for (TextEditingController element in _controllers.values) {
+    for (final TextEditingController element in _controllers.values) {
       element.dispose();
     }
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Form(
+  Widget build(final BuildContext context) => Form(
       key: _formKey,
       child: Column(
         children: [
@@ -85,7 +82,7 @@ class _LoginFormState extends State<_PasswordForm> {
               labelText: '确认密码',
               hintText: '请再次输入新密码',
             ),
-            validator: (String? value) {
+            validator: (final String? value) {
               final String? result = passwordValidator(value);
               if (result != null) {
                 return result;
@@ -105,7 +102,6 @@ class _LoginFormState extends State<_PasswordForm> {
         ],
       ),
     );
-  }
 
   void _onSubmitPressed() {
     if (!_formKey.currentState!.validate()) {
@@ -118,18 +114,16 @@ class _LoginFormState extends State<_PasswordForm> {
         i.key: i.value.text
     };
     pb.collection('users').update(pb.authStore.model.id, body: body).then(
-      (RecordModel value) {
-        return SharedPreferences.getInstance().then((SharedPreferences prefs) {
+      (final RecordModel value) => SharedPreferences.getInstance().then((final SharedPreferences prefs) {
           pb.authStore.clear();
           prefs.clear();
           showSuccess(context, '修改成功');
           return navGoto(context, const Login());
-        });
-      },
+        }),
     ).catchError(_onError);
   }
 
-  void _onError(error) {
+  void _onError(final error) {
     if (error.statusCode == 0) {
       showError(context, '网络错误');
     } else if (error.statusCode == 400) {

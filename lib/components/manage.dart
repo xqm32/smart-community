@@ -41,8 +41,7 @@ class _ManageState extends State<Manage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(final BuildContext context) => Scaffold(
       appBar: AppBar(
         title: widget.title,
         actions: [
@@ -55,14 +54,14 @@ class _ManageState extends State<Manage> {
           FutureBuilder(
             future: _records,
             builder: (
-              BuildContext context,
-              AsyncSnapshot<List<RecordModel>> snapshot,
+              final BuildContext context,
+              final AsyncSnapshot<List<RecordModel>> snapshot,
             ) {
               if (snapshot.hasData) {
                 return SearchAction(
                   records: snapshot.data!,
                   filter: widget.filter,
-                  toElement: (RecordModel record) =>
+                  toElement: (final RecordModel record) =>
                       widget.toElement(context, refreshRecords, record),
                 );
               }
@@ -74,11 +73,11 @@ class _ManageState extends State<Manage> {
       body: FutureBuilder(
         future: _records,
         builder:
-            (BuildContext context, AsyncSnapshot<List<RecordModel>> snapshot) {
+            (final BuildContext context, final AsyncSnapshot<List<RecordModel>> snapshot) {
           if (snapshot.hasData) {
             return RecordList(
               records: snapshot.data!,
-              itemBuilder: (BuildContext context, int index) {
+              itemBuilder: (final BuildContext context, final int index) {
                 final RecordModel record = snapshot.data!.elementAt(index);
                 return widget.toElement(context, refreshRecords, record);
               },
@@ -94,7 +93,6 @@ class _ManageState extends State<Manage> {
             )
           : null,
     );
-  }
 
   void refreshRecords() {
     setState(() {

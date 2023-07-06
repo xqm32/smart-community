@@ -14,15 +14,13 @@ class ResidentProblems extends StatelessWidget {
   final String communityId;
 
   @override
-  Widget build(BuildContext context) {
-    return Manage(
+  Widget build(final BuildContext context) => Manage(
       title: const Text('问题上报'),
       fetchRecords: fetchRecords,
       filter: keyFilter('title'),
       toElement: toElement,
       onAddPressed: onAddPressed,
     );
-  }
 
   Future<List<RecordModel>> fetchRecords() {
     final String filter =
@@ -32,17 +30,17 @@ class ResidentProblems extends StatelessWidget {
         .getFullList(filter: filter, sort: '-created');
   }
 
-  void onAddPressed(BuildContext context, void Function() refreshRecords) {
+  void onAddPressed(final BuildContext context, final void Function() refreshRecords) {
     navPush(
       context,
       ResidentProblem(communityId: communityId),
-    ).then((value) => refreshRecords());
+    ).then((final value) => refreshRecords());
   }
 
   Widget toElement(
-    BuildContext context,
-    void Function() refreshRecords,
-    RecordModel record,
+    final BuildContext context,
+    final void Function() refreshRecords,
+    final RecordModel record,
   ) {
     final String remark = record.getStringValue('remark');
 
@@ -68,12 +66,12 @@ class ResidentProblems extends StatelessWidget {
         navPush(
           context,
           ResidentProblem(communityId: communityId, recordId: record.id),
-        ).then((value) => refreshRecords());
+        ).then((final value) => refreshRecords());
       },
     );
   }
 
-  Widget _recordState(RecordModel record) {
+  Widget _recordState(final RecordModel record) {
     final String state = record.getStringValue('state');
     const double fontSize = 16;
 

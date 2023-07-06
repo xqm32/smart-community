@@ -53,7 +53,7 @@ class _ResidentCarState extends State<ResidentCar> {
   @override
   void initState() {
     _formKeys =
-        List.generate(_steps.length, (int index) => GlobalKey<FormState>());
+        List.generate(_steps.length, (final int index) => GlobalKey<FormState>());
     _controllers = {
       for (final String i in _fields) i: TextEditingController(),
     };
@@ -70,7 +70,7 @@ class _ResidentCarState extends State<ResidentCar> {
           filter:
               'communityId = "${widget.communityId}" && userId = "${pb.authStore.model!.id}"',
         )
-        .then((List<RecordModel> value) {
+        .then((final List<RecordModel> value) {
       setState(() {
         _houses = value;
       });
@@ -79,7 +79,7 @@ class _ResidentCarState extends State<ResidentCar> {
     pb
         .collection('communities')
         .getOne(widget.communityId)
-        .then((RecordModel value) {
+        .then((final RecordModel value) {
       final String struct = value.getStringValue('parking');
 
       setState(() {
@@ -98,15 +98,14 @@ class _ResidentCarState extends State<ResidentCar> {
 
   @override
   void dispose() {
-    for (TextEditingController i in _controllers.values) {
+    for (final TextEditingController i in _controllers.values) {
       i.dispose();
     }
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(final BuildContext context) => Scaffold(
       appBar: AppBar(
         title: const Text('车辆管理'),
         actions: _actionsBuilder(context),
@@ -114,7 +113,7 @@ class _ResidentCarState extends State<ResidentCar> {
       body: Stepper(
         type: StepperType.horizontal,
         currentStep: _index,
-        controlsBuilder: (BuildContext context, ControlsDetails details) =>
+        controlsBuilder: (final BuildContext context, final ControlsDetails details) =>
             Container(),
         steps: [
           for (int i = 0; i < _steps.length; ++i)
@@ -126,9 +125,8 @@ class _ResidentCarState extends State<ResidentCar> {
         ],
       ),
     );
-  }
 
-  void _setRecord(RecordModel record) async {
+  void _setRecord(final RecordModel record) async {
     final String state = record.getStringValue('state');
     for (final MapEntry<String, TextEditingController> i
         in _controllers.entries) {
@@ -156,7 +154,7 @@ class _ResidentCarState extends State<ResidentCar> {
     } else if (!_struct![area]![zone]!.contains(position)) {
       position = null;
     }
-    String houseId = record.getStringValue('houseId');
+    final String houseId = record.getStringValue('houseId');
     setState(() {
       _houseId = houseId.isEmpty ? null : houseId;
       _record = record;
@@ -204,16 +202,16 @@ class _ResidentCarState extends State<ResidentCar> {
       service
           .create(body: _getBody(), files: files)
           .then(_setRecord)
-          .catchError((error) => showException(context, error));
+          .catchError((final error) => showException(context, error));
     } else {
       service
           .update(_record!.id, body: _getBody(), files: files)
           .then(_setRecord)
-          .catchError((error) => showException(context, error));
+          .catchError((final error) => showException(context, error));
     }
   }
 
-  List<Widget>? _actionsBuilder(context) {
+  List<Widget>? _actionsBuilder(final context) {
     if (_record == null) {
       return null;
     }
@@ -222,8 +220,7 @@ class _ResidentCarState extends State<ResidentCar> {
       IconButton(
         onPressed: () => showDialog(
           context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
+          builder: (final BuildContext context) => AlertDialog(
               surfaceTintColor: Theme.of(context).colorScheme.background,
               title: const Text('删除车辆'),
               content: const Text('确定要删除该车辆吗？'),
@@ -236,7 +233,7 @@ class _ResidentCarState extends State<ResidentCar> {
                 ),
                 TextButton(
                   onPressed: () {
-                    service.delete(_record!.id).then((value) {
+                    service.delete(_record!.id).then((final value) {
                       navPop(context, 'OK');
                       navPop(context);
                     });
@@ -244,8 +241,7 @@ class _ResidentCarState extends State<ResidentCar> {
                   child: const Text('确认'),
                 ),
               ],
-            );
-          },
+            ),
         ),
         icon: const Icon(
           Icons.delete_outline,
@@ -256,12 +252,11 @@ class _ResidentCarState extends State<ResidentCar> {
   }
 
   Widget _imageForm(
-    String field,
-    String labelText,
-    String hintText,
-    void Function(String filename, Uint8List bytes) update,
-  ) {
-    return Column(
+    final String field,
+    final String labelText,
+    final String hintText,
+    final void Function(String filename, Uint8List bytes) update,
+  ) => Column(
       children: [
         Container(
           decoration: _files[field] != null
@@ -282,10 +277,8 @@ class _ResidentCarState extends State<ResidentCar> {
         ),
       ],
     );
-  }
 
-  Widget _form({required int index}) {
-    return Form(
+  Widget _form({required final int index}) => Form(
       key: _formKeys[index],
       child: Column(
         children: [
@@ -314,13 +307,13 @@ class _ResidentCarState extends State<ResidentCar> {
                   value: _area,
                   items: _struct?.keys
                       .map(
-                        (String e) => DropdownMenuItem(
+                        (final String e) => DropdownMenuItem(
                           value: e,
                           child: Text(e),
                         ),
                       )
                       .toList(),
-                  onChanged: (String? value) {
+                  onChanged: (final String? value) {
                     setState(() {
                       _area = value;
                       _zone = null;
@@ -338,13 +331,13 @@ class _ResidentCarState extends State<ResidentCar> {
                   items: (_struct?[_area] as Map<String, dynamic>?)
                       ?.keys
                       .map(
-                        (String e) => DropdownMenuItem(
+                        (final String e) => DropdownMenuItem(
                           value: e,
                           child: Text(e),
                         ),
                       )
                       .toList(),
-                  onChanged: (String? value) {
+                  onChanged: (final String? value) {
                     setState(() {
                       _zone = value;
                       _position = null;
@@ -360,13 +353,13 @@ class _ResidentCarState extends State<ResidentCar> {
             value: _position,
             items: (_struct?[_area]?[_zone] as List?)
                 ?.map(
-                  (e) => DropdownMenuItem(
+                  (final e) => DropdownMenuItem(
                     value: e as String,
                     child: Text(e),
                   ),
                 )
                 .toList(),
-            onChanged: (String? value) {
+            onChanged: (final String? value) {
               setState(() {
                 _position = value;
               });
@@ -377,13 +370,13 @@ class _ResidentCarState extends State<ResidentCar> {
             value: _houseId,
             items: _houses
                 ?.map(
-                  (RecordModel e) => DropdownMenuItem(
+                  (final RecordModel e) => DropdownMenuItem(
                     value: e.id,
                     child: Text(e.getStringValue('location')),
                   ),
                 )
                 .toList(),
-            onChanged: (String? value) {
+            onChanged: (final String? value) {
               setState(() {
                 _houseId = value;
               });
@@ -391,7 +384,7 @@ class _ResidentCarState extends State<ResidentCar> {
           ),
           const SizedBox(height: 16),
           _imageForm('photo', '请上传车辆照片', '选择车辆照片',
-              (String filename, Uint8List bytes) {
+              (final String filename, final Uint8List bytes) {
             setState(() {
               _files['photo'] = bytes;
               _filenames['photo'] = filename;
@@ -405,5 +398,4 @@ class _ResidentCarState extends State<ResidentCar> {
         ],
       ),
     );
-  }
 }

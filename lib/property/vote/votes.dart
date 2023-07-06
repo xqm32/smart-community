@@ -14,34 +14,31 @@ class PropertyVotes extends StatelessWidget {
   final String communityId;
 
   @override
-  Widget build(BuildContext context) {
-    return Manage(
+  Widget build(final BuildContext context) => Manage(
       title: const Text('支出投票管理'),
       fetchRecords: fetchRecords,
       filter: keyFilter('title'),
       toElement: toElement,
       onAddPressed: onAddPressed,
     );
-  }
 
   Future<List<RecordModel>> fetchRecords() {
     final String filter = 'communityId = "$communityId"';
     return pb.collection('votes').getFullList(filter: filter, sort: '-created');
   }
 
-  void onAddPressed(BuildContext context, void Function() refreshRecords) {
+  void onAddPressed(final BuildContext context, final void Function() refreshRecords) {
     navPush(
       context,
       PropertyVote(communityId: communityId),
-    ).then((value) => refreshRecords());
+    ).then((final value) => refreshRecords());
   }
 
   Widget toElement(
-    BuildContext context,
-    void Function() refreshRecords,
-    RecordModel record,
-  ) {
-    return ListTile(
+    final BuildContext context,
+    final void Function() refreshRecords,
+    final RecordModel record,
+  ) => ListTile(
       title: Text(record.getStringValue('title')),
       subtitle: RichText(
         text: TextSpan(
@@ -58,12 +55,11 @@ class PropertyVotes extends StatelessWidget {
         navPush(
           context,
           PropertyVote(communityId: communityId, recordId: record.id),
-        ).then((value) => refreshRecords());
+        ).then((final value) => refreshRecords());
       },
     );
-  }
 
-  Widget _recordState(RecordModel record) {
+  Widget _recordState(final RecordModel record) {
     final String start = record.getStringValue('start');
     final String end = record.getStringValue('end');
     const double fontSize = 16;

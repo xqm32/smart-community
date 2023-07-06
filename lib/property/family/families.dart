@@ -14,14 +14,12 @@ class PropertyFamilies extends StatelessWidget {
   final String communityId;
 
   @override
-  Widget build(BuildContext context) {
-    return Manage(
+  Widget build(final BuildContext context) => Manage(
       title: const Text('家人审核'),
       fetchRecords: fetchRecords,
       filter: keyFilter('name'),
       toElement: toElement,
     );
-  }
 
   Future<List<RecordModel>> fetchRecords() {
     final String filter = 'communityId = "$communityId"';
@@ -34,9 +32,9 @@ class PropertyFamilies extends StatelessWidget {
   }
 
   Widget toElement(
-    BuildContext context,
-    void Function() refreshRecords,
-    RecordModel record,
+    final BuildContext context,
+    final void Function() refreshRecords,
+    final RecordModel record,
   ) {
     final String userName =
         record.expand['userId']!.first.getStringValue('name');
@@ -63,12 +61,12 @@ class PropertyFamilies extends StatelessWidget {
         navPush(
           context,
           PropertyFamily(communityId: communityId, recordId: record.id),
-        ).then((value) => refreshRecords());
+        ).then((final value) => refreshRecords());
       },
     );
   }
 
-  Widget _recordState(RecordModel record) {
+  Widget _recordState(final RecordModel record) {
     final String state = record.getStringValue('state');
     const double fontSize = 16;
 

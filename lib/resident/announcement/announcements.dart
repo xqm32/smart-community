@@ -15,14 +15,12 @@ class ResidentAnnouncements extends StatelessWidget {
   final String communityId;
 
   @override
-  Widget build(BuildContext context) {
-    return Manage(
+  Widget build(final BuildContext context) => Manage(
       title: const Text('通知公告'),
       fetchRecords: fetchRecords,
       filter: keyFilter('title'),
       toElement: toElement,
     );
-  }
 
   Future<List<RecordModel>> fetchRecords() {
     final String filter = 'communityId = "$communityId"';
@@ -32,18 +30,16 @@ class ResidentAnnouncements extends StatelessWidget {
   }
 
   Widget toElement(
-    BuildContext context,
-    void Function() refreshRecords,
-    RecordModel record,
-  ) {
-    return Announcement(
+    final BuildContext context,
+    final void Function() refreshRecords,
+    final RecordModel record,
+  ) => Announcement(
       record: record,
       onTap: () {
         navPush(
           context,
           ResidentAnnouncement(recordId: record.id),
-        ).then((value) => refreshRecords());
+        ).then((final value) => refreshRecords());
       },
     );
-  }
 }

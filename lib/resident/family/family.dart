@@ -34,7 +34,7 @@ class _ResidentFamilyState extends State<ResidentFamily> {
   @override
   void initState() {
     _formKeys =
-        List.generate(_steps.length, (int index) => GlobalKey<FormState>());
+        List.generate(_steps.length, (final int index) => GlobalKey<FormState>());
     _controllers = {
       for (final String i in _fields) i: TextEditingController(),
     };
@@ -46,15 +46,14 @@ class _ResidentFamilyState extends State<ResidentFamily> {
 
   @override
   void dispose() {
-    for (TextEditingController i in _controllers.values) {
+    for (final TextEditingController i in _controllers.values) {
       i.dispose();
     }
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(final BuildContext context) => Scaffold(
       appBar: AppBar(
         title: const Text('家人管理'),
         actions: _actionsBuilder(context),
@@ -62,7 +61,7 @@ class _ResidentFamilyState extends State<ResidentFamily> {
       body: Stepper(
         type: StepperType.horizontal,
         currentStep: _index,
-        controlsBuilder: (BuildContext context, ControlsDetails details) =>
+        controlsBuilder: (final BuildContext context, final ControlsDetails details) =>
             Container(),
         steps: [
           for (int i = 0; i < _steps.length; ++i)
@@ -74,9 +73,8 @@ class _ResidentFamilyState extends State<ResidentFamily> {
         ],
       ),
     );
-  }
 
-  void _setRecord(RecordModel record) {
+  void _setRecord(final RecordModel record) {
     final String state = record.getStringValue('state');
     for (final MapEntry<String, TextEditingController> i
         in _controllers.entries) {
@@ -112,17 +110,16 @@ class _ResidentFamilyState extends State<ResidentFamily> {
       service
           .create(body: _getBody())
           .then(_setRecord)
-          .catchError((error) => showException(context, error));
+          .catchError((final error) => showException(context, error));
     } else {
       service
           .update(_record!.id, body: _getBody())
           .then(_setRecord)
-          .catchError((error) => showException(context, error));
+          .catchError((final error) => showException(context, error));
     }
   }
 
-  Widget _form({required int index}) {
-    return Form(
+  Widget _form({required final int index}) => Form(
       key: _formKeys[index],
       child: Column(
         children: [
@@ -158,9 +155,8 @@ class _ResidentFamilyState extends State<ResidentFamily> {
         ],
       ),
     );
-  }
 
-  List<Widget>? _actionsBuilder(context) {
+  List<Widget>? _actionsBuilder(final context) {
     if (_record == null) {
       return null;
     }
@@ -169,8 +165,7 @@ class _ResidentFamilyState extends State<ResidentFamily> {
       IconButton(
         onPressed: () => showDialog(
           context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
+          builder: (final BuildContext context) => AlertDialog(
               surfaceTintColor: Theme.of(context).colorScheme.background,
               title: const Text('删除家人'),
               content: const Text('确定要删除该家人吗？'),
@@ -183,7 +178,7 @@ class _ResidentFamilyState extends State<ResidentFamily> {
                 ),
                 TextButton(
                   onPressed: () {
-                    service.delete(_record!.id).then((value) {
+                    service.delete(_record!.id).then((final value) {
                       navPop(context, 'OK');
                       navPop(context);
                     });
@@ -191,8 +186,7 @@ class _ResidentFamilyState extends State<ResidentFamily> {
                   child: const Text('确认'),
                 ),
               ],
-            );
-          },
+            ),
         ),
         icon: const Icon(
           Icons.delete_outline,

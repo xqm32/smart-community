@@ -45,7 +45,7 @@ class _ResidentVerifyState extends State<ResidentVerify> {
   @override
   void initState() {
     _formKeys =
-        List.generate(_steps.length, (int index) => GlobalKey<FormState>());
+        List.generate(_steps.length, (final int index) => GlobalKey<FormState>());
     _controllers = {
       for (final String i in _fields) i: TextEditingController(),
     };
@@ -58,7 +58,7 @@ class _ResidentVerifyState extends State<ResidentVerify> {
     final String residentsFilter =
         'communityId = "${widget.communityId}" && userId = "${pb.authStore.model!.id}"';
     pb.collection('residents').getFullList(filter: residentsFilter).then(
-      (List<RecordModel> value) {
+      (final List<RecordModel> value) {
         if (value.isNotEmpty) {
           _setRecord(value.first);
         }
@@ -69,15 +69,14 @@ class _ResidentVerifyState extends State<ResidentVerify> {
 
   @override
   void dispose() {
-    for (TextEditingController i in _controllers.values) {
+    for (final TextEditingController i in _controllers.values) {
       i.dispose();
     }
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(final BuildContext context) => Scaffold(
       appBar: AppBar(
         title: const Text('实名认证'),
         actions: _actionsBuilder(context),
@@ -85,7 +84,7 @@ class _ResidentVerifyState extends State<ResidentVerify> {
       body: Stepper(
         type: StepperType.horizontal,
         currentStep: _index,
-        controlsBuilder: (BuildContext context, ControlsDetails details) =>
+        controlsBuilder: (final BuildContext context, final ControlsDetails details) =>
             Container(),
         steps: [
           for (int i = 0; i < _steps.length; ++i)
@@ -97,9 +96,8 @@ class _ResidentVerifyState extends State<ResidentVerify> {
         ],
       ),
     );
-  }
 
-  void _setRecord(RecordModel record) async {
+  void _setRecord(final RecordModel record) async {
     final String state = record.getStringValue('state');
     for (final MapEntry<String, TextEditingController> i
         in _controllers.entries) {
@@ -153,16 +151,16 @@ class _ResidentVerifyState extends State<ResidentVerify> {
       service
           .create(body: _getBody(), files: files)
           .then(_setRecord)
-          .catchError((error) => showException(context, error));
+          .catchError((final error) => showException(context, error));
     } else {
       service
           .update(_record!.id, body: _getBody(), files: files)
           .then(_setRecord)
-          .catchError((error) => showException(context, error));
+          .catchError((final error) => showException(context, error));
     }
   }
 
-  List<Widget>? _actionsBuilder(context) {
+  List<Widget>? _actionsBuilder(final context) {
     if (_record == null) {
       return null;
     }
@@ -171,8 +169,7 @@ class _ResidentVerifyState extends State<ResidentVerify> {
       IconButton(
         onPressed: () => showDialog(
           context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
+          builder: (final BuildContext context) => AlertDialog(
               surfaceTintColor: Theme.of(context).colorScheme.background,
               title: const Text('删除认证'),
               content: const Text('确定要删除该认证吗？'),
@@ -185,7 +182,7 @@ class _ResidentVerifyState extends State<ResidentVerify> {
                 ),
                 TextButton(
                   onPressed: () {
-                    service.delete(_record!.id).then((value) {
+                    service.delete(_record!.id).then((final value) {
                       navPop(context, 'OK');
                       navPop(context);
                     });
@@ -193,8 +190,7 @@ class _ResidentVerifyState extends State<ResidentVerify> {
                   child: const Text('确认'),
                 ),
               ],
-            );
-          },
+            ),
         ),
         icon: const Icon(
           Icons.delete_outline,
@@ -205,12 +201,11 @@ class _ResidentVerifyState extends State<ResidentVerify> {
   }
 
   Widget _imageForm(
-    String field,
-    String labelText,
-    String hintText,
-    void Function(String filename, Uint8List bytes) update,
-  ) {
-    return Column(
+    final String field,
+    final String labelText,
+    final String hintText,
+    final void Function(String filename, Uint8List bytes) update,
+  ) => Column(
       children: [
         Container(
           decoration: _files[field] != null
@@ -231,15 +226,13 @@ class _ResidentVerifyState extends State<ResidentVerify> {
         ),
       ],
     );
-  }
 
-  Widget _form({required int index}) {
-    return Form(
+  Widget _form({required final int index}) => Form(
       key: _formKeys[index],
       child: Column(
         children: [
           _imageForm('idCard', '请上传身份证照片', '选择身份证照片',
-              (String filename, Uint8List bytes) {
+              (final String filename, final Uint8List bytes) {
             setState(() {
               _files['idCard'] = bytes;
               _filenames['idCard'] = filename;
@@ -253,5 +246,4 @@ class _ResidentVerifyState extends State<ResidentVerify> {
         ],
       ),
     );
-  }
 }

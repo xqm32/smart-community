@@ -42,7 +42,7 @@ class _PropertyIndexState extends State<PropertyIndex> {
         'communityId = "${widget.communityId}" && userId = "${pb.authStore.model!.id}"';
 
     pb.collection('propertys').getFullList(filter: residentsFilter).then(
-      (List<RecordModel> value) {
+      (final List<RecordModel> value) {
         setState(() {
           _state =
               value.isNotEmpty ? value.first.getStringValue('state') : null;
@@ -54,7 +54,7 @@ class _PropertyIndexState extends State<PropertyIndex> {
   }
 
   @override
-  void didUpdateWidget(covariant PropertyIndex oldWidget) {
+  void didUpdateWidget(covariant final PropertyIndex oldWidget) {
     announcements = pb.collection('announcements').getFullList(
           filter: 'communityId = "${widget.communityId}"',
           sort: '-created',
@@ -64,7 +64,7 @@ class _PropertyIndexState extends State<PropertyIndex> {
         'communityId = "${widget.communityId}" && userId = "${pb.authStore.model!.id}"';
 
     pb.collection('propertys').getFullList(filter: residentsFilter).then(
-      (List<RecordModel> value) {
+      (final List<RecordModel> value) {
         setState(() {
           _state =
               value.isNotEmpty ? value.first.getStringValue('state') : null;
@@ -76,7 +76,7 @@ class _PropertyIndexState extends State<PropertyIndex> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     if (_state == null) {
       return const Center(
         child: Column(
@@ -117,8 +117,8 @@ class _PropertyIndexState extends State<PropertyIndex> {
             FutureBuilder(
               future: announcements,
               builder: (
-                BuildContext context,
-                AsyncSnapshot<List<RecordModel>> snapshot,
+                final BuildContext context,
+                final AsyncSnapshot<List<RecordModel>> snapshot,
               ) {
                 if (snapshot.hasData) {
                   return PropertyIndexAnnouncement(
@@ -140,8 +140,8 @@ class _PropertyIndexState extends State<PropertyIndex> {
             FutureBuilder(
               future: announcements,
               builder: (
-                BuildContext context,
-                AsyncSnapshot<List<RecordModel>> snapshot,
+                final BuildContext context,
+                final AsyncSnapshot<List<RecordModel>> snapshot,
               ) {
                 if (snapshot.hasData) {
                   return PropertyIndexAnnouncements(
@@ -173,28 +173,26 @@ class PropertyIndexAnnouncement extends StatelessWidget {
   final List<RecordModel> announcements;
 
   @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: const Icon(Icons.notifications),
-      title: announcements.isEmpty
-          ? const Text('暂无通知')
-          : Text(
-              announcements.first.getStringValue('title'),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
+  Widget build(final BuildContext context) => ListTile(
+        leading: const Icon(Icons.notifications),
+        title: announcements.isEmpty
+            ? const Text('暂无通知')
+            : Text(
+                announcements.first.getStringValue('title'),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+        trailing: TextButton(
+          onPressed: () => navPush(
+            context,
+            PropertyAnnouncement(
+              communityId: communityId,
+              recordId: announcements.first.id,
             ),
-      trailing: TextButton(
-        onPressed: () => navPush(
-          context,
-          PropertyAnnouncement(
-            communityId: communityId,
-            recordId: announcements.first.id,
           ),
+          child: const Text('编辑'),
         ),
-        child: const Text('编辑'),
-      ),
-    );
-  }
+      );
 }
 
 class PropertyIndexService extends StatelessWidget {
@@ -206,78 +204,82 @@ class PropertyIndexService extends StatelessWidget {
   final String communityId;
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            PropertyIndexServiceIcon(
-              onPressed: () =>
-                  navPush(context, PropertyResidents(communityId: communityId)),
-              icon: Icons.person,
-              text: '居民管理',
-              color: Colors.orange,
-            ),
-            PropertyIndexServiceIcon(
-              onPressed: () =>
-                  navPush(context, PropertyHouses(communityId: communityId)),
-              icon: Icons.home,
-              text: '房屋审核',
-              color: Colors.green,
-            ),
-            PropertyIndexServiceIcon(
-              onPressed: () =>
-                  navPush(context, PropertyCars(communityId: communityId)),
-              icon: Icons.car_rental,
-              text: '车辆审核',
-              color: Colors.blue,
-            ),
-            PropertyIndexServiceIcon(
-              onPressed: () =>
-                  navPush(context, PropertyFamilies(communityId: communityId)),
-              icon: Icons.people,
-              text: '家人审核',
-              color: Colors.purple,
-            ),
-          ],
-        ),
-        Row(
-          children: [
-            PropertyIndexServiceIcon(
-              onPressed: () =>
-                  navPush(context, PropertyProblems(communityId: communityId)),
-              icon: Icons.question_mark,
-              text: '事件处置',
-              color: Colors.cyan,
-            ),
-            PropertyIndexServiceIcon(
-              onPressed: () =>
-                  navPush(context, PropertyVotes(communityId: communityId)),
-              icon: Icons.how_to_vote,
-              text: '支出投票管理',
-              color: Colors.indigo,
-            ),
-            PropertyIndexServiceIcon(
-              onPressed: () => navPush(
-                context,
-                PropertyInformation(communityId: communityId),
+  Widget build(final BuildContext context) => Column(
+        children: [
+          Row(
+            children: [
+              PropertyIndexServiceIcon(
+                onPressed: () => navPush(
+                  context,
+                  PropertyResidents(communityId: communityId),
+                ),
+                icon: Icons.person,
+                text: '居民管理',
+                color: Colors.orange,
               ),
-              icon: Icons.settings,
-              text: '小区信息配置',
-              color: Colors.lightGreen,
-            ),
-            PropertyIndexServiceIcon(
-              onPressed: () {},
-              icon: Icons.more_horiz,
-              text: '更多服务',
-              color: Colors.grey,
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-      ],
-    );
-  }
+              PropertyIndexServiceIcon(
+                onPressed: () =>
+                    navPush(context, PropertyHouses(communityId: communityId)),
+                icon: Icons.home,
+                text: '房屋审核',
+                color: Colors.green,
+              ),
+              PropertyIndexServiceIcon(
+                onPressed: () =>
+                    navPush(context, PropertyCars(communityId: communityId)),
+                icon: Icons.car_rental,
+                text: '车辆审核',
+                color: Colors.blue,
+              ),
+              PropertyIndexServiceIcon(
+                onPressed: () => navPush(
+                  context,
+                  PropertyFamilies(communityId: communityId),
+                ),
+                icon: Icons.people,
+                text: '家人审核',
+                color: Colors.purple,
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              PropertyIndexServiceIcon(
+                onPressed: () => navPush(
+                  context,
+                  PropertyProblems(communityId: communityId),
+                ),
+                icon: Icons.question_mark,
+                text: '事件处置',
+                color: Colors.cyan,
+              ),
+              PropertyIndexServiceIcon(
+                onPressed: () =>
+                    navPush(context, PropertyVotes(communityId: communityId)),
+                icon: Icons.how_to_vote,
+                text: '支出投票管理',
+                color: Colors.indigo,
+              ),
+              PropertyIndexServiceIcon(
+                onPressed: () => navPush(
+                  context,
+                  PropertyInformation(communityId: communityId),
+                ),
+                icon: Icons.settings,
+                text: '小区信息配置',
+                color: Colors.lightGreen,
+              ),
+              PropertyIndexServiceIcon(
+                onPressed: () {},
+                icon: Icons.more_horiz,
+                text: '更多服务',
+                color: Colors.grey,
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+        ],
+      );
 }
 
 class PropertyIndexServiceIcon extends StatelessWidget {
@@ -295,21 +297,19 @@ class PropertyIndexServiceIcon extends StatelessWidget {
   final Color? color;
 
   @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        children: [
-          IconButton(
-            onPressed: onPressed,
-            icon: Icon(icon),
-            iconSize: 50,
-            color: color,
-          ),
-          Text(text),
-        ],
-      ),
-    );
-  }
+  Widget build(final BuildContext context) => Expanded(
+        child: Column(
+          children: [
+            IconButton(
+              onPressed: onPressed,
+              icon: Icon(icon),
+              iconSize: 50,
+              color: color,
+            ),
+            Text(text),
+          ],
+        ),
+      );
 }
 
 class PropertyIndexAnnouncements extends StatelessWidget {
@@ -323,45 +323,41 @@ class PropertyIndexAnnouncements extends StatelessWidget {
   final List<RecordModel> announcements;
 
   @override
-  Widget build(BuildContext context) {
-    // 参见 https://stackoverflow.com/questions/45669202/how-to-add-a-listview-to-a-column-in-flutter
-
-    return Expanded(
-      child: Column(
-        children: [
-          ListTile(
-            leading: const Icon(Icons.newspaper),
-            title: const Text('通知公告'),
-            trailing: TextButton(
-              onPressed: () => navPush(
-                context,
-                PropertyAnnouncements(communityId: communityId),
+  Widget build(final BuildContext context) => Expanded(
+        child: Column(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.newspaper),
+              title: const Text('通知公告'),
+              trailing: TextButton(
+                onPressed: () => navPush(
+                  context,
+                  PropertyAnnouncements(communityId: communityId),
+                ),
+                child: const Text('更多'),
               ),
-              child: const Text('更多'),
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: announcements.length,
-              itemBuilder: (BuildContext context, int index) {
-                final RecordModel record = announcements[index];
-                return Announcement(
-                  record: record,
-                  onTap: () {
-                    navPush(
-                      context,
-                      PropertyAnnouncement(
-                        communityId: communityId,
-                        recordId: record.id,
-                      ),
-                    );
-                  },
-                );
-              },
+            Expanded(
+              child: ListView.builder(
+                itemCount: announcements.length,
+                itemBuilder: (final BuildContext context, final int index) {
+                  final RecordModel record = announcements[index];
+                  return Announcement(
+                    record: record,
+                    onTap: () {
+                      navPush(
+                        context,
+                        PropertyAnnouncement(
+                          communityId: communityId,
+                          recordId: record.id,
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+      );
 }

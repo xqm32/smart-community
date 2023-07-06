@@ -41,7 +41,7 @@ class _ResidentProblemState extends State<ResidentProblem> {
   @override
   void initState() {
     _formKeys =
-        List.generate(_steps.length, (int index) => GlobalKey<FormState>());
+        List.generate(_steps.length, (final int index) => GlobalKey<FormState>());
     _controllers = {
       for (final String i in _fields) i: TextEditingController(),
     };
@@ -59,15 +59,14 @@ class _ResidentProblemState extends State<ResidentProblem> {
 
   @override
   void dispose() {
-    for (TextEditingController i in _controllers.values) {
+    for (final TextEditingController i in _controllers.values) {
       i.dispose();
     }
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(final BuildContext context) => Scaffold(
       appBar: AppBar(
         title: const Text('问题上报'),
         actions: _actionsBuilder(context),
@@ -75,7 +74,7 @@ class _ResidentProblemState extends State<ResidentProblem> {
       body: Stepper(
         type: StepperType.horizontal,
         currentStep: _index,
-        controlsBuilder: (BuildContext context, ControlsDetails details) =>
+        controlsBuilder: (final BuildContext context, final ControlsDetails details) =>
             Container(),
         steps: [
           for (int i = 0; i < _steps.length; ++i)
@@ -87,9 +86,8 @@ class _ResidentProblemState extends State<ResidentProblem> {
         ],
       ),
     );
-  }
 
-  void _setRecord(RecordModel record) async {
+  void _setRecord(final RecordModel record) async {
     final String state = record.getStringValue('state');
     for (final MapEntry<String, TextEditingController> i
         in _controllers.entries) {
@@ -143,22 +141,21 @@ class _ResidentProblemState extends State<ResidentProblem> {
       service
           .create(body: _getBody(), files: files)
           .then(_setRecord)
-          .catchError((error) => showException(context, error));
+          .catchError((final error) => showException(context, error));
     } else {
       service
           .update(_record!.id, body: _getBody(), files: files)
           .then(_setRecord)
-          .catchError((error) => showException(context, error));
+          .catchError((final error) => showException(context, error));
     }
   }
 
   Widget _imageForm(
-    String field,
-    String labelText,
-    String hintText,
-    void Function(String filename, Uint8List bytes) update,
-  ) {
-    return Column(
+    final String field,
+    final String labelText,
+    final String hintText,
+    final void Function(String filename, Uint8List bytes) update,
+  ) => Column(
       children: [
         Container(
           decoration: _files[field] != null
@@ -179,10 +176,8 @@ class _ResidentProblemState extends State<ResidentProblem> {
         ),
       ],
     );
-  }
 
-  Widget _form({required int index}) {
-    return Form(
+  Widget _form({required final int index}) => Form(
       key: _formKeys[index],
       child: Column(
         children: [
@@ -216,7 +211,7 @@ class _ResidentProblemState extends State<ResidentProblem> {
           ),
           const SizedBox(height: 16),
           _imageForm('photo', '请上传问题照片', '选择问题照片',
-              (String filename, Uint8List bytes) {
+              (final String filename, final Uint8List bytes) {
             setState(() {
               _files['photo'] = bytes;
               _filenames['photo'] = filename;
@@ -230,9 +225,8 @@ class _ResidentProblemState extends State<ResidentProblem> {
         ],
       ),
     );
-  }
 
-  List<Widget>? _actionsBuilder(context) {
+  List<Widget>? _actionsBuilder(final context) {
     if (_record == null) {
       return null;
     }
@@ -241,8 +235,7 @@ class _ResidentProblemState extends State<ResidentProblem> {
       IconButton(
         onPressed: () => showDialog(
           context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
+          builder: (final BuildContext context) => AlertDialog(
               surfaceTintColor: Theme.of(context).colorScheme.background,
               title: const Text('删除问题'),
               content: const Text('确定要删除该问题吗？'),
@@ -255,7 +248,7 @@ class _ResidentProblemState extends State<ResidentProblem> {
                 ),
                 TextButton(
                   onPressed: () {
-                    service.delete(_record!.id).then((value) {
+                    service.delete(_record!.id).then((final value) {
                       navPop(context, 'OK');
                       navPop(context);
                     });
@@ -263,8 +256,7 @@ class _ResidentProblemState extends State<ResidentProblem> {
                   child: const Text('确认'),
                 ),
               ],
-            );
-          },
+            ),
         ),
         icon: const Icon(
           Icons.delete_outline,

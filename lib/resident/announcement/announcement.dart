@@ -30,8 +30,7 @@ class _ResidentAnnouncementState extends State<ResidentAnnouncement> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(final BuildContext context) => Scaffold(
       appBar: AppBar(
         title: const Text('通知公告'),
       ),
@@ -82,9 +81,8 @@ class _ResidentAnnouncementState extends State<ResidentAnnouncement> {
             )
           : const LinearProgressIndicator(),
     );
-  }
 
-  void _setRecord(RecordModel record) {
+  void _setRecord(final RecordModel record) {
     setState(() {
       _record = record;
     });

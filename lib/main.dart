@@ -10,8 +10,7 @@ class App extends StatelessWidget {
   const App({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(final BuildContext context) => MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Smart Community',
       theme: ThemeData(
@@ -20,5 +19,4 @@ class App extends StatelessWidget {
       ),
       home: const Login(),
     );
-  }
 }

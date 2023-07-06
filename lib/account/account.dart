@@ -22,8 +22,7 @@ class _AccountState extends State<Account> {
   RecordModel? record = pb.authStore.model;
 
   @override
-  Widget build(BuildContext context) {
-    return Center(
+  Widget build(final BuildContext context) => Center(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -79,10 +78,10 @@ class _AccountState extends State<Account> {
               leading: const Icon(Icons.logout, color: Colors.red),
               onTap: () {
                 pb.authStore.clear();
-                SharedPreferences.getInstance().then((SharedPreferences prefs) {
+                SharedPreferences.getInstance().then((final SharedPreferences prefs) {
                   prefs
                       .clear()
-                      .then((bool value) => navGoto(context, const Login()));
+                      .then((final bool value) => navGoto(context, const Login()));
                 });
               },
               title: const Text('退出登陆', style: TextStyle(color: Colors.red)),
@@ -91,7 +90,6 @@ class _AccountState extends State<Account> {
         ),
       ),
     );
-  }
 }
 
 class AccountAvatar extends StatelessWidget {
@@ -105,7 +103,7 @@ class AccountAvatar extends StatelessWidget {
   final void Function() onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     final String avatar = record.getStringValue('avatar');
 
     NetworkImage? image;

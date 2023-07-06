@@ -15,15 +15,13 @@ class PropertyAnnouncements extends StatelessWidget {
   final String communityId;
 
   @override
-  Widget build(BuildContext context) {
-    return Manage(
+  Widget build(final BuildContext context) => Manage(
       title: const Text('通知公告'),
       fetchRecords: fetchRecords,
       filter: keyFilter('title'),
       toElement: toElement,
       onAddPressed: onAddPressed,
     );
-  }
 
   Future<List<RecordModel>> fetchRecords() {
     final String filter = 'communityId = "$communityId"';
@@ -32,26 +30,24 @@ class PropertyAnnouncements extends StatelessWidget {
         .getFullList(filter: filter, sort: '-created');
   }
 
-  void onAddPressed(BuildContext context, void Function() refreshRecords) {
+  void onAddPressed(final BuildContext context, final void Function() refreshRecords) {
     navPush(
       context,
       PropertyAnnouncement(communityId: communityId),
-    ).then((value) => refreshRecords());
+    ).then((final value) => refreshRecords());
   }
 
   Widget toElement(
-    BuildContext context,
-    void Function() refreshRecords,
-    RecordModel record,
-  ) {
-    return Announcement(
+    final BuildContext context,
+    final void Function() refreshRecords,
+    final RecordModel record,
+  ) => Announcement(
       record: record,
       onTap: () {
         navPush(
           context,
           PropertyAnnouncement(communityId: communityId, recordId: record.id),
-        ).then((value) => refreshRecords());
+        ).then((final value) => refreshRecords());
       },
     );
-  }
 }

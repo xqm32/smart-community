@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pocketbase/src/dtos/record_model.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
 
@@ -7,21 +7,19 @@ class AccountInformation extends StatelessWidget {
   const AccountInformation({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('修改信息')),
-      body: const Center(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              _InformationForm(),
-            ],
+  Widget build(final BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('修改信息')),
+        body: const Center(
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                _InformationForm(),
+              ],
+            ),
           ),
         ),
-      ),
-    );
-  }
+      );
 }
 
 class _InformationForm extends StatefulWidget {
@@ -52,53 +50,51 @@ class _LoginFormState extends State<_InformationForm> {
 
   @override
   void dispose() {
-    for (TextEditingController element in _controllers.values) {
+    for (final TextEditingController element in _controllers.values) {
       element.dispose();
     }
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          TextFormField(
-            controller: _controllers['name'],
-            decoration: const InputDecoration(
-              labelText: '姓名',
-              hintText: '请输入姓名',
+  Widget build(final BuildContext context) => Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            TextFormField(
+              controller: _controllers['name'],
+              decoration: const InputDecoration(
+                labelText: '姓名',
+                hintText: '请输入姓名',
+              ),
+              validator: notNullValidator('姓名不能为空'),
             ),
-            validator: notNullValidator('姓名不能为空'),
-          ),
-          TextFormField(
-            controller: _controllers['identity'],
-            decoration: const InputDecoration(
-              labelText: '身份证号',
-              hintText: '请输入身份证号',
+            TextFormField(
+              controller: _controllers['identity'],
+              decoration: const InputDecoration(
+                labelText: '身份证号',
+                hintText: '请输入身份证号',
+              ),
+              validator: notNullValidator('身份证号不能为空'),
             ),
-            validator: notNullValidator('身份证号不能为空'),
-          ),
-          TextFormField(
-            controller: _controllers['phone'],
-            decoration: const InputDecoration(
-              labelText: '手机号',
-              hintText: '请输入手机号',
+            TextFormField(
+              controller: _controllers['phone'],
+              decoration: const InputDecoration(
+                labelText: '手机号',
+                hintText: '请输入手机号',
+              ),
+              validator: notNullValidator('手机号不能为空'),
             ),
-            validator: notNullValidator('手机号不能为空'),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () => _onSubmitPressed(context),
-            child: const Text('确认修改'),
-          ),
-        ],
-      ),
-    );
-  }
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => _onSubmitPressed(context),
+              child: const Text('确认修改'),
+            ),
+          ],
+        ),
+      );
 
-  void _onSubmitPressed(context) {
+  void _onSubmitPressed(final context) {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -111,7 +107,7 @@ class _LoginFormState extends State<_InformationForm> {
     pb
         .collection('users')
         .update(pb.authStore.model.id, body: body)
-        .then((RecordModel value) => navPop(context))
-        .catchError((error) => showException(context, error));
+        .then((final RecordModel value) => navPop(context))
+        .catchError((final error) => showException(context, error));
   }
 }

@@ -14,14 +14,12 @@ class ResidentVotes extends StatelessWidget {
   final String communityId;
 
   @override
-  Widget build(BuildContext context) {
-    return Manage(
-      title: const Text('支出投票管理'),
-      fetchRecords: fetchRecords,
-      filter: keyFilter('title'),
-      toElement: toElement,
-    );
-  }
+  Widget build(final BuildContext context) => Manage(
+        title: const Text('支出投票管理'),
+        fetchRecords: fetchRecords,
+        filter: keyFilter('title'),
+        toElement: toElement,
+      );
 
   Future<List<RecordModel>> fetchRecords() {
     final String filter = 'communityId = "$communityId"';
@@ -29,34 +27,33 @@ class ResidentVotes extends StatelessWidget {
   }
 
   Widget toElement(
-    BuildContext context,
-    void Function() refreshRecords,
-    RecordModel record,
-  ) {
-    return ListTile(
-      title: Text(record.getStringValue('title')),
-      subtitle: RichText(
-        text: TextSpan(
-          children: [
-            TextSpan(
-              text: getDateTime(record.created),
-              style: const TextStyle(color: Colors.grey),
-            ),
-          ],
+    final BuildContext context,
+    final void Function() refreshRecords,
+    final RecordModel record,
+  ) =>
+      ListTile(
+        title: Text(record.getStringValue('title')),
+        subtitle: RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: getDateTime(record.created),
+                style: const TextStyle(color: Colors.grey),
+              ),
+            ],
+          ),
         ),
-      ),
-      trailing: _recordState(record),
-      onTap: () {
-        navPush(
-          context,
-          ResidentVote(communityId: communityId, recordId: record.id),
-        ).then((value) => refreshRecords());
-      },
-    );
-  }
+        trailing: _recordState(record),
+        onTap: () {
+          navPush(
+            context,
+            ResidentVote(communityId: communityId, recordId: record.id),
+          ).then((final value) => refreshRecords());
+        },
+      );
 
-  Widget _recordState(RecordModel record) {
-    late Future<List<RecordModel>> result =
+  Widget _recordState(final RecordModel record) {
+    late final Future<List<RecordModel>> result =
         pb.collection('results').getFullList(
               filter:
                   'voteId = "${record.id}" && userId = "${pb.authStore.model!.id}"',
@@ -67,8 +64,10 @@ class ResidentVotes extends StatelessWidget {
 
     return FutureBuilder(
       future: result,
-      builder:
-          (BuildContext context, AsyncSnapshot<List<RecordModel>> snapshot) {
+      builder: (
+        final BuildContext context,
+        final AsyncSnapshot<List<RecordModel>> snapshot,
+      ) {
         if (snapshot.hasData) {
           if (snapshot.data!.isEmpty) {
             return _recordStateText(start, end, fontSize);
@@ -94,7 +93,11 @@ class ResidentVotes extends StatelessWidget {
     );
   }
 
-  Widget _recordStateText(String start, String end, double fontSize) {
+  Widget _recordStateText(
+    final String start,
+    final String end,
+    final double fontSize,
+  ) {
     if (start.isNotEmpty &&
         DateTime.now().toLocal().isBefore(DateTime.parse(start))) {
       return Text(

@@ -14,15 +14,13 @@ class ResidentHouses extends StatelessWidget {
   final String communityId;
 
   @override
-  Widget build(BuildContext context) {
-    return Manage(
+  Widget build(final BuildContext context) => Manage(
       title: const Text('房屋管理'),
       fetchRecords: fetchRecords,
       filter: keyFilter('location'),
       onAddPressed: onAddPressed,
       toElement: toElement,
     );
-  }
 
   Future<List<RecordModel>> fetchRecords() {
     final String filter =
@@ -32,19 +30,18 @@ class ResidentHouses extends StatelessWidget {
         .getFullList(filter: filter, sort: '-created');
   }
 
-  void onAddPressed(BuildContext context, void Function() refreshRecords) {
+  void onAddPressed(final BuildContext context, final void Function() refreshRecords) {
     navPush(
       context,
       ResidentHouse(communityId: communityId),
-    ).then((value) => refreshRecords());
+    ).then((final value) => refreshRecords());
   }
 
   Widget toElement(
-    BuildContext context,
-    void Function() refreshRecords,
-    RecordModel record,
-  ) {
-    return ListTile(
+    final BuildContext context,
+    final void Function() refreshRecords,
+    final RecordModel record,
+  ) => ListTile(
       title: Text(record.getStringValue('location')),
       subtitle: Text(getDateTime(record.created)),
       trailing: _recordState(record),
@@ -52,12 +49,11 @@ class ResidentHouses extends StatelessWidget {
         navPush(
           context,
           ResidentHouse(communityId: communityId, recordId: record.id),
-        ).then((value) => refreshRecords());
+        ).then((final value) => refreshRecords());
       },
     );
-  }
 
-  Widget _recordState(RecordModel record) {
+  Widget _recordState(final RecordModel record) {
     final String state = record.getStringValue('state');
     const double fontSize = 16;
 

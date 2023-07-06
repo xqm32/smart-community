@@ -41,7 +41,7 @@ class _PropertyHouseState extends State<PropertyHouse> {
   @override
   void initState() {
     _formKeys =
-        List.generate(_steps.length, (int index) => GlobalKey<FormState>());
+        List.generate(_steps.length, (final int index) => GlobalKey<FormState>());
     _userControllers = {
       for (final String i in _userFields) i: TextEditingController(),
     };
@@ -57,18 +57,17 @@ class _PropertyHouseState extends State<PropertyHouse> {
 
   @override
   void dispose() {
-    for (TextEditingController i in _userControllers.values) {
+    for (final TextEditingController i in _userControllers.values) {
       i.dispose();
     }
-    for (TextEditingController i in _controllers.values) {
+    for (final TextEditingController i in _controllers.values) {
       i.dispose();
     }
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(final BuildContext context) => Scaffold(
       appBar: AppBar(
         title: const Text('房屋审核'),
         actions: _actionsBuilder(context),
@@ -76,7 +75,7 @@ class _PropertyHouseState extends State<PropertyHouse> {
       body: Stepper(
         type: StepperType.horizontal,
         currentStep: _index,
-        controlsBuilder: (BuildContext context, ControlsDetails details) =>
+        controlsBuilder: (final BuildContext context, final ControlsDetails details) =>
             Container(),
         steps: [
           for (int i = 0; i < _steps.length; ++i)
@@ -88,9 +87,8 @@ class _PropertyHouseState extends State<PropertyHouse> {
         ],
       ),
     );
-  }
 
-  void _setRecord(RecordModel record) {
+  void _setRecord(final RecordModel record) {
     for (final MapEntry<String, TextEditingController> i
         in _controllers.entries) {
       i.value.text = record.getStringValue(i.key);
@@ -107,8 +105,7 @@ class _PropertyHouseState extends State<PropertyHouse> {
     });
   }
 
-  void Function() _onPressed(String state) {
-    return () {
+  void Function() _onPressed(final String state) => () {
       if (!_formKeys[_index].currentState!.validate()) {
         return;
       }
@@ -119,12 +116,10 @@ class _PropertyHouseState extends State<PropertyHouse> {
       _service
           .update(_record!.id, body: body, expand: _expand)
           .then(_setRecord)
-          .catchError((error) => showException(context, error));
+          .catchError((final error) => showException(context, error));
     };
-  }
 
-  Widget _form({required int index}) {
-    return Form(
+  Widget _form({required final int index}) => Form(
       key: _formKeys[index],
       child: Column(
         children: [
@@ -186,9 +181,8 @@ class _PropertyHouseState extends State<PropertyHouse> {
         ],
       ),
     );
-  }
 
-  List<Widget>? _actionsBuilder(context) {
+  List<Widget>? _actionsBuilder(final context) {
     if (_record == null) {
       return null;
     }
@@ -197,8 +191,7 @@ class _PropertyHouseState extends State<PropertyHouse> {
       IconButton(
         onPressed: () => showDialog(
           context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
+          builder: (final BuildContext context) => AlertDialog(
               surfaceTintColor: Theme.of(context).colorScheme.background,
               title: const Text('删除房屋'),
               content: const Text('确定要删除该房屋吗？'),
@@ -211,7 +204,7 @@ class _PropertyHouseState extends State<PropertyHouse> {
                 ),
                 TextButton(
                   onPressed: () {
-                    _service.delete(_record!.id).then((value) {
+                    _service.delete(_record!.id).then((final value) {
                       navPop(context, 'OK');
                       navPop(context);
                     });
@@ -219,8 +212,7 @@ class _PropertyHouseState extends State<PropertyHouse> {
                   child: const Text('确认'),
                 ),
               ],
-            );
-          },
+            ),
         ),
         icon: const Icon(
           Icons.delete_outline,

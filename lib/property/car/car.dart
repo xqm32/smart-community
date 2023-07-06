@@ -41,7 +41,7 @@ class _PropertyCarState extends State<PropertyCar> {
   @override
   void initState() {
     _formKeys =
-        List.generate(_steps.length, (int index) => GlobalKey<FormState>());
+        List.generate(_steps.length, (final int index) => GlobalKey<FormState>());
     _userControllers = {
       for (final String i in _userFields) i: TextEditingController(),
     };
@@ -57,18 +57,17 @@ class _PropertyCarState extends State<PropertyCar> {
 
   @override
   void dispose() {
-    for (TextEditingController i in _userControllers.values) {
+    for (final TextEditingController i in _userControllers.values) {
       i.dispose();
     }
-    for (TextEditingController i in _controllers.values) {
+    for (final TextEditingController i in _controllers.values) {
       i.dispose();
     }
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(final BuildContext context) => Scaffold(
       appBar: AppBar(
         title: const Text('车辆审核'),
         actions: _actionsBuilder(context),
@@ -76,7 +75,7 @@ class _PropertyCarState extends State<PropertyCar> {
       body: Stepper(
         type: StepperType.horizontal,
         currentStep: _index,
-        controlsBuilder: (BuildContext context, ControlsDetails details) =>
+        controlsBuilder: (final BuildContext context, final ControlsDetails details) =>
             Container(),
         steps: [
           for (int i = 0; i < _steps.length; ++i)
@@ -88,9 +87,8 @@ class _PropertyCarState extends State<PropertyCar> {
         ],
       ),
     );
-  }
 
-  void _setRecord(RecordModel record) {
+  void _setRecord(final RecordModel record) {
     for (final MapEntry<String, TextEditingController> i
         in _controllers.entries) {
       i.value.text = record.getStringValue(i.key);
@@ -107,8 +105,7 @@ class _PropertyCarState extends State<PropertyCar> {
     });
   }
 
-  void Function() _onPressed(String state) {
-    return () {
+  void Function() _onPressed(final String state) => () {
       if (!_formKeys[_index].currentState!.validate()) {
         return;
       }
@@ -119,12 +116,10 @@ class _PropertyCarState extends State<PropertyCar> {
       _service
           .update(_record!.id, body: body, expand: _expand)
           .then(_setRecord)
-          .catchError((error) => showException(context, error));
+          .catchError((final error) => showException(context, error));
     };
-  }
 
-  Widget _form({required int index}) {
-    return Form(
+  Widget _form({required final int index}) => Form(
       key: _formKeys[index],
       child: Column(
         children: [
@@ -200,9 +195,8 @@ class _PropertyCarState extends State<PropertyCar> {
         ],
       ),
     );
-  }
 
-  List<Widget>? _actionsBuilder(context) {
+  List<Widget>? _actionsBuilder(final context) {
     if (_record == null) {
       return null;
     }
@@ -211,8 +205,7 @@ class _PropertyCarState extends State<PropertyCar> {
       IconButton(
         onPressed: () => showDialog(
           context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
+          builder: (final BuildContext context) => AlertDialog(
               surfaceTintColor: Theme.of(context).colorScheme.background,
               title: const Text('删除车辆'),
               content: const Text('确定要删除该车辆吗？'),
@@ -225,7 +218,7 @@ class _PropertyCarState extends State<PropertyCar> {
                 ),
                 TextButton(
                   onPressed: () {
-                    _service.delete(_record!.id).then((value) {
+                    _service.delete(_record!.id).then((final value) {
                       navPop(context, 'OK');
                       navPop(context);
                     });
@@ -233,8 +226,7 @@ class _PropertyCarState extends State<PropertyCar> {
                   child: const Text('确认'),
                 ),
               ],
-            );
-          },
+            ),
         ),
         icon: const Icon(
           Icons.delete_outline,

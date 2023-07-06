@@ -40,7 +40,7 @@ class _ResidentIndexState extends State<ResidentIndex> {
   }
 
   @override
-  void didUpdateWidget(covariant ResidentIndex oldWidget) {
+  void didUpdateWidget(covariant final ResidentIndex oldWidget) {
     announcements = pb.collection('announcements').getFullList(
           filter: 'communityId = "${widget.communityId}"',
           sort: '-created',
@@ -50,7 +50,7 @@ class _ResidentIndexState extends State<ResidentIndex> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     final Map<String?, Text> label = {
       null: const Text('您还未入住该小区'),
       'reviewing': const Text(
@@ -97,8 +97,8 @@ class _ResidentIndexState extends State<ResidentIndex> {
             FutureBuilder(
               future: announcements,
               builder: (
-                BuildContext context,
-                AsyncSnapshot<List<RecordModel>> snapshot,
+                final BuildContext context,
+                final AsyncSnapshot<List<RecordModel>> snapshot,
               ) {
                 if (snapshot.hasData) {
                   return ResidentIndexAnnouncement(
@@ -116,8 +116,8 @@ class _ResidentIndexState extends State<ResidentIndex> {
             FutureBuilder(
               future: announcements,
               builder: (
-                BuildContext context,
-                AsyncSnapshot<List<RecordModel>> snapshot,
+                final BuildContext context,
+                final AsyncSnapshot<List<RecordModel>> snapshot,
               ) {
                 if (snapshot.hasData) {
                   return ResidentIndexAnnouncements(
@@ -142,7 +142,7 @@ class _ResidentIndexState extends State<ResidentIndex> {
         'communityId = "${widget.communityId}" && userId = "${pb.authStore.model!.id}"';
 
     pb.collection('residents').getFullList(filter: residentsFilter).then(
-      (List<RecordModel> value) {
+      (final List<RecordModel> value) {
         setState(() {
           _state =
               value.isNotEmpty ? value.first.getStringValue('state') : null;
@@ -161,25 +161,23 @@ class ResidentIndexAnnouncement extends StatelessWidget {
   final List<RecordModel> announcements;
 
   @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: const Icon(Icons.notifications),
-      title: announcements.isEmpty
-          ? const Text('暂无通知')
-          : Text(
-              announcements.first.getStringValue('title'),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            ),
-      trailing: TextButton(
-        onPressed: () => navPush(
-          context,
-          ResidentAnnouncement(recordId: announcements.first.id),
+  Widget build(final BuildContext context) => ListTile(
+        leading: const Icon(Icons.notifications),
+        title: announcements.isEmpty
+            ? const Text('暂无通知')
+            : Text(
+                announcements.first.getStringValue('title'),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+        trailing: TextButton(
+          onPressed: () => navPush(
+            context,
+            ResidentAnnouncement(recordId: announcements.first.id),
+          ),
+          child: const Text('查看'),
         ),
-        child: const Text('查看'),
-      ),
-    );
-  }
+      );
 }
 
 class ResidentIndexService extends StatelessWidget {
@@ -191,75 +189,73 @@ class ResidentIndexService extends StatelessWidget {
   final String communityId;
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            ResidentIndexServiceIcon(
-              onPressed: () =>
-                  navPush(context, ResidentVerify(communityId: communityId)),
-              icon: Icons.person,
-              text: '实名认证',
-              color: Colors.orange,
-            ),
-            ResidentIndexServiceIcon(
-              onPressed: () =>
-                  navPush(context, ResidentHouses(communityId: communityId)),
-              icon: Icons.home,
-              text: '房屋管理',
-              color: Colors.green,
-            ),
-            ResidentIndexServiceIcon(
-              onPressed: () =>
-                  navPush(context, ResidentCars(communityId: communityId)),
-              icon: Icons.car_rental,
-              text: '车辆管理',
-              color: Colors.blue,
-            ),
-            ResidentIndexServiceIcon(
-              onPressed: () =>
-                  navPush(context, ResidentFamilies(communityId: communityId)),
-              icon: Icons.people,
-              text: '家人管理',
-              color: Colors.purple,
-            ),
-          ],
-        ),
-        Row(
-          children: [
-            ResidentIndexServiceIcon(
-              onPressed: () =>
-                  navPush(context, ResidentProblems(communityId: communityId)),
-              icon: Icons.question_mark,
-              text: '问题上报',
-              color: Colors.cyan,
-            ),
-            ResidentIndexServiceIcon(
-              onPressed: () =>
-                  navPush(context, ResidentVotes(communityId: communityId)),
-              icon: Icons.how_to_vote,
-              text: '预算支出投票',
-              color: Colors.indigo,
-            ),
-            ResidentIndexServiceIcon(
-              onPressed: () {},
-              icon: Icons.phone,
-              text: '联系物业',
-              color: Colors.lightGreen,
-            ),
-            ResidentIndexServiceIcon(
-              onPressed: () {},
-              icon: Icons.more_horiz,
-              text: '更多服务',
-              color: Colors.grey,
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-      ],
-    );
-  }
+  Widget build(final BuildContext context) => Column(
+        children: [
+          Row(
+            children: [
+              ResidentIndexServiceIcon(
+                onPressed: () =>
+                    navPush(context, ResidentVerify(communityId: communityId)),
+                icon: Icons.person,
+                text: '实名认证',
+                color: Colors.orange,
+              ),
+              ResidentIndexServiceIcon(
+                onPressed: () =>
+                    navPush(context, ResidentHouses(communityId: communityId)),
+                icon: Icons.home,
+                text: '房屋管理',
+                color: Colors.green,
+              ),
+              ResidentIndexServiceIcon(
+                onPressed: () =>
+                    navPush(context, ResidentCars(communityId: communityId)),
+                icon: Icons.car_rental,
+                text: '车辆管理',
+                color: Colors.blue,
+              ),
+              ResidentIndexServiceIcon(
+                onPressed: () => navPush(
+                    context, ResidentFamilies(communityId: communityId),),
+                icon: Icons.people,
+                text: '家人管理',
+                color: Colors.purple,
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              ResidentIndexServiceIcon(
+                onPressed: () => navPush(
+                    context, ResidentProblems(communityId: communityId),),
+                icon: Icons.question_mark,
+                text: '问题上报',
+                color: Colors.cyan,
+              ),
+              ResidentIndexServiceIcon(
+                onPressed: () =>
+                    navPush(context, ResidentVotes(communityId: communityId)),
+                icon: Icons.how_to_vote,
+                text: '预算支出投票',
+                color: Colors.indigo,
+              ),
+              ResidentIndexServiceIcon(
+                onPressed: () {},
+                icon: Icons.phone,
+                text: '联系物业',
+                color: Colors.lightGreen,
+              ),
+              ResidentIndexServiceIcon(
+                onPressed: () {},
+                icon: Icons.more_horiz,
+                text: '更多服务',
+                color: Colors.grey,
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+        ],
+      );
 }
 
 class ResidentIndexServiceIcon extends StatelessWidget {
@@ -277,21 +273,19 @@ class ResidentIndexServiceIcon extends StatelessWidget {
   final Color? color;
 
   @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        children: [
-          IconButton(
-            onPressed: onPressed,
-            icon: Icon(icon),
-            iconSize: 50,
-            color: color,
-          ),
-          Text(text),
-        ],
-      ),
-    );
-  }
+  Widget build(final BuildContext context) => Expanded(
+        child: Column(
+          children: [
+            IconButton(
+              onPressed: onPressed,
+              icon: Icon(icon),
+              iconSize: 50,
+              color: color,
+            ),
+            Text(text),
+          ],
+        ),
+      );
 }
 
 class ResidentIndexAnnouncements extends StatelessWidget {
@@ -305,42 +299,38 @@ class ResidentIndexAnnouncements extends StatelessWidget {
   final List<RecordModel> announcements;
 
   @override
-  Widget build(BuildContext context) {
-    // 参见 https://stackoverflow.com/questions/45669202/how-to-add-a-listview-to-a-column-in-flutter
-
-    return Expanded(
-      child: Column(
-        children: [
-          ListTile(
-            leading: const Icon(Icons.newspaper),
-            title: const Text('通知公告'),
-            trailing: TextButton(
-              onPressed: () => navPush(
-                context,
-                ResidentAnnouncements(communityId: communityId),
+  Widget build(final BuildContext context) => Expanded(
+        child: Column(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.newspaper),
+              title: const Text('通知公告'),
+              trailing: TextButton(
+                onPressed: () => navPush(
+                  context,
+                  ResidentAnnouncements(communityId: communityId),
+                ),
+                child: const Text('更多'),
               ),
-              child: const Text('更多'),
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: announcements.length,
-              itemBuilder: (BuildContext context, int index) {
-                final RecordModel record = announcements[index];
-                return Announcement(
-                  record: record,
-                  onTap: () {
-                    navPush(
-                      context,
-                      ResidentAnnouncement(recordId: record.id),
-                    );
-                  },
-                );
-              },
+            Expanded(
+              child: ListView.builder(
+                itemCount: announcements.length,
+                itemBuilder: (final BuildContext context, final int index) {
+                  final RecordModel record = announcements[index];
+                  return Announcement(
+                    record: record,
+                    onTap: () {
+                      navPush(
+                        context,
+                        ResidentAnnouncement(recordId: record.id),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+      );
 }

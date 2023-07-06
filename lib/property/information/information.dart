@@ -32,7 +32,7 @@ class _PropertyInformationState extends State<PropertyInformation> {
   @override
   void initState() {
     _formKeys =
-        List.generate(_steps.length, (int index) => GlobalKey<FormState>());
+        List.generate(_steps.length, (final int index) => GlobalKey<FormState>());
     _controllers = {
       for (final String i in _fields) i: TextEditingController(),
     };
@@ -42,15 +42,14 @@ class _PropertyInformationState extends State<PropertyInformation> {
 
   @override
   void dispose() {
-    for (TextEditingController i in _controllers.values) {
+    for (final TextEditingController i in _controllers.values) {
       i.dispose();
     }
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(final BuildContext context) => Scaffold(
       appBar: AppBar(
         title: const Text('小区信息配置'),
         actions: _actionsBuilder(context),
@@ -58,7 +57,7 @@ class _PropertyInformationState extends State<PropertyInformation> {
       body: Stepper(
         type: StepperType.horizontal,
         currentStep: _index,
-        controlsBuilder: (BuildContext context, ControlsDetails details) =>
+        controlsBuilder: (final BuildContext context, final ControlsDetails details) =>
             Container(),
         steps: [
           for (int i = 0; i < _steps.length; ++i)
@@ -70,9 +69,8 @@ class _PropertyInformationState extends State<PropertyInformation> {
         ],
       ),
     );
-  }
 
-  void _setRecord(RecordModel record) {
+  void _setRecord(final RecordModel record) {
     final int index = record.getStringValue('struct').isNotEmpty &&
             record.getStringValue('parking').isNotEmpty
         ? 1
@@ -109,11 +107,10 @@ class _PropertyInformationState extends State<PropertyInformation> {
     service
         .update(_record!.id, body: _getBody())
         .then(_setRecord)
-        .catchError((error) => showException(context, error));
+        .catchError((final error) => showException(context, error));
   }
 
-  Widget _form({required int index}) {
-    return Form(
+  Widget _form({required final int index}) => Form(
       key: _formKeys[index],
       child: Column(
         children: [
@@ -157,9 +154,8 @@ class _PropertyInformationState extends State<PropertyInformation> {
         ],
       ),
     );
-  }
 
-  List<Widget>? _actionsBuilder(context) {
+  List<Widget>? _actionsBuilder(final context) {
     if (_record == null) {
       return null;
     }
@@ -168,32 +164,30 @@ class _PropertyInformationState extends State<PropertyInformation> {
       TextButton(
         onPressed: () => showDialog(
           context: context,
-          builder: (BuildContext context) {
-            return SimpleDialog(
+          builder: (final BuildContext context) => SimpleDialog(
               surfaceTintColor: Theme.of(context).colorScheme.background,
               children: [
                 SimpleDialogOption(
                   onPressed: () {
-                    onPressed('struct').then((value) => {navPop(context)});
+                    onPressed('struct').then((final value) => {navPop(context)});
                   },
                   child: const Text('导入小区架构'),
                 ),
                 SimpleDialogOption(
                   onPressed: () {
-                    onPressed('parking').then((value) => {navPop(context)});
+                    onPressed('parking').then((final value) => {navPop(context)});
                   },
                   child: const Text('导入车位架构'),
                 ),
               ],
-            );
-          },
+            ),
         ),
         child: const Text('导入信息', style: TextStyle(color: Colors.green)),
       )
     ];
   }
 
-  Future<void> onPressed(String field) async {
+  Future<void> onPressed(final String field) async {
     const XTypeGroup typeGroup = XTypeGroup(
       label: 'JSON',
       extensions: <String>['json'],

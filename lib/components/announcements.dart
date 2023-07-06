@@ -14,7 +14,7 @@ class Announcement extends StatelessWidget {
   final void Function() onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     final String author = record.getStringValue('author');
 
     return ListTile(

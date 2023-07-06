@@ -36,7 +36,7 @@ class _ResidentVoteState extends State<ResidentVote> {
   @override
   void initState() {
     _formKeys =
-        List.generate(_steps.length, (int index) => GlobalKey<FormState>());
+        List.generate(_steps.length, (final int index) => GlobalKey<FormState>());
     _controllers = {
       for (final String i in _fields) i: TextEditingController(),
     };
@@ -46,15 +46,14 @@ class _ResidentVoteState extends State<ResidentVote> {
 
   @override
   void dispose() {
-    for (TextEditingController i in _controllers.values) {
+    for (final TextEditingController i in _controllers.values) {
       i.dispose();
     }
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(final BuildContext context) => Scaffold(
       appBar: AppBar(
         title: const Text('支出投票管理'),
         actions: _actionsBuilder(context),
@@ -62,7 +61,7 @@ class _ResidentVoteState extends State<ResidentVote> {
       body: Stepper(
         type: StepperType.horizontal,
         currentStep: _index,
-        controlsBuilder: (BuildContext context, ControlsDetails details) =>
+        controlsBuilder: (final BuildContext context, final ControlsDetails details) =>
             Container(),
         steps: [
           for (int i = 0; i < _steps.length; ++i)
@@ -74,9 +73,8 @@ class _ResidentVoteState extends State<ResidentVote> {
         ],
       ),
     );
-  }
 
-  void _setRecord(RecordModel record) async {
+  void _setRecord(final RecordModel record) async {
     int index = 0;
     RecordModel? result;
 
@@ -126,24 +124,23 @@ class _ResidentVoteState extends State<ResidentVote> {
           .collection('results')
           .create(body: _getBody())
           .then(
-            (RecordModel value) =>
+            (final RecordModel value) =>
                 service.getOne(widget.recordId).then(_setRecord),
           )
-          .catchError((error) => showException(context, error));
+          .catchError((final error) => showException(context, error));
     } else {
       pb
           .collection('results')
           .update(_result!.id, body: _getBody())
           .then(
-            (RecordModel value) =>
+            (final RecordModel value) =>
                 service.getOne(widget.recordId).then(_setRecord),
           )
-          .catchError((error) => showException(context, error));
+          .catchError((final error) => showException(context, error));
     }
   }
 
-  Widget _form({required int index}) {
-    return Form(
+  Widget _form({required final int index}) => Form(
       key: _formKeys[index],
       child: Column(
         children: [
@@ -224,13 +221,13 @@ class _ResidentVoteState extends State<ResidentVote> {
                 ?.getStringValue('options')
                 .split('\n')
                 .map(
-                  (String e) => DropdownMenuItem(
+                  (final String e) => DropdownMenuItem(
                     value: e,
                     child: Text(e),
                   ),
                 )
                 .toList(),
-            onChanged: (String? value) {
+            onChanged: (final String? value) {
               setState(() {
                 _option = value;
               });
@@ -261,9 +258,8 @@ class _ResidentVoteState extends State<ResidentVote> {
         ],
       ),
     );
-  }
 
-  List<Widget>? _actionsBuilder(context) {
+  List<Widget>? _actionsBuilder(final context) {
     if (_result == null) {
       return null;
     }
@@ -272,8 +268,7 @@ class _ResidentVoteState extends State<ResidentVote> {
       IconButton(
         onPressed: () => showDialog(
           context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
+          builder: (final BuildContext context) => AlertDialog(
               surfaceTintColor: Theme.of(context).colorScheme.background,
               title: const Text('删除投票'),
               content: const Text('确定要删除该投票吗？'),
@@ -286,7 +281,7 @@ class _ResidentVoteState extends State<ResidentVote> {
                 ),
                 TextButton(
                   onPressed: () {
-                    pb.collection('results').delete(_result!.id).then((value) {
+                    pb.collection('results').delete(_result!.id).then((final value) {
                       navPop(context, 'OK');
                       navPop(context);
                     });
@@ -294,8 +289,7 @@ class _ResidentVoteState extends State<ResidentVote> {
                   child: const Text('确认'),
                 ),
               ],
-            );
-          },
+            ),
         ),
         icon: const Icon(
           Icons.delete_outline,

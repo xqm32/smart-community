@@ -17,24 +17,22 @@ class SearchAction extends StatelessWidget {
       builder;
 
   @override
-  Widget build(BuildContext context) {
-    return SearchAnchor(
+  Widget build(final BuildContext context) => SearchAnchor(
       viewSurfaceTintColor: Theme.of(context).colorScheme.background,
       isFullScreen: true,
       builder: builder ??
-          (BuildContext context, SearchController controller) => IconButton(
+          (final BuildContext context, final SearchController controller) => IconButton(
                 onPressed: () => controller.openView(),
                 icon: const Icon(Icons.search),
               ),
-      suggestionsBuilder: (BuildContext context, SearchController controller) {
+      suggestionsBuilder: (final BuildContext context, final SearchController controller) {
         final String input = controller.value.text;
         return records
-            .where((RecordModel record) => filter(record, input))
+            .where((final RecordModel record) => filter(record, input))
             .map(toElement)
             .toList();
       },
     );
-  }
 }
 
 class RecordList extends StatelessWidget {
@@ -48,8 +46,7 @@ class RecordList extends StatelessWidget {
   final Widget? Function(BuildContext, int) itemBuilder;
 
   @override
-  Widget build(BuildContext context) {
-    return Center(
+  Widget build(final BuildContext context) => Center(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -64,5 +61,4 @@ class RecordList extends StatelessWidget {
         ),
       ),
     );
-  }
 }

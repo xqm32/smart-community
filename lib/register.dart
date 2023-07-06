@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pocketbase/src/dtos/record_model.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
 import 'package:smart_community/login.dart';
@@ -8,8 +8,7 @@ class Register extends StatelessWidget {
   const Register({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
+  Widget build(final BuildContext context) => const Scaffold(
       body: Center(
         child: Padding(
           padding: EdgeInsets.all(16.0),
@@ -22,7 +21,6 @@ class Register extends StatelessWidget {
         ),
       ),
     );
-  }
 }
 
 class RegisterForm extends StatefulWidget {
@@ -61,9 +59,9 @@ class _RegisterFormState extends State<RegisterForm> {
       'role': ['resident']
     });
 
-    pb.collection('users').create(body: body).then((RecordModel value) {
+    pb.collection('users').create(body: body).then((final RecordModel value) {
       navGoto(context, const Login());
-    }).catchError((error) {
+    }).catchError((final error) {
       if (error.statusCode == 400) {
         setState(() {
           _usernameErrorText = '用户名已存在';
@@ -87,7 +85,7 @@ class _RegisterFormState extends State<RegisterForm> {
 
   @override
   void dispose() {
-    for (TextEditingController i in _controllers.values) {
+    for (final TextEditingController i in _controllers.values) {
       i.dispose();
     }
 
@@ -95,8 +93,7 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Form(
+  Widget build(final BuildContext context) => Form(
       key: _formKey,
       child: Column(
         children: [
@@ -148,7 +145,7 @@ class _RegisterFormState extends State<RegisterForm> {
               labelText: '确认密码',
               hintText: '请再次输入密码',
             ),
-            validator: (String? value) {
+            validator: (final String? value) {
               final String? result = passwordValidator(value);
               if (result != null) {
                 return result;
@@ -173,5 +170,4 @@ class _RegisterFormState extends State<RegisterForm> {
         ],
       ),
     );
-  }
 }

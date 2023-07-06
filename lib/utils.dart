@@ -7,31 +7,27 @@ import 'package:smart_community/config.dart';
 
 final PocketBase pb = PocketBase(baseUrl);
 
-Future<dynamic> navPush(context, widget) {
-  return Navigator.of(context).push(
+Future<dynamic> navPush(final context, final widget) => Navigator.of(context).push(
     MaterialPageRoute(
-      builder: (BuildContext context) => widget,
+      builder: (final BuildContext context) => widget,
     ),
   );
-}
 
-void navPop(context, [dynamic result]) {
+void navPop(final context, [final dynamic result]) {
   Navigator.of(context).pop(result);
 }
 
-Future<dynamic> navGoto(context, widget) {
-  return Navigator.of(context).pushAndRemoveUntil(
-    MaterialPageRoute(builder: (BuildContext context) => widget),
-    (Route route) => false,
+Future<dynamic> navGoto(final context, final widget) => Navigator.of(context).pushAndRemoveUntil(
+    MaterialPageRoute(builder: (final BuildContext context) => widget),
+    (final Route route) => false,
   );
-}
 
-void showException(context, error) {
+void showException(final context, final error) {
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$error')));
 }
 
 // 参见 https://api.flutter.dev/flutter/material/SnackBar-class.html
-void showError(context, error) {
+void showError(final context, final error) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: Text('$error'),
@@ -40,7 +36,7 @@ void showError(context, error) {
   );
 }
 
-void showSuccess(context, error) {
+void showSuccess(final context, final error) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: Text('$error'),
@@ -50,7 +46,7 @@ void showSuccess(context, error) {
 }
 
 // 参见 https://docs.flutter.dev/cookbook/forms/validation
-String? usernameValidator(String? value) {
+String? usernameValidator(final String? value) {
   if (value == null || value.isEmpty || value.length < 3) {
     return '用户名长度至少为 3';
   } else {
@@ -58,7 +54,7 @@ String? usernameValidator(String? value) {
   }
 }
 
-String? passwordValidator(String? value) {
+String? passwordValidator(final String? value) {
   if (value == null || value.isEmpty || value.length < 8) {
     return '密码长度至少为 8';
   } else {
@@ -66,29 +62,25 @@ String? passwordValidator(String? value) {
   }
 }
 
-String? Function(String?) notNullValidator(String message) {
-  return (String? value) {
+String? Function(String?) notNullValidator(final String message) => (final String? value) {
     if (value == null || value.isEmpty) {
       return message;
     } else {
       return null;
     }
   };
-}
 
-String getDate(String formattedString) {
+String getDate(final String formattedString) {
   final DateTime datetime = DateTime.parse(formattedString).toLocal();
   return datetime.toIso8601String().split('T')[0];
 }
 
-String getDateTime(String formattedString) {
+String getDateTime(final String formattedString) {
   final DateTime datetime = DateTime.parse(formattedString).toLocal();
   return datetime.toIso8601String().replaceAll('T', ' ').split('.')[0];
 }
 
-bool Function(RecordModel, String) keyFilter(String primaryKey) {
-  return (RecordModel record, String input) {
-    return input.split(' ').every((String element) {
+bool Function(RecordModel, String) keyFilter(final String primaryKey) => (final RecordModel record, final String input) => input.split(' ').every((final String element) {
       if (element.contains(':')) {
         final List<String> elements = element.replaceFirst(':', ' ').split(' ');
         final String key = elements.first;
@@ -121,11 +113,9 @@ bool Function(RecordModel, String) keyFilter(String primaryKey) {
         return record.getStringValue(primaryKey).contains(element);
       }
     });
-  };
-}
 
 void pickImage({
-  required void Function(String filename, Uint8List bytes) update,
+  required final void Function(String filename, Uint8List bytes) update,
 }) async {
   const XTypeGroup typeGroup = XTypeGroup(
     label: 'images',

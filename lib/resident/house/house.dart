@@ -40,7 +40,7 @@ class _ResidentHouseState extends State<ResidentHouse> {
   @override
   void initState() {
     _formKeys =
-        List.generate(_steps.length, (int index) => GlobalKey<FormState>());
+        List.generate(_steps.length, (final int index) => GlobalKey<FormState>());
     _controllers = {
       for (final String i in _fields) i: TextEditingController(),
     };
@@ -48,7 +48,7 @@ class _ResidentHouseState extends State<ResidentHouse> {
     pb
         .collection('communities')
         .getOne(widget.communityId)
-        .then((RecordModel value) {
+        .then((final RecordModel value) {
       final String struct = value.getStringValue('struct');
 
       setState(() {
@@ -67,15 +67,14 @@ class _ResidentHouseState extends State<ResidentHouse> {
 
   @override
   void dispose() {
-    for (TextEditingController i in _controllers.values) {
+    for (final TextEditingController i in _controllers.values) {
       i.dispose();
     }
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(final BuildContext context) => Scaffold(
       appBar: AppBar(
         title: const Text('房屋管理'),
         actions: _actionsBuilder(context),
@@ -83,7 +82,7 @@ class _ResidentHouseState extends State<ResidentHouse> {
       body: Stepper(
         type: StepperType.horizontal,
         currentStep: _index,
-        controlsBuilder: (BuildContext context, ControlsDetails details) =>
+        controlsBuilder: (final BuildContext context, final ControlsDetails details) =>
             Container(),
         steps: [
           for (int i = 0; i < _steps.length; ++i)
@@ -95,9 +94,8 @@ class _ResidentHouseState extends State<ResidentHouse> {
         ],
       ),
     );
-  }
 
-  void _setRecord(RecordModel record) {
+  void _setRecord(final RecordModel record) {
     final String state = record.getStringValue('state');
     for (final MapEntry<String, TextEditingController> i
         in _controllers.entries) {
@@ -154,17 +152,16 @@ class _ResidentHouseState extends State<ResidentHouse> {
       service
           .create(body: _getBody())
           .then(_setRecord)
-          .catchError((error) => showException(context, error));
+          .catchError((final error) => showException(context, error));
     } else {
       service
           .update(_record!.id, body: _getBody())
           .then(_setRecord)
-          .catchError((error) => showException(context, error));
+          .catchError((final error) => showException(context, error));
     }
   }
 
-  Widget _form({required int index}) {
-    return Form(
+  Widget _form({required final int index}) => Form(
       key: _formKeys[index],
       child: Column(
         children: [
@@ -186,13 +183,13 @@ class _ResidentHouseState extends State<ResidentHouse> {
                   value: _building,
                   items: _struct?.keys
                       .map(
-                        (String e) => DropdownMenuItem(
+                        (final String e) => DropdownMenuItem(
                           value: e,
                           child: Text(e),
                         ),
                       )
                       .toList(),
-                  onChanged: (String? value) {
+                  onChanged: (final String? value) {
                     setState(() {
                       _building = value;
                       _floor = null;
@@ -210,13 +207,13 @@ class _ResidentHouseState extends State<ResidentHouse> {
                   items: (_struct?[_building] as Map<String, dynamic>?)
                       ?.keys
                       .map(
-                        (String e) => DropdownMenuItem(
+                        (final String e) => DropdownMenuItem(
                           value: e,
                           child: Text(e),
                         ),
                       )
                       .toList(),
-                  onChanged: (String? value) {
+                  onChanged: (final String? value) {
                     setState(() {
                       _floor = value;
                       _room = null;
@@ -232,13 +229,13 @@ class _ResidentHouseState extends State<ResidentHouse> {
             value: _room,
             items: (_struct?[_building]?[_floor] as List?)
                 ?.map(
-                  (e) => DropdownMenuItem(
+                  (final e) => DropdownMenuItem(
                     value: e as String,
                     child: Text(e),
                   ),
                 )
                 .toList(),
-            onChanged: (String? value) {
+            onChanged: (final String? value) {
               setState(() {
                 _room = value;
               });
@@ -253,9 +250,8 @@ class _ResidentHouseState extends State<ResidentHouse> {
         ],
       ),
     );
-  }
 
-  List<Widget>? _actionsBuilder(context) {
+  List<Widget>? _actionsBuilder(final context) {
     if (_record == null) {
       return null;
     }
@@ -264,8 +260,7 @@ class _ResidentHouseState extends State<ResidentHouse> {
       IconButton(
         onPressed: () => showDialog(
           context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
+          builder: (final BuildContext context) => AlertDialog(
               surfaceTintColor: Theme.of(context).colorScheme.background,
               title: const Text('删除房屋'),
               content: const Text('确定要删除该房屋吗？'),
@@ -278,7 +273,7 @@ class _ResidentHouseState extends State<ResidentHouse> {
                 ),
                 TextButton(
                   onPressed: () {
-                    service.delete(_record!.id).then((value) {
+                    service.delete(_record!.id).then((final value) {
                       navPop(context, 'OK');
                       navPop(context);
                     });
@@ -286,8 +281,7 @@ class _ResidentHouseState extends State<ResidentHouse> {
                   child: const Text('确认'),
                 ),
               ],
-            );
-          },
+            ),
         ),
         icon: const Icon(
           Icons.delete_outline,

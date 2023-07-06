@@ -26,7 +26,7 @@ class _ResidentState extends State<Resident> {
   @override
   void initState() {
     communities = pb.collection('communities').getFullList();
-    SharedPreferences.getInstance().then((SharedPreferences prefs) {
+    SharedPreferences.getInstance().then((final SharedPreferences prefs) {
       if (prefs.containsKey('communityId')) {
         fetchCommunity(prefs.getString('communityId')!);
       }
@@ -36,24 +36,23 @@ class _ResidentState extends State<Resident> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(final BuildContext context) => Scaffold(
       appBar: AppBar(
         title: const Text('居民端'),
         actions: [
           FutureBuilder(
             future: communities,
             builder: (
-              BuildContext context,
-              AsyncSnapshot<List<RecordModel>> snapshot,
+              final BuildContext context,
+              final AsyncSnapshot<List<RecordModel>> snapshot,
             ) {
               if (snapshot.hasData) {
                 return SearchAction(
                   builder: _searchActionBuilder,
                   records: snapshot.data!,
-                  filter: (RecordModel element, String input) =>
+                  filter: (final RecordModel element, final String input) =>
                       element.getStringValue('name').contains(input),
-                  toElement: (RecordModel element) => ListTile(
+                  toElement: (final RecordModel element) => ListTile(
                     title: Text(element.getStringValue('name')),
                     onTap: () {
                       fetchCommunity(element.id);
@@ -68,18 +67,16 @@ class _ResidentState extends State<Resident> {
         ],
       ),
       body: [
-        communityId != null
-            ? ResidentIndex(communityId: communityId!)
-            : FutureBuilder(
+        if (communityId != null) ResidentIndex(communityId: communityId!) else FutureBuilder(
                 future: communities,
                 builder: (
-                  BuildContext context,
-                  AsyncSnapshot<List<RecordModel>> snapshot,
+                  final BuildContext context,
+                  final AsyncSnapshot<List<RecordModel>> snapshot,
                 ) {
                   if (snapshot.hasData) {
                     return RecordList(
                       records: snapshot.data!,
-                      itemBuilder: (BuildContext context, int index) {
+                      itemBuilder: (final BuildContext context, final int index) {
                         final RecordModel element =
                             snapshot.data!.elementAt(index);
                         return ListTile(
@@ -106,17 +103,16 @@ class _ResidentState extends State<Resident> {
           ),
         ],
         currentIndex: _index,
-        onTap: (int index) {
+        onTap: (final int index) {
           setState(() {
             _index = index;
           });
         },
       ),
     );
-  }
 
-  void fetchCommunity(String id) {
-    SharedPreferences.getInstance().then((SharedPreferences prefs) {
+  void fetchCommunity(final String id) {
+    SharedPreferences.getInstance().then((final SharedPreferences prefs) {
       prefs.setString('communityId', id);
       setState(
         () {
@@ -127,14 +123,13 @@ class _ResidentState extends State<Resident> {
     });
   }
 
-  Widget _searchActionBuilder(context, controller) {
-    return TextButton(
+  Widget _searchActionBuilder(final context, final controller) => TextButton(
       onPressed: () => controller.openView(),
       child: communityId != null
           ? FutureBuilder(
               future: community,
               builder:
-                  (BuildContext context, AsyncSnapshot<RecordModel> snapshot) {
+                  (final BuildContext context, final AsyncSnapshot<RecordModel> snapshot) {
                 if (snapshot.hasData) {
                   return Text(snapshot.data!.getStringValue('name'));
                 }
@@ -143,5 +138,4 @@ class _ResidentState extends State<Resident> {
             )
           : const Text('请选择小区'),
     );
-  }
 }
