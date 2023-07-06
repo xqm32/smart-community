@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -34,6 +35,11 @@ class _ResidentCarState extends State<ResidentCar> {
   };
   int _index = 0;
 
+  Map<String, dynamic>? _struct;
+  String? _area;
+  String? _zone;
+  String? _position;
+
   final List<String> _fileFields = ['photo'];
   Map<String, Uint8List?> _files = {};
   Map<String, String?> _filenames = {};
@@ -54,9 +60,21 @@ class _ResidentCarState extends State<ResidentCar> {
     _filenames = {
       for (final i in _fileFields) i: null,
     };
-    if (widget.recordId != null) {
-      service.getOne(widget.recordId!).then(_setRecord);
-    }
+
+    pb.collection('communities').getOne(widget.communityId).then((value) {
+      final struct = value.getStringValue('parking');
+
+      setState(() {
+        _struct = struct.isNotEmpty
+            ? jsonDecode(struct) as Map<String, dynamic>
+            : null;
+      });
+
+      if (widget.recordId != null) {
+        service.getOne(widget.recordId!).then(_setRecord);
+      }
+    });
+
     super.initState();
   }
 
@@ -104,12 +122,28 @@ class _ResidentCarState extends State<ResidentCar> {
         images[i] = resp.bodyBytes;
       }
     }
+    String? area = record.getStringValue('area');
+    String? zone = record.getStringValue('zone');
+    String? position = record.getStringValue('position');
+    if (_struct == null || !_struct!.containsKey(area)) {
+      area = null;
+      zone = null;
+      position = null;
+    } else if (!_struct![area]!.containsKey(zone)) {
+      zone = null;
+      position = null;
+    } else if (!_struct![area]![zone]!.contains(position)) {
+      position = null;
+    }
     setState(() {
       _record = record;
       for (final i in images.keys) {
         _files[i] = images[i];
       }
       _index = _stateIndex[state] ?? 0;
+      _area = area;
+      _zone = zone;
+      _position = position;
     });
   }
 
@@ -121,6 +155,9 @@ class _ResidentCarState extends State<ResidentCar> {
       'userId': pb.authStore.model!.id,
       'communityId': widget.communityId,
       'state': 'reviewing',
+      'area': _area,
+      'zone': _zone,
+      'position': _position,
     });
 
     return body;
@@ -133,7 +170,7 @@ class _ResidentCarState extends State<ResidentCar> {
 
     final files = [
       for (final i in _files.entries)
-        if (i.value != null)
+        if (i.value != null && _filenames[i.key] != null)
           MultipartFile.fromBytes(i.key, i.value!, filename: _filenames[i.key])
     ];
 
@@ -241,6 +278,68 @@ class _ResidentCarState extends State<ResidentCar> {
               hintText: '请填写车牌号',
             ),
             validator: notNullValidator('车牌号不能为空'),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Flexible(
+                child: DropdownButtonFormField(
+                  decoration: const InputDecoration(labelText: '区域'),
+                  value: _area,
+                  items: _struct?.keys
+                      .map((e) => DropdownMenuItem(
+                            value: e,
+                            child: Text(e),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _area = value;
+                      _zone = null;
+                      _position = null;
+                    });
+                  },
+                  validator: notNullValidator('区域不能为空'),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Flexible(
+                child: DropdownButtonFormField(
+                  decoration: const InputDecoration(labelText: '分区'),
+                  value: _zone,
+                  items: (_struct?[_area] as Map<String, dynamic>?)
+                      ?.keys
+                      .map((e) => DropdownMenuItem(
+                            value: e,
+                            child: Text(e),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _zone = value;
+                      _position = null;
+                    });
+                  },
+                  validator: notNullValidator('分区不能为空'),
+                ),
+              ),
+            ],
+          ),
+          DropdownButtonFormField(
+            decoration: const InputDecoration(labelText: '车位'),
+            value: _position,
+            items: (_struct?[_area]?[_zone] as List?)
+                ?.map((e) => DropdownMenuItem(
+                      value: e as String,
+                      child: Text(e),
+                    ))
+                .toList(),
+            onChanged: (value) {
+              setState(() {
+                _position = value;
+              });
+            },
           ),
           const SizedBox(height: 16),
           _imageForm('photo', '请上传车辆照片', '选择车辆照片', (filename, bytes) {

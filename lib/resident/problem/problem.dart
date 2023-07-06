@@ -129,7 +129,7 @@ class _ResidentProblemState extends State<ResidentProblem> {
 
     final files = [
       for (final i in _files.entries)
-        if (i.value != null)
+        if (i.value != null && _filenames[i.key] != null)
           MultipartFile.fromBytes(i.key, i.value!, filename: _filenames[i.key])
     ];
 
