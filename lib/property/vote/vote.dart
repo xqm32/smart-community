@@ -33,8 +33,10 @@ class _PropertyVoteState extends State<PropertyVote> {
 
   @override
   void initState() {
-    _formKeys =
-        List.generate(_steps.length, (final int index) => GlobalKey<FormState>());
+    _formKeys = List.generate(
+      _steps.length,
+      (final int index) => GlobalKey<FormState>(),
+    );
     _controllers = {
       for (final String i in _fields) i: TextEditingController(),
     };
@@ -54,25 +56,26 @@ class _PropertyVoteState extends State<PropertyVote> {
 
   @override
   Widget build(final BuildContext context) => Scaffold(
-      appBar: AppBar(
-        title: const Text('支出投票管理'),
-        actions: _actionsBuilder(context),
-      ),
-      body: Stepper(
-        type: StepperType.horizontal,
-        currentStep: _index,
-        controlsBuilder: (final BuildContext context, final ControlsDetails details) =>
-            Container(),
-        steps: [
-          for (int i = 0; i < _steps.length; ++i)
-            Step(
-              isActive: _index >= i,
-              title: Text(_steps.elementAt(i)),
-              content: _form(index: i),
-            ),
-        ],
-      ),
-    );
+        appBar: AppBar(
+          title: const Text('支出投票管理'),
+          actions: _actionsBuilder(context),
+        ),
+        body: Stepper(
+          type: StepperType.horizontal,
+          currentStep: _index,
+          controlsBuilder:
+              (final BuildContext context, final ControlsDetails details) =>
+                  Container(),
+          steps: [
+            for (int i = 0; i < _steps.length; ++i)
+              Step(
+                isActive: _index >= i,
+                title: Text(_steps.elementAt(i)),
+                content: _form(index: i),
+              ),
+          ],
+        ),
+      );
 
   void _setRecord(final RecordModel record) async {
     for (final MapEntry<String, TextEditingController> i
@@ -129,87 +132,85 @@ class _PropertyVoteState extends State<PropertyVote> {
   }
 
   Widget _form({required final int index}) => Form(
-      key: _formKeys[index],
-      child: Column(
-        children: [
-          TextFormField(
-            controller: _controllers['title'],
-            decoration: const InputDecoration(
-              labelText: '标题',
-              hintText: '请填写投票标题',
-            ),
-            validator: notNullValidator('标题不能为空'),
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: _controllers['content'],
-            decoration: const InputDecoration(
-              labelText: '内容',
-              hintText: '请填写投票内容',
-              border: OutlineInputBorder(),
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-            ),
-            validator: notNullValidator('内容不能为空'),
-            maxLines: null,
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: _controllers['start'],
-            decoration: const InputDecoration(
-              labelText: '起始时间',
-              hintText: '请填写起始时间',
-            ),
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: _controllers['end'],
-            decoration: const InputDecoration(
-              labelText: '结束时间',
-              hintText: '请填写结束时间',
-            ),
-          ),
-          const SizedBox(height: 16),
-          if (_index == 0)
+        key: _formKeys[index],
+        child: Column(
+          children: [
             TextFormField(
-              controller: _controllers['options'],
+              controller: _controllers['title'],
               decoration: const InputDecoration(
-                labelText: '选项',
-                hintText: '请填写投票选项',
+                labelText: '标题',
+                hintText: '请填写投票标题',
+              ),
+              validator: notNullValidator('标题不能为空'),
+            ),
+            TextFormField(
+              controller: _controllers['start'],
+              decoration: const InputDecoration(
+                labelText: '起始时间',
+                hintText: 'YYYY-MM-DD HH:MM:SS',
+              ),
+            ),
+            TextFormField(
+              controller: _controllers['end'],
+              decoration: const InputDecoration(
+                labelText: '结束时间',
+                hintText: 'YYYY-MM-DD HH:MM:SS',
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _controllers['content'],
+              decoration: const InputDecoration(
+                labelText: '描述',
+                hintText: '请填写投票描述',
                 border: OutlineInputBorder(),
                 floatingLabelBehavior: FloatingLabelBehavior.always,
               ),
-              validator: notNullValidator('选项不能为空'),
+              validator: notNullValidator('描述不能为空'),
               maxLines: null,
-            )
-          else
-            DecoratedBox(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                children: [
-                  const SizedBox(height: 8),
-                  const Text('投票结果'),
-                  for (final MapEntry<String, int> i in counts!.entries)
-                    ListTile(
-                      title: Text(i.key),
-                      trailing: Text(
-                        '${i.value} 票',
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    )
-                ],
-              ),
             ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _onSubmitPressed,
-            child: Text(['提交', '修改信息'].elementAt(_index)),
-          )
-        ],
-      ),
-    );
+            const SizedBox(height: 16),
+            if (_index == 0)
+              TextFormField(
+                controller: _controllers['options'],
+                decoration: const InputDecoration(
+                  labelText: '选项',
+                  hintText: '选项一\n选项二\n选项三',
+                  border: OutlineInputBorder(),
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                ),
+                validator: notNullValidator('选项不能为空'),
+                maxLines: null,
+              )
+            else
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 8),
+                    const Text('投票结果'),
+                    for (final MapEntry<String, int> i in counts!.entries)
+                      ListTile(
+                        title: Text(i.key),
+                        trailing: Text(
+                          '${i.value} 票',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      )
+                  ],
+                ),
+              ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _onSubmitPressed,
+              child: Text(['提交', '修改信息'].elementAt(_index)),
+            )
+          ],
+        ),
+      );
 
   List<Widget>? _actionsBuilder(final context) {
     if (_record == null) {
@@ -221,27 +222,27 @@ class _PropertyVoteState extends State<PropertyVote> {
         onPressed: () => showDialog(
           context: context,
           builder: (final BuildContext context) => AlertDialog(
-              surfaceTintColor: Theme.of(context).colorScheme.background,
-              title: const Text('删除投票'),
-              content: const Text('确定要删除该投票吗？'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    navPop(context, 'Cancel');
-                  },
-                  child: const Text('取消'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    service.delete(_record!.id).then((final value) {
-                      navPop(context, 'OK');
-                      navPop(context);
-                    });
-                  },
-                  child: const Text('确认'),
-                ),
-              ],
-            ),
+            surfaceTintColor: Theme.of(context).colorScheme.background,
+            title: const Text('删除投票'),
+            content: const Text('确定要删除该投票吗？'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  navPop(context, 'Cancel');
+                },
+                child: const Text('取消'),
+              ),
+              TextButton(
+                onPressed: () {
+                  service.delete(_record!.id).then((final value) {
+                    navPop(context, 'OK');
+                    navPop(context);
+                  });
+                },
+                child: const Text('确认'),
+              ),
+            ],
+          ),
         ),
         icon: const Icon(
           Icons.delete_outline,
