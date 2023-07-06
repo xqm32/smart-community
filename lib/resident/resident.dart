@@ -37,79 +37,82 @@ class _ResidentState extends State<Resident> {
 
   @override
   Widget build(final BuildContext context) => Scaffold(
-      appBar: AppBar(
-        title: const Text('居民端'),
-        actions: [
-          FutureBuilder(
-            future: communities,
-            builder: (
-              final BuildContext context,
-              final AsyncSnapshot<List<RecordModel>> snapshot,
-            ) {
-              if (snapshot.hasData) {
-                return SearchAction(
-                  builder: _searchActionBuilder,
-                  records: snapshot.data!,
-                  filter: (final RecordModel element, final String input) =>
-                      element.getStringValue('name').contains(input),
-                  toElement: (final RecordModel element) => ListTile(
-                    title: Text(element.getStringValue('name')),
-                    onTap: () {
-                      fetchCommunity(element.id);
-                      navPop(context);
-                    },
-                  ),
-                );
-              }
-              return Container();
-            },
-          )
-        ],
-      ),
-      body: [
-        if (communityId != null) ResidentIndex(communityId: communityId!) else FutureBuilder(
-                future: communities,
-                builder: (
-                  final BuildContext context,
-                  final AsyncSnapshot<List<RecordModel>> snapshot,
-                ) {
-                  if (snapshot.hasData) {
-                    return RecordList(
-                      records: snapshot.data!,
-                      itemBuilder: (final BuildContext context, final int index) {
-                        final RecordModel element =
-                            snapshot.data!.elementAt(index);
-                        return ListTile(
-                          title: Text(element.getStringValue('name')),
-                          onTap: () => fetchCommunity(element.id),
-                        );
+        appBar: AppBar(
+          title: const Text('居民端'),
+          actions: [
+            FutureBuilder(
+              future: communities,
+              builder: (
+                final BuildContext context,
+                final AsyncSnapshot<List<RecordModel>> snapshot,
+              ) {
+                if (snapshot.hasData) {
+                  return SearchAction(
+                    builder: _searchActionBuilder,
+                    records: snapshot.data!,
+                    filter: (final RecordModel element, final String input) =>
+                        element.getStringValue('name').contains(input),
+                    toElement: (final RecordModel element) => ListTile(
+                      title: Text(element.getStringValue('name')),
+                      onTap: () {
+                        fetchCommunity(element.id);
+                        navPop(context);
                       },
-                    );
-                  }
-                  return Container();
-                },
-              ),
-        const Account(),
-      ].elementAt(_index),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '首页',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: '我的',
-          ),
-        ],
-        currentIndex: _index,
-        onTap: (final int index) {
-          setState(() {
-            _index = index;
-          });
-        },
-      ),
-    );
+                    ),
+                  );
+                }
+                return Container();
+              },
+            )
+          ],
+        ),
+        body: [
+          if (communityId != null)
+            ResidentIndex(communityId: communityId!)
+          else
+            FutureBuilder(
+              future: communities,
+              builder: (
+                final BuildContext context,
+                final AsyncSnapshot<List<RecordModel>> snapshot,
+              ) {
+                if (snapshot.hasData) {
+                  return RecordList(
+                    records: snapshot.data!,
+                    itemBuilder: (final BuildContext context, final int index) {
+                      final RecordModel element =
+                          snapshot.data!.elementAt(index);
+                      return ListTile(
+                        title: Text(element.getStringValue('name')),
+                        onTap: () => fetchCommunity(element.id),
+                      );
+                    },
+                  );
+                }
+                return Container();
+              },
+            ),
+          const Account(),
+        ].elementAt(_index),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: '首页',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: '我的',
+            ),
+          ],
+          currentIndex: _index,
+          onTap: (final int index) {
+            setState(() {
+              _index = index;
+            });
+          },
+        ),
+      );
 
   void fetchCommunity(final String id) {
     SharedPreferences.getInstance().then((final SharedPreferences prefs) {
@@ -124,18 +127,20 @@ class _ResidentState extends State<Resident> {
   }
 
   Widget _searchActionBuilder(final context, final controller) => TextButton(
-      onPressed: () => controller.openView(),
-      child: communityId != null
-          ? FutureBuilder(
-              future: community,
-              builder:
-                  (final BuildContext context, final AsyncSnapshot<RecordModel> snapshot) {
-                if (snapshot.hasData) {
-                  return Text(snapshot.data!.getStringValue('name'));
-                }
-                return Container();
-              },
-            )
-          : const Text('请选择小区'),
-    );
+        onPressed: () => controller.openView(),
+        child: communityId != null
+            ? FutureBuilder(
+                future: community,
+                builder: (
+                  final BuildContext context,
+                  final AsyncSnapshot<RecordModel> snapshot,
+                ) {
+                  if (snapshot.hasData) {
+                    return Text(snapshot.data!.getStringValue('name'));
+                  }
+                  return Container();
+                },
+              )
+            : const Text('请选择小区'),
+      );
 }

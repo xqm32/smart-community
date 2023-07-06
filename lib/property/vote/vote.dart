@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
@@ -141,7 +142,7 @@ class _PropertyVoteState extends State<PropertyVote> {
                 labelText: '标题',
                 hintText: '请填写投票标题',
               ),
-              validator: notNullValidator('标题不能为空'),
+              validator: FormBuilderValidators.required(errorText: '标题不能为空'),
             ),
             TextFormField(
               controller: _controllers['start'],
@@ -166,7 +167,7 @@ class _PropertyVoteState extends State<PropertyVote> {
                 border: OutlineInputBorder(),
                 floatingLabelBehavior: FloatingLabelBehavior.always,
               ),
-              validator: notNullValidator('描述不能为空'),
+              validator: FormBuilderValidators.required(errorText: '描述不能为空'),
               maxLines: null,
             ),
             const SizedBox(height: 16),
@@ -179,7 +180,7 @@ class _PropertyVoteState extends State<PropertyVote> {
                   border: OutlineInputBorder(),
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                 ),
-                validator: notNullValidator('选项不能为空'),
+                validator: FormBuilderValidators.required(errorText: '选项不能为空'),
                 maxLines: null,
               )
             else

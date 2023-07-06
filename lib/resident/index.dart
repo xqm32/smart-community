@@ -216,7 +216,9 @@ class ResidentIndexService extends StatelessWidget {
               ),
               ResidentIndexServiceIcon(
                 onPressed: () => navPush(
-                    context, ResidentFamilies(communityId: communityId),),
+                  context,
+                  ResidentFamilies(communityId: communityId),
+                ),
                 icon: Icons.people,
                 text: '家人管理',
                 color: Colors.purple,
@@ -227,7 +229,9 @@ class ResidentIndexService extends StatelessWidget {
             children: [
               ResidentIndexServiceIcon(
                 onPressed: () => navPush(
-                    context, ResidentProblems(communityId: communityId),),
+                  context,
+                  ResidentProblems(communityId: communityId),
+                ),
                 icon: Icons.question_mark,
                 text: '问题上报',
                 color: Colors.cyan,

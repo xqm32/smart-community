@@ -23,73 +23,74 @@ class _AccountState extends State<Account> {
 
   @override
   Widget build(final BuildContext context) => Center(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            if (record != null)
-              AccountAvatar(
-                record: record!,
-                onTap: () async {
-                  const XTypeGroup typeGroup = XTypeGroup(
-                    label: 'images',
-                    extensions: <String>['jpg', 'png'],
-                  );
-                  final XFile? file = await openFile(
-                    acceptedTypeGroups: <XTypeGroup>[typeGroup],
-                  );
-                  if (file != null) {
-                    final Uint8List bytes = await file.readAsBytes();
-                    await pb.collection('users').update(
-                      record!.id,
-                      files: [
-                        MultipartFile.fromBytes(
-                          'avatar',
-                          bytes,
-                          filename: file.name,
-                        )
-                      ],
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              if (record != null)
+                AccountAvatar(
+                  record: record!,
+                  onTap: () async {
+                    const XTypeGroup typeGroup = XTypeGroup(
+                      label: 'images',
+                      extensions: <String>['jpg', 'png'],
                     );
-                    setState(() {
-                      record = pb.authStore.model;
-                    });
-                  }
+                    final XFile? file = await openFile(
+                      acceptedTypeGroups: <XTypeGroup>[typeGroup],
+                    );
+                    if (file != null) {
+                      final Uint8List bytes = await file.readAsBytes();
+                      await pb.collection('users').update(
+                        record!.id,
+                        files: [
+                          MultipartFile.fromBytes(
+                            'avatar',
+                            bytes,
+                            filename: file.name,
+                          )
+                        ],
+                      );
+                      setState(() {
+                        record = pb.authStore.model;
+                      });
+                    }
+                  },
+                ),
+              const Divider(height: 0),
+              ListTile(
+                leading: const Icon(Icons.person),
+                onTap: () async {
+                  await navPush(context, const AccountInformation());
+                  setState(() {
+                    record = pb.authStore.model;
+                  });
                 },
+                title: const Text('修改信息'),
               ),
-            const Divider(height: 0),
-            ListTile(
-              leading: const Icon(Icons.person),
-              onTap: () async {
-                await navPush(context, const AccountInformation());
-                setState(() {
-                  record = pb.authStore.model;
-                });
-              },
-              title: const Text('修改信息'),
-            ),
-            const Divider(height: 0),
-            ListTile(
-              leading: const Icon(Icons.lock),
-              onTap: () => navPush(context, const AccountPassword()),
-              title: const Text('修改密码'),
-            ),
-            const Divider(height: 0),
-            ListTile(
-              leading: const Icon(Icons.logout, color: Colors.red),
-              onTap: () {
-                pb.authStore.clear();
-                SharedPreferences.getInstance().then((final SharedPreferences prefs) {
-                  prefs
-                      .clear()
-                      .then((final bool value) => navGoto(context, const Login()));
-                });
-              },
-              title: const Text('退出登陆', style: TextStyle(color: Colors.red)),
-            ),
-          ],
+              const Divider(height: 0),
+              ListTile(
+                leading: const Icon(Icons.lock),
+                onTap: () => navPush(context, const AccountPassword()),
+                title: const Text('修改密码'),
+              ),
+              const Divider(height: 0),
+              ListTile(
+                leading: const Icon(Icons.logout, color: Colors.red),
+                onTap: () {
+                  pb.authStore.clear();
+                  SharedPreferences.getInstance()
+                      .then((final SharedPreferences prefs) {
+                    prefs.clear().then(
+                          (final bool value) => navGoto(context, const Login()),
+                        );
+                  });
+                },
+                title: const Text('退出登陆', style: TextStyle(color: Colors.red)),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
 }
 
 class AccountAvatar extends StatelessWidget {

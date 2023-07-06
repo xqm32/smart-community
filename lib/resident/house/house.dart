@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
@@ -39,8 +40,10 @@ class _ResidentHouseState extends State<ResidentHouse> {
 
   @override
   void initState() {
-    _formKeys =
-        List.generate(_steps.length, (final int index) => GlobalKey<FormState>());
+    _formKeys = List.generate(
+      _steps.length,
+      (final int index) => GlobalKey<FormState>(),
+    );
     _controllers = {
       for (final String i in _fields) i: TextEditingController(),
     };
@@ -75,25 +78,26 @@ class _ResidentHouseState extends State<ResidentHouse> {
 
   @override
   Widget build(final BuildContext context) => Scaffold(
-      appBar: AppBar(
-        title: const Text('房屋管理'),
-        actions: _actionsBuilder(context),
-      ),
-      body: Stepper(
-        type: StepperType.horizontal,
-        currentStep: _index,
-        controlsBuilder: (final BuildContext context, final ControlsDetails details) =>
-            Container(),
-        steps: [
-          for (int i = 0; i < _steps.length; ++i)
-            Step(
-              isActive: _index >= i,
-              title: Text(_steps.elementAt(i)),
-              content: _form(index: i),
-            ),
-        ],
-      ),
-    );
+        appBar: AppBar(
+          title: const Text('房屋管理'),
+          actions: _actionsBuilder(context),
+        ),
+        body: Stepper(
+          type: StepperType.horizontal,
+          currentStep: _index,
+          controlsBuilder:
+              (final BuildContext context, final ControlsDetails details) =>
+                  Container(),
+          steps: [
+            for (int i = 0; i < _steps.length; ++i)
+              Step(
+                isActive: _index >= i,
+                title: Text(_steps.elementAt(i)),
+                content: _form(index: i),
+              ),
+          ],
+        ),
+      );
 
   void _setRecord(final RecordModel record) {
     final String state = record.getStringValue('state');
@@ -162,94 +166,96 @@ class _ResidentHouseState extends State<ResidentHouse> {
   }
 
   Widget _form({required final int index}) => Form(
-      key: _formKeys[index],
-      child: Column(
-        children: [
-          TextFormField(
-            controller: _controllers['location'],
-            decoration: const InputDecoration(
-              labelText: '地址',
-              hintText: '请填写房屋地址',
+        key: _formKeys[index],
+        child: Column(
+          children: [
+            TextFormField(
+              controller: _controllers['location'],
+              decoration: const InputDecoration(
+                labelText: '地址',
+                hintText: '请填写房屋地址',
+              ),
+              validator: FormBuilderValidators.required(errorText: '地址不能为空'),
             ),
-            validator: notNullValidator('地址不能为空'),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Flexible(
-                child: DropdownButtonFormField(
-                  decoration: const InputDecoration(labelText: '楼幢'),
-                  value: _building,
-                  items: _struct?.keys
-                      .map(
-                        (final String e) => DropdownMenuItem(
-                          value: e,
-                          child: Text(e),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (final String? value) {
-                    setState(() {
-                      _building = value;
-                      _floor = null;
-                      _room = null;
-                    });
-                  },
-                  validator: notNullValidator('楼层不能为空'),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Flexible(
-                child: DropdownButtonFormField(
-                  decoration: const InputDecoration(labelText: '楼层'),
-                  value: _floor,
-                  items: (_struct?[_building] as Map<String, dynamic>?)
-                      ?.keys
-                      .map(
-                        (final String e) => DropdownMenuItem(
-                          value: e,
-                          child: Text(e),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (final String? value) {
-                    setState(() {
-                      _floor = value;
-                      _room = null;
-                    });
-                  },
-                  validator: notNullValidator('楼层不能为空'),
-                ),
-              ),
-            ],
-          ),
-          DropdownButtonFormField(
-            decoration: const InputDecoration(labelText: '房间号'),
-            value: _room,
-            items: (_struct?[_building]?[_floor] as List?)
-                ?.map(
-                  (final e) => DropdownMenuItem(
-                    value: e as String,
-                    child: Text(e),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: DropdownButtonFormField(
+                    decoration: const InputDecoration(labelText: '楼幢'),
+                    value: _building,
+                    items: _struct?.keys
+                        .map(
+                          (final String e) => DropdownMenuItem(
+                            value: e,
+                            child: Text(e),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (final String? value) {
+                      setState(() {
+                        _building = value;
+                        _floor = null;
+                        _room = null;
+                      });
+                    },
+                    validator:
+                        FormBuilderValidators.required(errorText: '楼层不能为空'),
                   ),
-                )
-                .toList(),
-            onChanged: (final String? value) {
-              setState(() {
-                _room = value;
-              });
-            },
-            validator: notNullValidator('房间不能为空'),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _onSubmitPressed,
-            child: Text(['提交', '修改信息', '修改信息'].elementAt(_index)),
-          )
-        ],
-      ),
-    );
+                ),
+                const SizedBox(width: 16),
+                Flexible(
+                  child: DropdownButtonFormField(
+                    decoration: const InputDecoration(labelText: '楼层'),
+                    value: _floor,
+                    items: (_struct?[_building] as Map<String, dynamic>?)
+                        ?.keys
+                        .map(
+                          (final String e) => DropdownMenuItem(
+                            value: e,
+                            child: Text(e),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (final String? value) {
+                      setState(() {
+                        _floor = value;
+                        _room = null;
+                      });
+                    },
+                    validator:
+                        FormBuilderValidators.required(errorText: '楼层不能为空'),
+                  ),
+                ),
+              ],
+            ),
+            DropdownButtonFormField(
+              decoration: const InputDecoration(labelText: '房间号'),
+              value: _room,
+              items: (_struct?[_building]?[_floor] as List?)
+                  ?.map(
+                    (final e) => DropdownMenuItem(
+                      value: e as String,
+                      child: Text(e),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (final String? value) {
+                setState(() {
+                  _room = value;
+                });
+              },
+              validator: FormBuilderValidators.required(errorText: '房间不能为空'),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _onSubmitPressed,
+              child: Text(['提交', '修改信息', '修改信息'].elementAt(_index)),
+            )
+          ],
+        ),
+      );
 
   List<Widget>? _actionsBuilder(final context) {
     if (_record == null) {
@@ -261,27 +267,27 @@ class _ResidentHouseState extends State<ResidentHouse> {
         onPressed: () => showDialog(
           context: context,
           builder: (final BuildContext context) => AlertDialog(
-              surfaceTintColor: Theme.of(context).colorScheme.background,
-              title: const Text('删除房屋'),
-              content: const Text('确定要删除该房屋吗？'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    navPop(context, 'Cancel');
-                  },
-                  child: const Text('取消'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    service.delete(_record!.id).then((final value) {
-                      navPop(context, 'OK');
-                      navPop(context);
-                    });
-                  },
-                  child: const Text('确认'),
-                ),
-              ],
-            ),
+            surfaceTintColor: Theme.of(context).colorScheme.background,
+            title: const Text('删除房屋'),
+            content: const Text('确定要删除该房屋吗？'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  navPop(context, 'Cancel');
+                },
+                child: const Text('取消'),
+              ),
+              TextButton(
+                onPressed: () {
+                  service.delete(_record!.id).then((final value) {
+                    navPop(context, 'OK');
+                    navPop(context);
+                  });
+                },
+                child: const Text('确认'),
+              ),
+            ],
+          ),
         ),
         icon: const Icon(
           Icons.delete_outline,

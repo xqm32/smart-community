@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:http/http.dart';
 import 'package:pocketbase/pocketbase.dart';
 
@@ -40,8 +41,10 @@ class _ResidentProblemState extends State<ResidentProblem> {
 
   @override
   void initState() {
-    _formKeys =
-        List.generate(_steps.length, (final int index) => GlobalKey<FormState>());
+    _formKeys = List.generate(
+      _steps.length,
+      (final int index) => GlobalKey<FormState>(),
+    );
     _controllers = {
       for (final String i in _fields) i: TextEditingController(),
     };
@@ -67,25 +70,26 @@ class _ResidentProblemState extends State<ResidentProblem> {
 
   @override
   Widget build(final BuildContext context) => Scaffold(
-      appBar: AppBar(
-        title: const Text('问题上报'),
-        actions: _actionsBuilder(context),
-      ),
-      body: Stepper(
-        type: StepperType.horizontal,
-        currentStep: _index,
-        controlsBuilder: (final BuildContext context, final ControlsDetails details) =>
-            Container(),
-        steps: [
-          for (int i = 0; i < _steps.length; ++i)
-            Step(
-              isActive: _index >= i,
-              title: Text(_steps.elementAt(i)),
-              content: _form(index: i),
-            ),
-        ],
-      ),
-    );
+        appBar: AppBar(
+          title: const Text('问题上报'),
+          actions: _actionsBuilder(context),
+        ),
+        body: Stepper(
+          type: StepperType.horizontal,
+          currentStep: _index,
+          controlsBuilder:
+              (final BuildContext context, final ControlsDetails details) =>
+                  Container(),
+          steps: [
+            for (int i = 0; i < _steps.length; ++i)
+              Step(
+                isActive: _index >= i,
+                title: Text(_steps.elementAt(i)),
+                content: _form(index: i),
+              ),
+          ],
+        ),
+      );
 
   void _setRecord(final RecordModel record) async {
     final String state = record.getStringValue('state');
@@ -155,76 +159,77 @@ class _ResidentProblemState extends State<ResidentProblem> {
     final String labelText,
     final String hintText,
     final void Function(String filename, Uint8List bytes) update,
-  ) => Column(
-      children: [
-        Container(
-          decoration: _files[field] != null
-              ? null
-              : BoxDecoration(border: Border.all(color: Colors.grey)),
-          height: 160,
-          child: _files[field] != null
-              ? Image.memory(
-                  _files[field]!,
-                )
-              : Center(child: Text(labelText)),
-        ),
-        TextButton(
-          onPressed: () {
-            pickImage(update: update);
-          },
-          child: Text(hintText),
-        ),
-      ],
-    );
+  ) =>
+      Column(
+        children: [
+          Container(
+            decoration: _files[field] != null
+                ? null
+                : BoxDecoration(border: Border.all(color: Colors.grey)),
+            height: 160,
+            child: _files[field] != null
+                ? Image.memory(
+                    _files[field]!,
+                  )
+                : Center(child: Text(labelText)),
+          ),
+          TextButton(
+            onPressed: () {
+              pickImage(update: update);
+            },
+            child: Text(hintText),
+          ),
+        ],
+      );
 
   Widget _form({required final int index}) => Form(
-      key: _formKeys[index],
-      child: Column(
-        children: [
-          TextFormField(
-            controller: _controllers['type'],
-            decoration: const InputDecoration(
-              labelText: '类型',
-              hintText: '请填写问题类型',
+        key: _formKeys[index],
+        child: Column(
+          children: [
+            TextFormField(
+              controller: _controllers['type'],
+              decoration: const InputDecoration(
+                labelText: '类型',
+                hintText: '请填写问题类型',
+              ),
+              validator: FormBuilderValidators.required(errorText: '类型不能为空'),
             ),
-            validator: notNullValidator('类型不能为空'),
-          ),
-          TextFormField(
-            controller: _controllers['title'],
-            decoration: const InputDecoration(
-              labelText: '标题',
-              hintText: '请填写问题标题',
+            TextFormField(
+              controller: _controllers['title'],
+              decoration: const InputDecoration(
+                labelText: '标题',
+                hintText: '请填写问题标题',
+              ),
+              validator: FormBuilderValidators.required(errorText: '标题不能为空'),
             ),
-            validator: notNullValidator('标题不能为空'),
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: _controllers['content'],
-            decoration: const InputDecoration(
-              labelText: '内容',
-              hintText: '请填写问题内容',
-              border: OutlineInputBorder(),
-              floatingLabelBehavior: FloatingLabelBehavior.always,
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _controllers['content'],
+              decoration: const InputDecoration(
+                labelText: '内容',
+                hintText: '请填写问题内容',
+                border: OutlineInputBorder(),
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+              ),
+              validator: FormBuilderValidators.required(errorText: '内容不能为空'),
+              maxLines: null,
             ),
-            validator: notNullValidator('内容不能为空'),
-            maxLines: null,
-          ),
-          const SizedBox(height: 16),
-          _imageForm('photo', '请上传问题照片', '选择问题照片',
-              (final String filename, final Uint8List bytes) {
-            setState(() {
-              _files['photo'] = bytes;
-              _filenames['photo'] = filename;
-            });
-          }),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _onSubmitPressed,
-            child: Text(['提交', '修改信息', '修改信息'].elementAt(_index)),
-          )
-        ],
-      ),
-    );
+            const SizedBox(height: 16),
+            _imageForm('photo', '请上传问题照片', '选择问题照片',
+                (final String filename, final Uint8List bytes) {
+              setState(() {
+                _files['photo'] = bytes;
+                _filenames['photo'] = filename;
+              });
+            }),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _onSubmitPressed,
+              child: Text(['提交', '修改信息', '修改信息'].elementAt(_index)),
+            )
+          ],
+        ),
+      );
 
   List<Widget>? _actionsBuilder(final context) {
     if (_record == null) {
@@ -236,27 +241,27 @@ class _ResidentProblemState extends State<ResidentProblem> {
         onPressed: () => showDialog(
           context: context,
           builder: (final BuildContext context) => AlertDialog(
-              surfaceTintColor: Theme.of(context).colorScheme.background,
-              title: const Text('删除问题'),
-              content: const Text('确定要删除该问题吗？'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    navPop(context, 'Cancel');
-                  },
-                  child: const Text('取消'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    service.delete(_record!.id).then((final value) {
-                      navPop(context, 'OK');
-                      navPop(context);
-                    });
-                  },
-                  child: const Text('确认'),
-                ),
-              ],
-            ),
+            surfaceTintColor: Theme.of(context).colorScheme.background,
+            title: const Text('删除问题'),
+            content: const Text('确定要删除该问题吗？'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  navPop(context, 'Cancel');
+                },
+                child: const Text('取消'),
+              ),
+              TextButton(
+                onPressed: () {
+                  service.delete(_record!.id).then((final value) {
+                    navPop(context, 'OK');
+                    navPop(context);
+                  });
+                },
+                child: const Text('确认'),
+              ),
+            ],
+          ),
         ),
         icon: const Icon(
           Icons.delete_outline,

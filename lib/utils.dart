@@ -7,26 +7,27 @@ import 'package:smart_community/config.dart';
 
 final PocketBase pb = PocketBase(baseUrl);
 
-Future<dynamic> navPush(final context, final widget) => Navigator.of(context).push(
-    MaterialPageRoute(
-      builder: (final BuildContext context) => widget,
-    ),
-  );
+Future<dynamic> navPush(final context, final widget) =>
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (final BuildContext context) => widget,
+      ),
+    );
 
 void navPop(final context, [final dynamic result]) {
   Navigator.of(context).pop(result);
 }
 
-Future<dynamic> navGoto(final context, final widget) => Navigator.of(context).pushAndRemoveUntil(
-    MaterialPageRoute(builder: (final BuildContext context) => widget),
-    (final Route route) => false,
-  );
+Future<dynamic> navGoto(final context, final widget) =>
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (final BuildContext context) => widget),
+      (final Route route) => false,
+    );
 
 void showException(final context, final error) {
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$error')));
 }
 
-// 参见 https://api.flutter.dev/flutter/material/SnackBar-class.html
 void showError(final context, final error) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
@@ -45,7 +46,6 @@ void showSuccess(final context, final error) {
   );
 }
 
-// 参见 https://docs.flutter.dev/cookbook/forms/validation
 String? usernameValidator(final String? value) {
   if (value == null || value.isEmpty || value.length < 3) {
     return '用户名长度至少为 3';
@@ -62,13 +62,14 @@ String? passwordValidator(final String? value) {
   }
 }
 
-String? Function(String?) notNullValidator(final String message) => (final String? value) {
-    if (value == null || value.isEmpty) {
-      return message;
-    } else {
-      return null;
-    }
-  };
+String? Function(String?) notNullValidator(final String message) =>
+    (final String? value) {
+      if (value == null || value.isEmpty) {
+        return message;
+      } else {
+        return null;
+      }
+    };
 
 String getDate(final String formattedString) {
   final DateTime datetime = DateTime.parse(formattedString).toLocal();
@@ -80,39 +81,42 @@ String getDateTime(final String formattedString) {
   return datetime.toIso8601String().replaceAll('T', ' ').split('.')[0];
 }
 
-bool Function(RecordModel, String) keyFilter(final String primaryKey) => (final RecordModel record, final String input) => input.split(' ').every((final String element) {
-      if (element.contains(':')) {
-        final List<String> elements = element.replaceFirst(':', ' ').split(' ');
-        final String key = elements.first;
-        final String value = elements.last;
+bool Function(RecordModel, String) keyFilter(final String primaryKey) =>
+    (final RecordModel record, final String input) =>
+        input.split(' ').every((final String element) {
+          if (element.contains(':')) {
+            final List<String> elements =
+                element.replaceFirst(':', ' ').split(' ');
+            final String key = elements.first;
+            final String value = elements.last;
 
-        if (key == 'after') {
-          final DateTime? datetime = DateTime.tryParse(value);
-          return datetime != null
-              ? DateTime.parse(record.created).toLocal().isAfter(datetime)
-              : false;
-        } else if (key == 'before') {
-          final DateTime? datetime = DateTime.tryParse(value);
-          return datetime != null
-              ? DateTime.parse(record.created).toLocal().isBefore(datetime)
-              : false;
-        } else if (key == 'userName') {
-          return record.expand['userId']?.first
-                  .getStringValue('name')
-                  .contains(value) ??
-              false;
-        } else if (key == 'userPhone') {
-          return record.expand['userId']?.first
-                  .getStringValue('phone')
-                  .contains(value) ??
-              false;
-        } else {
-          return record.getStringValue(key).contains(value);
-        }
-      } else {
-        return record.getStringValue(primaryKey).contains(element);
-      }
-    });
+            if (key == 'after') {
+              final DateTime? datetime = DateTime.tryParse(value);
+              return datetime != null
+                  ? DateTime.parse(record.created).toLocal().isAfter(datetime)
+                  : false;
+            } else if (key == 'before') {
+              final DateTime? datetime = DateTime.tryParse(value);
+              return datetime != null
+                  ? DateTime.parse(record.created).toLocal().isBefore(datetime)
+                  : false;
+            } else if (key == 'userName') {
+              return record.expand['userId']?.first
+                      .getStringValue('name')
+                      .contains(value) ??
+                  false;
+            } else if (key == 'userPhone') {
+              return record.expand['userId']?.first
+                      .getStringValue('phone')
+                      .contains(value) ??
+                  false;
+            } else {
+              return record.getStringValue(key).contains(value);
+            }
+          } else {
+            return record.getStringValue(primaryKey).contains(element);
+          }
+        });
 
 void pickImage({
   required final void Function(String filename, Uint8List bytes) update,

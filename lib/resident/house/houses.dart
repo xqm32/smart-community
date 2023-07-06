@@ -15,12 +15,12 @@ class ResidentHouses extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) => Manage(
-      title: const Text('房屋管理'),
-      fetchRecords: fetchRecords,
-      filter: keyFilter('location'),
-      onAddPressed: onAddPressed,
-      toElement: toElement,
-    );
+        title: const Text('房屋管理'),
+        fetchRecords: fetchRecords,
+        filter: keyFilter('location'),
+        onAddPressed: onAddPressed,
+        toElement: toElement,
+      );
 
   Future<List<RecordModel>> fetchRecords() {
     final String filter =
@@ -30,7 +30,10 @@ class ResidentHouses extends StatelessWidget {
         .getFullList(filter: filter, sort: '-created');
   }
 
-  void onAddPressed(final BuildContext context, final void Function() refreshRecords) {
+  void onAddPressed(
+    final BuildContext context,
+    final void Function() refreshRecords,
+  ) {
     navPush(
       context,
       ResidentHouse(communityId: communityId),
@@ -41,17 +44,18 @@ class ResidentHouses extends StatelessWidget {
     final BuildContext context,
     final void Function() refreshRecords,
     final RecordModel record,
-  ) => ListTile(
-      title: Text(record.getStringValue('location')),
-      subtitle: Text(getDateTime(record.created)),
-      trailing: _recordState(record),
-      onTap: () {
-        navPush(
-          context,
-          ResidentHouse(communityId: communityId, recordId: record.id),
-        ).then((final value) => refreshRecords());
-      },
-    );
+  ) =>
+      ListTile(
+        title: Text(record.getStringValue('location')),
+        subtitle: Text(getDateTime(record.created)),
+        trailing: _recordState(record),
+        onTap: () {
+          navPush(
+            context,
+            ResidentHouse(communityId: communityId, recordId: record.id),
+          ).then((final value) => refreshRecords());
+        },
+      );
 
   Widget _recordState(final RecordModel record) {
     final String state = record.getStringValue('state');

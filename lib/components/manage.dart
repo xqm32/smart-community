@@ -42,57 +42,59 @@ class _ManageState extends State<Manage> {
 
   @override
   Widget build(final BuildContext context) => Scaffold(
-      appBar: AppBar(
-        title: widget.title,
-        actions: [
-          IconButton(
-            onPressed: refreshRecords,
-            icon: const Icon(
-              Icons.refresh,
+        appBar: AppBar(
+          title: widget.title,
+          actions: [
+            IconButton(
+              onPressed: refreshRecords,
+              icon: const Icon(
+                Icons.refresh,
+              ),
             ),
-          ),
-          FutureBuilder(
-            future: _records,
-            builder: (
-              final BuildContext context,
-              final AsyncSnapshot<List<RecordModel>> snapshot,
-            ) {
-              if (snapshot.hasData) {
-                return SearchAction(
-                  records: snapshot.data!,
-                  filter: widget.filter,
-                  toElement: (final RecordModel record) =>
-                      widget.toElement(context, refreshRecords, record),
-                );
-              }
-              return const Icon(Icons.search);
-            },
-          )
-        ],
-      ),
-      body: FutureBuilder(
-        future: _records,
-        builder:
-            (final BuildContext context, final AsyncSnapshot<List<RecordModel>> snapshot) {
-          if (snapshot.hasData) {
-            return RecordList(
-              records: snapshot.data!,
-              itemBuilder: (final BuildContext context, final int index) {
-                final RecordModel record = snapshot.data!.elementAt(index);
-                return widget.toElement(context, refreshRecords, record);
+            FutureBuilder(
+              future: _records,
+              builder: (
+                final BuildContext context,
+                final AsyncSnapshot<List<RecordModel>> snapshot,
+              ) {
+                if (snapshot.hasData) {
+                  return SearchAction(
+                    records: snapshot.data!,
+                    filter: widget.filter,
+                    toElement: (final RecordModel record) =>
+                        widget.toElement(context, refreshRecords, record),
+                  );
+                }
+                return const Icon(Icons.search);
               },
-            );
-          }
-          return const LinearProgressIndicator();
-        },
-      ),
-      floatingActionButton: widget.onAddPressed != null
-          ? FloatingActionButton(
-              onPressed: () => widget.onAddPressed!(context, refreshRecords),
-              child: const Icon(Icons.add),
             )
-          : null,
-    );
+          ],
+        ),
+        body: FutureBuilder(
+          future: _records,
+          builder: (
+            final BuildContext context,
+            final AsyncSnapshot<List<RecordModel>> snapshot,
+          ) {
+            if (snapshot.hasData) {
+              return RecordList(
+                records: snapshot.data!,
+                itemBuilder: (final BuildContext context, final int index) {
+                  final RecordModel record = snapshot.data!.elementAt(index);
+                  return widget.toElement(context, refreshRecords, record);
+                },
+              );
+            }
+            return const LinearProgressIndicator();
+          },
+        ),
+        floatingActionButton: widget.onAddPressed != null
+            ? FloatingActionButton(
+                onPressed: () => widget.onAddPressed!(context, refreshRecords),
+                child: const Icon(Icons.add),
+              )
+            : null,
+      );
 
   void refreshRecords() {
     setState(() {

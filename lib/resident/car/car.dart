@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:http/http.dart';
 import 'package:pocketbase/pocketbase.dart';
 
@@ -52,8 +53,10 @@ class _ResidentCarState extends State<ResidentCar> {
 
   @override
   void initState() {
-    _formKeys =
-        List.generate(_steps.length, (final int index) => GlobalKey<FormState>());
+    _formKeys = List.generate(
+      _steps.length,
+      (final int index) => GlobalKey<FormState>(),
+    );
     _controllers = {
       for (final String i in _fields) i: TextEditingController(),
     };
@@ -106,25 +109,26 @@ class _ResidentCarState extends State<ResidentCar> {
 
   @override
   Widget build(final BuildContext context) => Scaffold(
-      appBar: AppBar(
-        title: const Text('车辆管理'),
-        actions: _actionsBuilder(context),
-      ),
-      body: Stepper(
-        type: StepperType.horizontal,
-        currentStep: _index,
-        controlsBuilder: (final BuildContext context, final ControlsDetails details) =>
-            Container(),
-        steps: [
-          for (int i = 0; i < _steps.length; ++i)
-            Step(
-              isActive: _index >= i,
-              title: Text(_steps.elementAt(i)),
-              content: _form(index: i),
-            ),
-        ],
-      ),
-    );
+        appBar: AppBar(
+          title: const Text('车辆管理'),
+          actions: _actionsBuilder(context),
+        ),
+        body: Stepper(
+          type: StepperType.horizontal,
+          currentStep: _index,
+          controlsBuilder:
+              (final BuildContext context, final ControlsDetails details) =>
+                  Container(),
+          steps: [
+            for (int i = 0; i < _steps.length; ++i)
+              Step(
+                isActive: _index >= i,
+                title: Text(_steps.elementAt(i)),
+                content: _form(index: i),
+              ),
+          ],
+        ),
+      );
 
   void _setRecord(final RecordModel record) async {
     final String state = record.getStringValue('state');
@@ -221,27 +225,27 @@ class _ResidentCarState extends State<ResidentCar> {
         onPressed: () => showDialog(
           context: context,
           builder: (final BuildContext context) => AlertDialog(
-              surfaceTintColor: Theme.of(context).colorScheme.background,
-              title: const Text('删除车辆'),
-              content: const Text('确定要删除该车辆吗？'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    navPop(context, 'Cancel');
-                  },
-                  child: const Text('取消'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    service.delete(_record!.id).then((final value) {
-                      navPop(context, 'OK');
-                      navPop(context);
-                    });
-                  },
-                  child: const Text('确认'),
-                ),
-              ],
-            ),
+            surfaceTintColor: Theme.of(context).colorScheme.background,
+            title: const Text('删除车辆'),
+            content: const Text('确定要删除该车辆吗？'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  navPop(context, 'Cancel');
+                },
+                child: const Text('取消'),
+              ),
+              TextButton(
+                onPressed: () {
+                  service.delete(_record!.id).then((final value) {
+                    navPop(context, 'OK');
+                    navPop(context);
+                  });
+                },
+                child: const Text('确认'),
+              ),
+            ],
+          ),
         ),
         icon: const Icon(
           Icons.delete_outline,
@@ -256,146 +260,152 @@ class _ResidentCarState extends State<ResidentCar> {
     final String labelText,
     final String hintText,
     final void Function(String filename, Uint8List bytes) update,
-  ) => Column(
-      children: [
-        Container(
-          decoration: _files[field] != null
-              ? null
-              : BoxDecoration(border: Border.all(color: Colors.grey)),
-          height: 160,
-          child: _files[field] != null
-              ? Image.memory(
-                  _files[field]!,
-                )
-              : Center(child: Text(labelText)),
-        ),
-        TextButton(
-          onPressed: () {
-            pickImage(update: update);
-          },
-          child: Text(hintText),
-        ),
-      ],
-    );
+  ) =>
+      Column(
+        children: [
+          Container(
+            decoration: _files[field] != null
+                ? null
+                : BoxDecoration(border: Border.all(color: Colors.grey)),
+            height: 160,
+            child: _files[field] != null
+                ? Image.memory(
+                    _files[field]!,
+                  )
+                : Center(child: Text(labelText)),
+          ),
+          TextButton(
+            onPressed: () {
+              pickImage(update: update);
+            },
+            child: Text(hintText),
+          ),
+        ],
+      );
 
   Widget _form({required final int index}) => Form(
-      key: _formKeys[index],
-      child: Column(
-        children: [
-          TextFormField(
-            controller: _controllers['name'],
-            decoration: const InputDecoration(
-              labelText: '名称',
-              hintText: '请填写车辆名称',
-            ),
-            validator: notNullValidator('名称不能为空'),
-          ),
-          TextFormField(
-            controller: _controllers['plate'],
-            decoration: const InputDecoration(
-              labelText: '车牌号',
-              hintText: '请填写车牌号',
-            ),
-            validator: notNullValidator('车牌号不能为空'),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Flexible(
-                child: DropdownButtonFormField(
-                  decoration: const InputDecoration(labelText: '区域'),
-                  value: _area,
-                  items: _struct?.keys
-                      .map(
-                        (final String e) => DropdownMenuItem(
-                          value: e,
-                          child: Text(e),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (final String? value) {
-                    setState(() {
-                      _area = value;
-                      _zone = null;
-                      _position = null;
-                    });
-                  },
-                  validator: notNullValidator('区域不能为空'),
-                ),
+        key: _formKeys[index],
+        child: Column(
+          children: [
+            TextFormField(
+              controller: _controllers['name'],
+              decoration: const InputDecoration(
+                labelText: '名称',
+                hintText: '请填写车辆名称',
               ),
-              const SizedBox(width: 16),
-              Flexible(
-                child: DropdownButtonFormField(
-                  decoration: const InputDecoration(labelText: '分区'),
-                  value: _zone,
-                  items: (_struct?[_area] as Map<String, dynamic>?)
-                      ?.keys
-                      .map(
-                        (final String e) => DropdownMenuItem(
-                          value: e,
-                          child: Text(e),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (final String? value) {
-                    setState(() {
-                      _zone = value;
-                      _position = null;
-                    });
-                  },
-                  validator: notNullValidator('分区不能为空'),
-                ),
+              validator: FormBuilderValidators.required(errorText: '名称不能为空'),
+            ),
+            TextFormField(
+              controller: _controllers['plate'],
+              decoration: const InputDecoration(
+                labelText: '车牌号',
+                hintText: '请填写车牌号',
               ),
-            ],
-          ),
-          DropdownButtonFormField(
-            decoration: const InputDecoration(labelText: '车位'),
-            value: _position,
-            items: (_struct?[_area]?[_zone] as List?)
-                ?.map(
-                  (final e) => DropdownMenuItem(
-                    value: e as String,
-                    child: Text(e),
+              validator: FormBuilderValidators.compose([
+                FormBuilderValidators.required(errorText: '车牌号不能为空'),
+                // TODO: 车牌号校验
+              ]),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: DropdownButtonFormField(
+                    decoration: const InputDecoration(labelText: '区域'),
+                    value: _area,
+                    items: _struct?.keys
+                        .map(
+                          (final String e) => DropdownMenuItem(
+                            value: e,
+                            child: Text(e),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (final String? value) {
+                      setState(() {
+                        _area = value;
+                        _zone = null;
+                        _position = null;
+                      });
+                    },
+                    validator:
+                        FormBuilderValidators.required(errorText: '区域不能为空'),
                   ),
-                )
-                .toList(),
-            onChanged: (final String? value) {
-              setState(() {
-                _position = value;
-              });
-            },
-          ),
-          DropdownButtonFormField(
-            decoration: const InputDecoration(labelText: '房屋绑定'),
-            value: _houseId,
-            items: _houses
-                ?.map(
-                  (final RecordModel e) => DropdownMenuItem(
-                    value: e.id,
-                    child: Text(e.getStringValue('location')),
+                ),
+                const SizedBox(width: 16),
+                Flexible(
+                  child: DropdownButtonFormField(
+                    decoration: const InputDecoration(labelText: '分区'),
+                    value: _zone,
+                    items: (_struct?[_area] as Map<String, dynamic>?)
+                        ?.keys
+                        .map(
+                          (final String e) => DropdownMenuItem(
+                            value: e,
+                            child: Text(e),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (final String? value) {
+                      setState(() {
+                        _zone = value;
+                        _position = null;
+                      });
+                    },
+                    validator:
+                        FormBuilderValidators.required(errorText: '分区不能为空'),
                   ),
-                )
-                .toList(),
-            onChanged: (final String? value) {
+                ),
+              ],
+            ),
+            DropdownButtonFormField(
+              decoration: const InputDecoration(labelText: '车位'),
+              value: _position,
+              items: (_struct?[_area]?[_zone] as List?)
+                  ?.map(
+                    (final e) => DropdownMenuItem(
+                      value: e as String,
+                      child: Text(e),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (final String? value) {
+                setState(() {
+                  _position = value;
+                });
+              },
+            ),
+            DropdownButtonFormField(
+              decoration: const InputDecoration(labelText: '房屋绑定'),
+              value: _houseId,
+              items: _houses
+                  ?.map(
+                    (final RecordModel e) => DropdownMenuItem(
+                      value: e.id,
+                      child: Text(e.getStringValue('location')),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (final String? value) {
+                setState(() {
+                  _houseId = value;
+                });
+              },
+            ),
+            const SizedBox(height: 16),
+            _imageForm('photo', '请上传车辆照片', '选择车辆照片',
+                (final String filename, final Uint8List bytes) {
               setState(() {
-                _houseId = value;
+                _files['photo'] = bytes;
+                _filenames['photo'] = filename;
               });
-            },
-          ),
-          const SizedBox(height: 16),
-          _imageForm('photo', '请上传车辆照片', '选择车辆照片',
-              (final String filename, final Uint8List bytes) {
-            setState(() {
-              _files['photo'] = bytes;
-              _filenames['photo'] = filename;
-            });
-          }),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _onSubmitPressed,
-            child: Text(['提交', '修改信息', '修改信息'].elementAt(_index)),
-          )
-        ],
-      ),
-    );
+            }),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _onSubmitPressed,
+              child: Text(['提交', '修改信息', '修改信息'].elementAt(_index)),
+            )
+          ],
+        ),
+      );
 }

@@ -15,12 +15,12 @@ class ResidentCars extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) => Manage(
-      title: const Text('车辆管理'),
-      fetchRecords: fetchRecords,
-      filter: keyFilter('name'),
-      toElement: toElement,
-      onAddPressed: onAddPressed,
-    );
+        title: const Text('车辆管理'),
+        fetchRecords: fetchRecords,
+        filter: keyFilter('name'),
+        toElement: toElement,
+        onAddPressed: onAddPressed,
+      );
 
   Future<List<RecordModel>> fetchRecords() {
     final String filter =
@@ -28,7 +28,10 @@ class ResidentCars extends StatelessWidget {
     return pb.collection('cars').getFullList(filter: filter, sort: '-created');
   }
 
-  void onAddPressed(final BuildContext context, final void Function() refreshRecords) {
+  void onAddPressed(
+    final BuildContext context,
+    final void Function() refreshRecords,
+  ) {
     navPush(
       context,
       ResidentCar(communityId: communityId),
@@ -39,17 +42,18 @@ class ResidentCars extends StatelessWidget {
     final BuildContext context,
     final void Function() refreshRecords,
     final RecordModel record,
-  ) => ListTile(
-      title: Text(record.getStringValue('name')),
-      subtitle: Text(record.getStringValue('plate')),
-      trailing: _recordState(record),
-      onTap: () {
-        navPush(
-          context,
-          ResidentCar(communityId: communityId, recordId: record.id),
-        ).then((final value) => refreshRecords());
-      },
-    );
+  ) =>
+      ListTile(
+        title: Text(record.getStringValue('name')),
+        subtitle: Text(record.getStringValue('plate')),
+        trailing: _recordState(record),
+        onTap: () {
+          navPush(
+            context,
+            ResidentCar(communityId: communityId, recordId: record.id),
+          ).then((final value) => refreshRecords());
+        },
+      );
 
   Widget _recordState(final RecordModel record) {
     final String state = record.getStringValue('state');

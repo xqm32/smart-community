@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
@@ -67,7 +68,7 @@ class _LoginFormState extends State<_InformationForm> {
                 labelText: '姓名',
                 hintText: '请输入姓名',
               ),
-              validator: notNullValidator('姓名不能为空'),
+              validator: FormBuilderValidators.required(errorText: '姓名不能为空'),
             ),
             TextFormField(
               controller: _controllers['identity'],
@@ -75,7 +76,13 @@ class _LoginFormState extends State<_InformationForm> {
                 labelText: '身份证号',
                 hintText: '请输入身份证号',
               ),
-              validator: notNullValidator('身份证号不能为空'),
+              validator: FormBuilderValidators.compose([
+                FormBuilderValidators.required(errorText: '身份证号不能为空'),
+                FormBuilderValidators.match(
+                  r'^([1-9]\d{5}(18|19|20)\d{2}(0[1-9]|1[0-2])(0[1-9]|[1-2]\d|3[0-1])\d{3}(\d|X))$',
+                  errorText: '身份证号格式不正确',
+                )
+              ]),
             ),
             TextFormField(
               controller: _controllers['phone'],
@@ -83,7 +90,7 @@ class _LoginFormState extends State<_InformationForm> {
                 labelText: '手机号',
                 hintText: '请输入手机号',
               ),
-              validator: notNullValidator('手机号不能为空'),
+              validator: FormBuilderValidators.required(errorText: '手机号不能为空'),
             ),
             const SizedBox(height: 16),
             ElevatedButton(

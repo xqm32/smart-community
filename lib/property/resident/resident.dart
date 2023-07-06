@@ -41,7 +41,9 @@ class _PropertyResidentState extends State<PropertyResident> {
   @override
   void initState() {
     _formKeys = List.generate(
-        _steps.length, (final int index) => GlobalKey<FormState>(),);
+      _steps.length,
+      (final int index) => GlobalKey<FormState>(),
+    );
     _userControllers = {
       for (final String i in _userFields) i: TextEditingController(),
     };
@@ -157,7 +159,9 @@ class _PropertyResidentState extends State<PropertyResident> {
                   ? Image.network(
                       pb
                           .getFileUrl(
-                              _record!, _record!.getStringValue('idCard'),)
+                            _record!,
+                            _record!.getStringValue('idCard'),
+                          )
                           .toString(),
                     )
                   : const Center(child: Text('用户未上传图片')),

@@ -10,18 +10,18 @@ class AccountPassword extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) => Scaffold(
-      appBar: AppBar(title: const Text('修改密码')),
-      body: const Center(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              _PasswordForm(),
-            ],
+        appBar: AppBar(title: const Text('修改密码')),
+        body: const Center(
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                _PasswordForm(),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
 }
 
 class _PasswordForm extends StatefulWidget {
@@ -55,53 +55,53 @@ class _LoginFormState extends State<_PasswordForm> {
 
   @override
   Widget build(final BuildContext context) => Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          TextFormField(
-            controller: _controllers['oldPassword'],
-            decoration: const InputDecoration(
-              labelText: '原密码',
-              hintText: '请输入原密码',
+        key: _formKey,
+        child: Column(
+          children: [
+            TextFormField(
+              controller: _controllers['oldPassword'],
+              decoration: const InputDecoration(
+                labelText: '原密码',
+                hintText: '请输入原密码',
+              ),
+              validator: passwordValidator,
+              obscureText: true,
             ),
-            validator: passwordValidator,
-            obscureText: true,
-          ),
-          TextFormField(
-            controller: _controllers['password'],
-            decoration: const InputDecoration(
-              labelText: '新密码',
-              hintText: '请输入新密码',
+            TextFormField(
+              controller: _controllers['password'],
+              decoration: const InputDecoration(
+                labelText: '新密码',
+                hintText: '请输入新密码',
+              ),
+              validator: passwordValidator,
+              obscureText: true,
             ),
-            validator: passwordValidator,
-            obscureText: true,
-          ),
-          TextFormField(
-            controller: _controllers['passwordConfirm'],
-            decoration: const InputDecoration(
-              labelText: '确认密码',
-              hintText: '请再次输入新密码',
+            TextFormField(
+              controller: _controllers['passwordConfirm'],
+              decoration: const InputDecoration(
+                labelText: '确认密码',
+                hintText: '请再次输入新密码',
+              ),
+              validator: (final String? value) {
+                final String? result = passwordValidator(value);
+                if (result != null) {
+                  return result;
+                }
+                if (value != _controllers['password']!.text) {
+                  return '两次输入密码不一致';
+                }
+                return null;
+              },
+              obscureText: true,
             ),
-            validator: (final String? value) {
-              final String? result = passwordValidator(value);
-              if (result != null) {
-                return result;
-              }
-              if (value != _controllers['password']!.text) {
-                return '两次输入密码不一致';
-              }
-              return null;
-            },
-            obscureText: true,
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _onSubmitPressed,
-            child: const Text('确认修改'),
-          ),
-        ],
-      ),
-    );
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _onSubmitPressed,
+              child: const Text('确认修改'),
+            ),
+          ],
+        ),
+      );
 
   void _onSubmitPressed() {
     if (!_formKey.currentState!.validate()) {
@@ -113,14 +113,19 @@ class _LoginFormState extends State<_PasswordForm> {
           in _controllers.entries)
         i.key: i.value.text
     };
-    pb.collection('users').update(pb.authStore.model.id, body: body).then(
-      (final RecordModel value) => SharedPreferences.getInstance().then((final SharedPreferences prefs) {
-          pb.authStore.clear();
-          prefs.clear();
-          showSuccess(context, '修改成功');
-          return navGoto(context, const Login());
-        }),
-    ).catchError(_onError);
+    pb
+        .collection('users')
+        .update(pb.authStore.model.id, body: body)
+        .then(
+          (final RecordModel value) => SharedPreferences.getInstance()
+              .then((final SharedPreferences prefs) {
+            pb.authStore.clear();
+            prefs.clear();
+            showSuccess(context, '修改成功');
+            return navGoto(context, const Login());
+          }),
+        )
+        .catchError(_onError);
   }
 
   void _onError(final error) {

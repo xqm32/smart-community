@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
@@ -32,8 +33,10 @@ class _PropertyAnnouncementState extends State<PropertyAnnouncement> {
 
   @override
   void initState() {
-    _formKeys =
-        List.generate(_steps.length, (final int index) => GlobalKey<FormState>());
+    _formKeys = List.generate(
+      _steps.length,
+      (final int index) => GlobalKey<FormState>(),
+    );
     _controllers = {
       for (final String i in _fields) i: TextEditingController(),
     };
@@ -53,25 +56,26 @@ class _PropertyAnnouncementState extends State<PropertyAnnouncement> {
 
   @override
   Widget build(final BuildContext context) => Scaffold(
-      appBar: AppBar(
-        title: const Text('通知公告'),
-        actions: _actionsBuilder(context),
-      ),
-      body: Stepper(
-        type: StepperType.horizontal,
-        currentStep: _index,
-        controlsBuilder: (final BuildContext context, final ControlsDetails details) =>
-            Container(),
-        steps: [
-          for (int i = 0; i < _steps.length; ++i)
-            Step(
-              isActive: _index >= i,
-              title: Text(_steps.elementAt(i)),
-              content: _form(index: i),
-            ),
-        ],
-      ),
-    );
+        appBar: AppBar(
+          title: const Text('通知公告'),
+          actions: _actionsBuilder(context),
+        ),
+        body: Stepper(
+          type: StepperType.horizontal,
+          currentStep: _index,
+          controlsBuilder:
+              (final BuildContext context, final ControlsDetails details) =>
+                  Container(),
+          steps: [
+            for (int i = 0; i < _steps.length; ++i)
+              Step(
+                isActive: _index >= i,
+                title: Text(_steps.elementAt(i)),
+                content: _form(index: i),
+              ),
+          ],
+        ),
+      );
 
   void _setRecord(final RecordModel record) {
     for (final MapEntry<String, TextEditingController> i
@@ -117,45 +121,45 @@ class _PropertyAnnouncementState extends State<PropertyAnnouncement> {
   }
 
   Widget _form({required final int index}) => Form(
-      key: _formKeys[index],
-      child: Column(
-        children: [
-          TextFormField(
-            controller: _controllers['title'],
-            decoration: const InputDecoration(
-              labelText: '标题',
-              hintText: '请填写公告标题',
+        key: _formKeys[index],
+        child: Column(
+          children: [
+            TextFormField(
+              controller: _controllers['title'],
+              decoration: const InputDecoration(
+                labelText: '标题',
+                hintText: '请填写公告标题',
+              ),
+              validator: FormBuilderValidators.required(errorText: '标题不能为空'),
             ),
-            validator: notNullValidator('标题不能为空'),
-          ),
-          TextFormField(
-            controller: _controllers['author'],
-            decoration: const InputDecoration(
-              labelText: '作者',
-              hintText: '请填写公告作者',
+            TextFormField(
+              controller: _controllers['author'],
+              decoration: const InputDecoration(
+                labelText: '作者',
+                hintText: '请填写公告作者',
+              ),
+              validator: FormBuilderValidators.required(errorText: '作者不能为空'),
             ),
-            validator: notNullValidator('作者不能为空'),
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: _controllers['content'],
-            decoration: const InputDecoration(
-              labelText: '内容',
-              hintText: '请填写公告内容',
-              border: OutlineInputBorder(),
-              floatingLabelBehavior: FloatingLabelBehavior.always,
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _controllers['content'],
+              decoration: const InputDecoration(
+                labelText: '内容',
+                hintText: '请填写公告内容',
+                border: OutlineInputBorder(),
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+              ),
+              validator: FormBuilderValidators.required(errorText: '内容不能为空'),
+              maxLines: null,
             ),
-            validator: notNullValidator('内容不能为空'),
-            maxLines: null,
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _onSubmitPressed,
-            child: Text(['提交', '修改信息'].elementAt(_index)),
-          )
-        ],
-      ),
-    );
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _onSubmitPressed,
+              child: Text(['提交', '修改信息'].elementAt(_index)),
+            )
+          ],
+        ),
+      );
 
   List<Widget>? _actionsBuilder(final context) {
     if (_record == null) {
@@ -167,27 +171,27 @@ class _PropertyAnnouncementState extends State<PropertyAnnouncement> {
         onPressed: () => showDialog(
           context: context,
           builder: (final BuildContext context) => AlertDialog(
-              surfaceTintColor: Theme.of(context).colorScheme.background,
-              title: const Text('删除公告'),
-              content: const Text('确定要删除该公告吗？'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    navPop(context, 'Cancel');
-                  },
-                  child: const Text('取消'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    service.delete(_record!.id).then((final value) {
-                      navPop(context, 'OK');
-                      navPop(context);
-                    });
-                  },
-                  child: const Text('确认'),
-                ),
-              ],
-            ),
+            surfaceTintColor: Theme.of(context).colorScheme.background,
+            title: const Text('删除公告'),
+            content: const Text('确定要删除该公告吗？'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  navPop(context, 'Cancel');
+                },
+                child: const Text('取消'),
+              ),
+              TextButton(
+                onPressed: () {
+                  service.delete(_record!.id).then((final value) {
+                    navPop(context, 'OK');
+                    navPop(context);
+                  });
+                },
+                child: const Text('确认'),
+              ),
+            ],
+          ),
         ),
         icon: const Icon(
           Icons.delete_outline,

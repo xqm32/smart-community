@@ -12,18 +12,18 @@ class Login extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) => const Scaffold(
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              LoginForm(),
-            ],
+        body: Center(
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                LoginForm(),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
 }
 
 class LoginForm extends StatefulWidget {
@@ -72,40 +72,40 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(final BuildContext context) => Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          _roleChoice(),
-          TextFormField(
-            controller: _controllers['username'],
-            decoration: const InputDecoration(
-              labelText: '用户名',
-              hintText: '请输入用户名',
+        key: _formKey,
+        child: Column(
+          children: [
+            _roleChoice(),
+            TextFormField(
+              controller: _controllers['username'],
+              decoration: const InputDecoration(
+                labelText: '用户名',
+                hintText: '请输入用户名',
+              ),
+              validator: usernameValidator,
             ),
-            validator: usernameValidator,
-          ),
-          TextFormField(
-            controller: _controllers['password'],
-            decoration: const InputDecoration(
-              labelText: '密码',
-              hintText: '请输入密码',
+            TextFormField(
+              controller: _controllers['password'],
+              decoration: const InputDecoration(
+                labelText: '密码',
+                hintText: '请输入密码',
+              ),
+              validator: passwordValidator,
+              obscureText: true,
             ),
-            validator: passwordValidator,
-            obscureText: true,
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _onLoginPressed,
-            child: const Text('登陆'),
-          ),
-          const SizedBox(height: 8),
-          TextButton(
-            onPressed: () => navGoto(context, const Register()),
-            child: const Text('注册'),
-          )
-        ],
-      ),
-    );
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _onLoginPressed,
+              child: const Text('登陆'),
+            ),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: () => navGoto(context, const Register()),
+              child: const Text('注册'),
+            )
+          ],
+        ),
+      );
 
   void _onLoginPressed() {
     if (!_formKey.currentState!.validate()) {
@@ -118,7 +118,11 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  void _login(final String username, final String password, final String selectedRole) {
+  void _login(
+    final String username,
+    final String password,
+    final String selectedRole,
+  ) {
     pb
         .collection('users')
         .authWithPassword(username, password)
@@ -181,18 +185,18 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   Widget _roleChoice() => SegmentedButton(
-      segments: const [
-        ButtonSegment(
-          value: 'resident',
-          label: Text('居民'),
-        ),
-        ButtonSegment(
-          value: 'property',
-          label: Text('物业'),
-        ),
-      ],
-      selected: {_role},
-      onSelectionChanged: (final Set<String> value) =>
-          setState(() => _role = value.first),
-    );
+        segments: const [
+          ButtonSegment(
+            value: 'resident',
+            label: Text('居民'),
+          ),
+          ButtonSegment(
+            value: 'property',
+            label: Text('物业'),
+          ),
+        ],
+        selected: {_role},
+        onSelectionChanged: (final Set<String> value) =>
+            setState(() => _role = value.first),
+      );
 }

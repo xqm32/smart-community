@@ -15,11 +15,11 @@ class PropertyResidents extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) => Manage(
-      title: const Text('居民管理'),
-      fetchRecords: fetchRecords,
-      filter: keyFilter('name'),
-      toElement: toElement,
-    );
+        title: const Text('居民管理'),
+        fetchRecords: fetchRecords,
+        filter: keyFilter('name'),
+        toElement: toElement,
+      );
 
   Future<List<RecordModel>> fetchRecords() {
     final String filter = 'communityId = "$communityId"';

@@ -31,56 +31,56 @@ class _ResidentAnnouncementState extends State<ResidentAnnouncement> {
 
   @override
   Widget build(final BuildContext context) => Scaffold(
-      appBar: AppBar(
-        title: const Text('通知公告'),
-      ),
-      body: _record != null
-          ? SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        _record!.getStringValue('title'),
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Text(
-                          _record!.getStringValue('author'),
-                          style: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          getDateTime(_record!.created),
+        appBar: AppBar(
+          title: const Text('通知公告'),
+        ),
+        body: _record != null
+            ? SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          _record!.getStringValue('title'),
                           style: const TextStyle(
-                            color: Colors.grey,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: MarkdownBody(
-                        data: _record!.getStringValue('content'),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Text(
+                            _record!.getStringValue('author'),
+                            style: TextStyle(
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            getDateTime(_record!.created),
+                            style: const TextStyle(
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: MarkdownBody(
+                          data: _record!.getStringValue('content'),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            )
-          : const LinearProgressIndicator(),
-    );
+              )
+            : const LinearProgressIndicator(),
+      );
 
   void _setRecord(final RecordModel record) {
     setState(() {

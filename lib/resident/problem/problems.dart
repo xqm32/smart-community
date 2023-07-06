@@ -15,12 +15,12 @@ class ResidentProblems extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) => Manage(
-      title: const Text('问题上报'),
-      fetchRecords: fetchRecords,
-      filter: keyFilter('title'),
-      toElement: toElement,
-      onAddPressed: onAddPressed,
-    );
+        title: const Text('问题上报'),
+        fetchRecords: fetchRecords,
+        filter: keyFilter('title'),
+        toElement: toElement,
+        onAddPressed: onAddPressed,
+      );
 
   Future<List<RecordModel>> fetchRecords() {
     final String filter =
@@ -30,7 +30,10 @@ class ResidentProblems extends StatelessWidget {
         .getFullList(filter: filter, sort: '-created');
   }
 
-  void onAddPressed(final BuildContext context, final void Function() refreshRecords) {
+  void onAddPressed(
+    final BuildContext context,
+    final void Function() refreshRecords,
+  ) {
     navPush(
       context,
       ResidentProblem(communityId: communityId),

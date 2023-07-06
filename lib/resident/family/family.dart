@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 import 'package:smart_community/utils.dart';
@@ -33,8 +34,10 @@ class _ResidentFamilyState extends State<ResidentFamily> {
 
   @override
   void initState() {
-    _formKeys =
-        List.generate(_steps.length, (final int index) => GlobalKey<FormState>());
+    _formKeys = List.generate(
+      _steps.length,
+      (final int index) => GlobalKey<FormState>(),
+    );
     _controllers = {
       for (final String i in _fields) i: TextEditingController(),
     };
@@ -54,25 +57,26 @@ class _ResidentFamilyState extends State<ResidentFamily> {
 
   @override
   Widget build(final BuildContext context) => Scaffold(
-      appBar: AppBar(
-        title: const Text('家人管理'),
-        actions: _actionsBuilder(context),
-      ),
-      body: Stepper(
-        type: StepperType.horizontal,
-        currentStep: _index,
-        controlsBuilder: (final BuildContext context, final ControlsDetails details) =>
-            Container(),
-        steps: [
-          for (int i = 0; i < _steps.length; ++i)
-            Step(
-              isActive: _index >= i,
-              title: Text(_steps.elementAt(i)),
-              content: _form(index: i),
-            ),
-        ],
-      ),
-    );
+        appBar: AppBar(
+          title: const Text('家人管理'),
+          actions: _actionsBuilder(context),
+        ),
+        body: Stepper(
+          type: StepperType.horizontal,
+          currentStep: _index,
+          controlsBuilder:
+              (final BuildContext context, final ControlsDetails details) =>
+                  Container(),
+          steps: [
+            for (int i = 0; i < _steps.length; ++i)
+              Step(
+                isActive: _index >= i,
+                title: Text(_steps.elementAt(i)),
+                content: _form(index: i),
+              ),
+          ],
+        ),
+      );
 
   void _setRecord(final RecordModel record) {
     final String state = record.getStringValue('state');
@@ -120,41 +124,41 @@ class _ResidentFamilyState extends State<ResidentFamily> {
   }
 
   Widget _form({required final int index}) => Form(
-      key: _formKeys[index],
-      child: Column(
-        children: [
-          TextFormField(
-            controller: _controllers['name'],
-            decoration: const InputDecoration(
-              labelText: '姓名',
-              hintText: '请填写家人姓名',
+        key: _formKeys[index],
+        child: Column(
+          children: [
+            TextFormField(
+              controller: _controllers['name'],
+              decoration: const InputDecoration(
+                labelText: '姓名',
+                hintText: '请填写家人姓名',
+              ),
+              validator: FormBuilderValidators.required(errorText: '姓名不能为空'),
             ),
-            validator: notNullValidator('姓名不能为空'),
-          ),
-          TextFormField(
-            controller: _controllers['identity'],
-            decoration: const InputDecoration(
-              labelText: '身份证号',
-              hintText: '请填写家人身份证号',
+            TextFormField(
+              controller: _controllers['identity'],
+              decoration: const InputDecoration(
+                labelText: '身份证号',
+                hintText: '请填写家人身份证号',
+              ),
+              validator: FormBuilderValidators.required(errorText: '身份证号不能为空'),
             ),
-            validator: notNullValidator('身份证号不能为空'),
-          ),
-          TextFormField(
-            controller: _controllers['relation'],
-            decoration: const InputDecoration(
-              labelText: '关系',
-              hintText: '请填写关系',
+            TextFormField(
+              controller: _controllers['relation'],
+              decoration: const InputDecoration(
+                labelText: '关系',
+                hintText: '请填写关系',
+              ),
+              validator: FormBuilderValidators.required(errorText: '关系不能为空'),
             ),
-            validator: notNullValidator('关系不能为空'),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _onSubmitPressed,
-            child: Text(['提交', '修改信息', '修改信息'].elementAt(_index)),
-          )
-        ],
-      ),
-    );
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _onSubmitPressed,
+              child: Text(['提交', '修改信息', '修改信息'].elementAt(_index)),
+            )
+          ],
+        ),
+      );
 
   List<Widget>? _actionsBuilder(final context) {
     if (_record == null) {
@@ -166,27 +170,27 @@ class _ResidentFamilyState extends State<ResidentFamily> {
         onPressed: () => showDialog(
           context: context,
           builder: (final BuildContext context) => AlertDialog(
-              surfaceTintColor: Theme.of(context).colorScheme.background,
-              title: const Text('删除家人'),
-              content: const Text('确定要删除该家人吗？'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    navPop(context, 'Cancel');
-                  },
-                  child: const Text('取消'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    service.delete(_record!.id).then((final value) {
-                      navPop(context, 'OK');
-                      navPop(context);
-                    });
-                  },
-                  child: const Text('确认'),
-                ),
-              ],
-            ),
+            surfaceTintColor: Theme.of(context).colorScheme.background,
+            title: const Text('删除家人'),
+            content: const Text('确定要删除该家人吗？'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  navPop(context, 'Cancel');
+                },
+                child: const Text('取消'),
+              ),
+              TextButton(
+                onPressed: () {
+                  service.delete(_record!.id).then((final value) {
+                    navPop(context, 'OK');
+                    navPop(context);
+                  });
+                },
+                child: const Text('确认'),
+              ),
+            ],
+          ),
         ),
         icon: const Icon(
           Icons.delete_outline,

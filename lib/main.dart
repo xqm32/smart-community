@@ -11,12 +11,12 @@ class App extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) => MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Smart Community',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      home: const Login(),
-    );
+        debugShowCheckedModeBanner: false,
+        title: 'Smart Community',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+          useMaterial3: true,
+        ),
+        home: const Login(),
+      );
 }

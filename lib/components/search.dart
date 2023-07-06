@@ -18,21 +18,23 @@ class SearchAction extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) => SearchAnchor(
-      viewSurfaceTintColor: Theme.of(context).colorScheme.background,
-      isFullScreen: true,
-      builder: builder ??
-          (final BuildContext context, final SearchController controller) => IconButton(
-                onPressed: () => controller.openView(),
-                icon: const Icon(Icons.search),
-              ),
-      suggestionsBuilder: (final BuildContext context, final SearchController controller) {
-        final String input = controller.value.text;
-        return records
-            .where((final RecordModel record) => filter(record, input))
-            .map(toElement)
-            .toList();
-      },
-    );
+        viewSurfaceTintColor: Theme.of(context).colorScheme.background,
+        isFullScreen: true,
+        builder: builder ??
+            (final BuildContext context, final SearchController controller) =>
+                IconButton(
+                  onPressed: () => controller.openView(),
+                  icon: const Icon(Icons.search),
+                ),
+        suggestionsBuilder:
+            (final BuildContext context, final SearchController controller) {
+          final String input = controller.value.text;
+          return records
+              .where((final RecordModel record) => filter(record, input))
+              .map(toElement)
+              .toList();
+        },
+      );
 }
 
 class RecordList extends StatelessWidget {
@@ -47,18 +49,18 @@ class RecordList extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) => Center(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: records.length,
-                itemBuilder: itemBuilder,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  itemCount: records.length,
+                  itemBuilder: itemBuilder,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+      );
 }

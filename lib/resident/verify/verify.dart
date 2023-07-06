@@ -44,8 +44,10 @@ class _ResidentVerifyState extends State<ResidentVerify> {
 
   @override
   void initState() {
-    _formKeys =
-        List.generate(_steps.length, (final int index) => GlobalKey<FormState>());
+    _formKeys = List.generate(
+      _steps.length,
+      (final int index) => GlobalKey<FormState>(),
+    );
     _controllers = {
       for (final String i in _fields) i: TextEditingController(),
     };
@@ -77,25 +79,26 @@ class _ResidentVerifyState extends State<ResidentVerify> {
 
   @override
   Widget build(final BuildContext context) => Scaffold(
-      appBar: AppBar(
-        title: const Text('实名认证'),
-        actions: _actionsBuilder(context),
-      ),
-      body: Stepper(
-        type: StepperType.horizontal,
-        currentStep: _index,
-        controlsBuilder: (final BuildContext context, final ControlsDetails details) =>
-            Container(),
-        steps: [
-          for (int i = 0; i < _steps.length; ++i)
-            Step(
-              isActive: _index >= i,
-              title: Text(_steps.elementAt(i)),
-              content: _form(index: i),
-            ),
-        ],
-      ),
-    );
+        appBar: AppBar(
+          title: const Text('实名认证'),
+          actions: _actionsBuilder(context),
+        ),
+        body: Stepper(
+          type: StepperType.horizontal,
+          currentStep: _index,
+          controlsBuilder:
+              (final BuildContext context, final ControlsDetails details) =>
+                  Container(),
+          steps: [
+            for (int i = 0; i < _steps.length; ++i)
+              Step(
+                isActive: _index >= i,
+                title: Text(_steps.elementAt(i)),
+                content: _form(index: i),
+              ),
+          ],
+        ),
+      );
 
   void _setRecord(final RecordModel record) async {
     final String state = record.getStringValue('state');
@@ -170,27 +173,27 @@ class _ResidentVerifyState extends State<ResidentVerify> {
         onPressed: () => showDialog(
           context: context,
           builder: (final BuildContext context) => AlertDialog(
-              surfaceTintColor: Theme.of(context).colorScheme.background,
-              title: const Text('删除认证'),
-              content: const Text('确定要删除该认证吗？'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    navPop(context, 'Cancel');
-                  },
-                  child: const Text('取消'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    service.delete(_record!.id).then((final value) {
-                      navPop(context, 'OK');
-                      navPop(context);
-                    });
-                  },
-                  child: const Text('确认'),
-                ),
-              ],
-            ),
+            surfaceTintColor: Theme.of(context).colorScheme.background,
+            title: const Text('删除认证'),
+            content: const Text('确定要删除该认证吗？'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  navPop(context, 'Cancel');
+                },
+                child: const Text('取消'),
+              ),
+              TextButton(
+                onPressed: () {
+                  service.delete(_record!.id).then((final value) {
+                    navPop(context, 'OK');
+                    navPop(context);
+                  });
+                },
+                child: const Text('确认'),
+              ),
+            ],
+          ),
         ),
         icon: const Icon(
           Icons.delete_outline,
@@ -205,45 +208,46 @@ class _ResidentVerifyState extends State<ResidentVerify> {
     final String labelText,
     final String hintText,
     final void Function(String filename, Uint8List bytes) update,
-  ) => Column(
-      children: [
-        Container(
-          decoration: _files[field] != null
-              ? null
-              : BoxDecoration(border: Border.all(color: Colors.grey)),
-          height: 160,
-          child: _files[field] != null
-              ? Image.memory(
-                  _files[field]!,
-                )
-              : Center(child: Text(labelText)),
-        ),
-        TextButton(
-          onPressed: () {
-            pickImage(update: update);
-          },
-          child: Text(hintText),
-        ),
-      ],
-    );
+  ) =>
+      Column(
+        children: [
+          Container(
+            decoration: _files[field] != null
+                ? null
+                : BoxDecoration(border: Border.all(color: Colors.grey)),
+            height: 160,
+            child: _files[field] != null
+                ? Image.memory(
+                    _files[field]!,
+                  )
+                : Center(child: Text(labelText)),
+          ),
+          TextButton(
+            onPressed: () {
+              pickImage(update: update);
+            },
+            child: Text(hintText),
+          ),
+        ],
+      );
 
   Widget _form({required final int index}) => Form(
-      key: _formKeys[index],
-      child: Column(
-        children: [
-          _imageForm('idCard', '请上传身份证照片', '选择身份证照片',
-              (final String filename, final Uint8List bytes) {
-            setState(() {
-              _files['idCard'] = bytes;
-              _filenames['idCard'] = filename;
-            });
-          }),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _onSubmitPressed,
-            child: Text(['提交', '修改信息', '修改信息'].elementAt(_index)),
-          )
-        ],
-      ),
-    );
+        key: _formKeys[index],
+        child: Column(
+          children: [
+            _imageForm('idCard', '请上传身份证照片', '选择身份证照片',
+                (final String filename, final Uint8List bytes) {
+              setState(() {
+                _files['idCard'] = bytes;
+                _filenames['idCard'] = filename;
+              });
+            }),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _onSubmitPressed,
+              child: Text(['提交', '修改信息', '修改信息'].elementAt(_index)),
+            )
+          ],
+        ),
+      );
 }
