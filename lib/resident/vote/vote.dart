@@ -147,58 +147,55 @@ class _ResidentVoteState extends State<ResidentVote> {
         child: Column(
           children: [
             if (_record != null)
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
+              Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      _record!.getStringValue('title'),
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
                     children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          _record!.getStringValue('title'),
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      Text(
+                        _record!.getStringValue('author'),
+                        style: TextStyle(
+                          color: Theme.of(context).primaryColor,
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Text(
-                            _record!.getStringValue('start'),
-                            style: const TextStyle(
-                              color: Colors.grey,
-                            ),
-                          ),
-                          const Text(
-                            ' 至 ',
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                          Text(
-                            _record!.getStringValue('end'),
-                            style: const TextStyle(
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
+                      const SizedBox(width: 8),
+                      Text(
+                        _record!.getStringValue('start'),
+                        style: const TextStyle(
+                          color: Colors.grey,
+                        ),
                       ),
-                      const SizedBox(height: 24),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: MarkdownBody(
-                          data: _record!.getStringValue('content'),
+                      const Text(
+                        ' 至 ',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      Text(
+                        _record!.getStringValue('end'),
+                        style: const TextStyle(
+                          color: Colors.grey,
                         ),
                       ),
                     ],
                   ),
-                ),
+                  const SizedBox(height: 12),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: MarkdownBody(
+                      data: _record!.getStringValue('content'),
+                    ),
+                  ),
+                ],
               ),
-            const SizedBox(height: 16),
             DropdownButtonFormField(
               decoration: const InputDecoration(labelText: '选项'),
               value: _option,

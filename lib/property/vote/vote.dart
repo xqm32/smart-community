@@ -21,7 +21,14 @@ class PropertyVote extends StatefulWidget {
 class _PropertyVoteState extends State<PropertyVote> {
   List<GlobalKey<FormState>> _formKeys = [];
 
-  final List<String> _fields = ['title', 'content', 'options', 'start', 'end'];
+  final List<String> _fields = [
+    'title',
+    'content',
+    'options',
+    'start',
+    'end',
+    'author'
+  ];
   Map<String, TextEditingController> _controllers = {};
   Map<String, int>? counts = {};
 
@@ -145,6 +152,14 @@ class _PropertyVoteState extends State<PropertyVote> {
                 hintText: '请填写投票标题',
               ),
               validator: FormBuilderValidators.required(errorText: '标题不能为空'),
+            ),
+            TextFormField(
+              controller: _controllers['author'],
+              decoration: const InputDecoration(
+                labelText: '作者',
+                hintText: '请填写投票作者',
+              ),
+              validator: FormBuilderValidators.required(errorText: '作者不能为空'),
             ),
             TextFormField(
               controller: _controllers['start'],

@@ -48,7 +48,15 @@ class PropertyVotes extends StatelessWidget {
           text: TextSpan(
             children: [
               TextSpan(
-                text: getDateTime(record.created),
+                text: getDate(record.getStringValue('start')),
+                style: const TextStyle(color: Colors.grey),
+              ),
+              const TextSpan(
+                text: ' 至 ',
+                style: TextStyle(color: Colors.grey),
+              ),
+              TextSpan(
+                text: getDate(record.getStringValue('end')),
                 style: const TextStyle(color: Colors.grey),
               ),
             ],
