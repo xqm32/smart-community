@@ -166,7 +166,7 @@ class AccountAvatar extends StatelessWidget {
     }
 
     return ListTile(
-      onTap: onTap,
+      // onTap: onTap,
       title: Row(
         children: [
           CircleAvatar(
@@ -195,6 +195,10 @@ class AccountAvatar extends StatelessWidget {
             ],
           ),
         ],
+      ),
+      trailing: TextButton(
+        onPressed: onTap,
+        child: const Text('更换头像'),
       ),
     );
   }

@@ -90,10 +90,50 @@ String getDateTime(final String formattedString) {
   return datetime.toIso8601String().replaceAll('T', ' ').split('.')[0];
 }
 
+bool Function(RecordModel record, String value) withKey(final String key) =>
+    (final RecordModel record, final String value) {
+      final name = record.getStringValue(key);
+      return name.isEmpty
+          ? record.expand['userId']?.first
+                  .getStringValue(key)
+                  .contains(value) ??
+              false
+          : name.contains(value);
+    };
+
+Map<String, dynamic> keyHans = {
+  '晚于': (final RecordModel record, final String value) {
+    final DateTime? datetime = DateTime.tryParse(value);
+    return datetime != null
+        ? DateTime.parse(record.created).toLocal().isAfter(datetime)
+        : false;
+  },
+  '早于': (final RecordModel record, final String value) {
+    final DateTime? datetime = DateTime.tryParse(value);
+    return datetime != null
+        ? DateTime.parse(record.created).toLocal().isBefore(datetime)
+        : false;
+  },
+  '姓名': withKey('name'),
+  '车牌号': withKey('plate'),
+};
+
 bool Function(RecordModel, String) keyFilter(final String primaryKey) =>
     (final RecordModel record, final String input) =>
         input.split(' ').every((final String element) {
-          if (element.contains(':')) {
+          if (element.contains('=')) {
+            debugPrint('=');
+            final List<String> elements =
+                element.replaceFirst('=', ' ').split(' ');
+            final String key = elements.first;
+            final String value = elements.last;
+
+            if (keyHans.containsKey(key)) {
+              return keyHans[key](record, value);
+            } else {
+              return record.getStringValue(primaryKey).contains(element);
+            }
+          } else if (element.contains(':')) {
             final List<String> elements =
                 element.replaceFirst(':', ' ').split(' ');
             final String key = elements.first;

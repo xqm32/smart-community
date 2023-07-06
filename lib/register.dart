@@ -61,6 +61,7 @@ class _RegisterFormState extends State<RegisterForm> {
     });
 
     pb.collection('users').create(body: body).then((final RecordModel value) {
+      showSuccess(context, '注册成功');
       navGoto(context, const Login());
     }).catchError((final error) {
       if (error.statusCode == 400) {

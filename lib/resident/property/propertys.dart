@@ -43,7 +43,7 @@ class ResidentPropertys extends StatelessWidget {
         ),
         onTap: () {
           Clipboard.setData(ClipboardData(
-              text: record.expand['userId']!.first.getStringValue('phone')));
+              text: record.expand['userId']!.first.getStringValue('phone'),),);
           showSuccess(context, '已复制手机号到剪贴板');
         },
       );
