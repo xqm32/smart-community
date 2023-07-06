@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:http/http.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -75,6 +76,34 @@ class _AccountState extends State<Account> {
               ),
               const Divider(height: 0),
               ListTile(
+                leading: const Icon(Icons.info),
+                onTap: () => showDialog(
+                  context: context,
+                  builder: (final context) => Dialog(
+                    surfaceTintColor: Theme.of(context).colorScheme.background,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          about(),
+                          const SizedBox(height: 15),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text('关闭'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                title: const Text('关于我们'),
+              ),
+              const Divider(height: 0),
+              ListTile(
                 leading: const Icon(Icons.logout, color: Colors.red),
                 onTap: () {
                   pb.authStore.clear();
@@ -91,6 +120,26 @@ class _AccountState extends State<Account> {
           ),
         ),
       );
+
+  Widget about() {
+    late final Future<List<RecordModel>> data =
+        pb.collection('about').getFullList(sort: '-created');
+    return FutureBuilder(
+      future: data,
+      builder: (final context, final snapshot) {
+        if (snapshot.hasData) {
+          final List<RecordModel> list = snapshot.data!;
+          if (list.isNotEmpty) {
+            return MarkdownBody(data: list.first.getStringValue('content'));
+          } else {
+            return const Text('暂无信息');
+          }
+        } else {
+          return const Text('加载中');
+        }
+      },
+    );
+  }
 }
 
 class AccountAvatar extends StatelessWidget {
