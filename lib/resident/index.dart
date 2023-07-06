@@ -8,6 +8,7 @@ import 'package:smart_community/resident/car/cars.dart';
 import 'package:smart_community/resident/family/families.dart';
 import 'package:smart_community/resident/house/houses.dart';
 import 'package:smart_community/resident/problem/problems.dart';
+import 'package:smart_community/resident/property/propertys.dart';
 import 'package:smart_community/resident/verify/verify.dart';
 import 'package:smart_community/resident/vote/votes.dart';
 import 'package:smart_community/utils.dart';
@@ -244,7 +245,10 @@ class ResidentIndexService extends StatelessWidget {
                 color: Colors.indigo,
               ),
               ResidentIndexServiceIcon(
-                onPressed: () {},
+                onPressed: () => navPush(
+                  context,
+                  ResidentPropertys(communityId: communityId),
+                ),
                 icon: Icons.phone,
                 text: '联系物业',
                 color: Colors.lightGreen,
