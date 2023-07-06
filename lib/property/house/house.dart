@@ -168,7 +168,6 @@ class _PropertyHouseState extends State<PropertyHouse> {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
             TextFormField(
               readOnly: true,
               controller: _controllers['room'],

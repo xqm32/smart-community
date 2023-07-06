@@ -10,10 +10,12 @@ class Manage extends StatefulWidget {
     required this.toElement,
     required this.filter,
     super.key,
+    this.actions,
     this.onAddPressed,
   });
 
   final Widget title;
+  final List<Widget>? actions;
   final Future<List<RecordModel>> Function() fetchRecords;
 
   final bool Function(RecordModel record, String input) filter;
@@ -45,6 +47,7 @@ class _ManageState extends State<Manage> {
         appBar: AppBar(
           title: widget.title,
           actions: [
+            if (widget.actions != null) ...widget.actions!,
             IconButton(
               onPressed: refreshRecords,
               icon: const Icon(

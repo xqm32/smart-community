@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
@@ -5,7 +9,7 @@ import 'package:smart_community/components/manage.dart';
 import 'package:smart_community/property/resident/resident.dart';
 import 'package:smart_community/utils.dart';
 
-class PropertyResidents extends StatelessWidget {
+class PropertyResidents extends StatefulWidget {
   const PropertyResidents({
     required this.communityId,
     super.key,
@@ -14,15 +18,107 @@ class PropertyResidents extends StatelessWidget {
   final String communityId;
 
   @override
+  State<PropertyResidents> createState() => _PropertyResidentsState();
+}
+
+class _PropertyResidentsState extends State<PropertyResidents> {
+  @override
   Widget build(final BuildContext context) => Manage(
         title: const Text('居民管理'),
         fetchRecords: fetchRecords,
         filter: keyFilter('name'),
         toElement: toElement,
+        actions: [
+          IconButton(
+            onPressed: () => {
+              upload()
+                  .then((final value) => showSuccess(context, '导入成功，请点击刷新按钮'))
+            },
+            icon: const Icon(Icons.upload),
+          ),
+          IconButton(
+            onPressed: () => {
+              download().then((final value) => showSuccess(context, '导出成功'))
+            },
+            icon: const Icon(Icons.download),
+          ),
+        ],
       );
 
+  Future<void> download() async {
+    final List<RecordModel> records = await fetchRecords();
+
+    final String fileName = '${widget.communityId}.json';
+    final FileSaveLocation? result =
+        await getSaveLocation(suggestedName: fileName);
+    if (result == null) {
+      return;
+    }
+
+    final List<Map<String, dynamic>> data = [];
+    for (final i in records) {
+      final u = i.expand['userId']!.first;
+      data.add({
+        'name': u.getStringValue('name'),
+        'phone': u.getStringValue('phone'),
+        'identity': u.getStringValue('identity'),
+      });
+    }
+
+    final Uint8List fileData =
+        Uint8List.fromList(JsonUtf8Encoder().convert(data));
+    final XFile textFile = XFile.fromData(fileData, name: fileName);
+    return textFile.saveTo(result.path);
+  }
+
+  Future<void> upload() async {
+    const XTypeGroup typeGroup = XTypeGroup(
+      label: 'json',
+      extensions: <String>['json'],
+    );
+    final XFile? file =
+        await openFile(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
+    if (file == null) {
+      return;
+    }
+
+    final String content = await file.readAsString();
+    final List<dynamic> data = jsonDecode(content);
+    for (final i in data) {
+      final test = await pb
+          .collection('users')
+          .getFullList(filter: 'identity = "${i['identity']}"');
+      RecordModel record;
+      if (test.isEmpty) {
+        record = await pb.collection('users').create(
+          body: {
+            'username': i['identity'],
+            'password': i['identity'].substring(9),
+            'passwordConfirm': i['identity'].substring(9),
+            'name': i['name'],
+            'phone': i['phone'],
+            'identity': i['identity'],
+            'role': 'resident',
+          },
+        );
+      } else {
+        record = test.first;
+      }
+      pb.collection('residents').create(
+        body: {
+          'communityId': widget.communityId,
+          'userId': record.id,
+          'state': 'verified',
+        },
+      ).then((final value) {
+        showSuccess(context, '导入完成，请点击刷新按钮');
+      }).catchError((final error) {});
+    }
+    return Future(() {});
+  }
+
   Future<List<RecordModel>> fetchRecords() {
-    final String filter = 'communityId = "$communityId"';
+    final String filter = 'communityId = "${widget.communityId}"';
     const String expand = 'userId';
     return pb.collection('residents').getFullList(
           expand: expand,
@@ -62,7 +158,10 @@ class PropertyResidents extends StatelessWidget {
       onTap: () {
         navPush(
           context,
-          PropertyResident(communityId: communityId, recordId: record.id),
+          PropertyResident(
+            communityId: widget.communityId,
+            recordId: record.id,
+          ),
         ).then((final value) => refreshRecords());
       },
     );

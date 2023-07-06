@@ -179,7 +179,6 @@ class _ResidentHouseState extends State<ResidentHouse> {
               ),
               validator: FormBuilderValidators.required(errorText: '地址不能为空'),
             ),
-            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
