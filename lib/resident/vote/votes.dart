@@ -56,13 +56,47 @@ class ResidentVotes extends StatelessWidget {
   }
 
   Widget _recordState(RecordModel record) {
+    late Future<List<RecordModel>> result =
+        pb.collection('results').getFullList(
+              filter:
+                  'voteId = "${record.id}" && userId = "${pb.authStore.model!.id}"',
+            );
     final start = record.getStringValue('start');
     final end = record.getStringValue('end');
     const double fontSize = 16;
 
+    return FutureBuilder(
+      future: result,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data!.isEmpty) {
+            return _recordStateText(start, end, fontSize);
+          } else {
+            return const Text(
+              '已投票',
+              style: TextStyle(
+                color: Colors.blue,
+                fontSize: fontSize,
+              ),
+            );
+          }
+        } else {
+          return const Text(
+            '加载中',
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: fontSize,
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  Widget _recordStateText(String start, String end, double fontSize) {
     if (start.isNotEmpty &&
         DateTime.now().toLocal().isBefore(DateTime.parse(start))) {
-      return const Text(
+      return Text(
         '未开始',
         style: TextStyle(
           color: Colors.purple,
@@ -71,7 +105,7 @@ class ResidentVotes extends StatelessWidget {
       );
     } else if (end.isNotEmpty &&
         DateTime.now().toLocal().isAfter(DateTime.parse(end))) {
-      return const Text(
+      return Text(
         '已结束',
         style: TextStyle(
           color: Colors.red,
@@ -79,7 +113,7 @@ class ResidentVotes extends StatelessWidget {
         ),
       );
     } else {
-      return const Text(
+      return Text(
         '进行中',
         style: TextStyle(
           color: Colors.green,

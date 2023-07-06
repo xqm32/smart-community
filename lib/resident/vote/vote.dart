@@ -79,7 +79,7 @@ class _ResidentVoteState extends State<ResidentVote> {
     RecordModel? result;
 
     final resultsFilter =
-        'voteId = "${record.id}" && userId = "${pb.authStore.model!.id}"';
+        'voteId = "${widget.recordId}" && userId = "${pb.authStore.model!.id}"';
     final results =
         await pb.collection('results').getFullList(filter: resultsFilter);
     if (results.isNotEmpty) {
@@ -107,6 +107,7 @@ class _ResidentVoteState extends State<ResidentVote> {
       'userId': pb.authStore.model!.id,
       // 'communityId': widget.communityId,
       'voteId': widget.recordId,
+      'option': _option,
     });
 
     return body;
@@ -121,13 +122,13 @@ class _ResidentVoteState extends State<ResidentVote> {
       pb
           .collection('results')
           .create(body: _getBody())
-          .then(_setRecord)
+          .then((value) => service.getOne(widget.recordId).then(_setRecord))
           .catchError((error) => showException(context, error));
     } else {
       pb
           .collection('results')
           .update(_result!.id, body: _getBody())
-          .then(_setRecord)
+          .then((value) => service.getOne(widget.recordId).then(_setRecord))
           .catchError((error) => showException(context, error));
     }
   }
@@ -165,7 +166,7 @@ class _ResidentVoteState extends State<ResidentVote> {
                             color: Colors.grey,
                           ),
                         ),
-                        const Text(' - ', style: TextStyle(color: Colors.grey)),
+                        const Text(' 至 ', style: TextStyle(color: Colors.grey)),
                         Text(
                           _record!.getStringValue('end'),
                           style: const TextStyle(
@@ -251,7 +252,7 @@ class _ResidentVoteState extends State<ResidentVote> {
   }
 
   List<Widget>? _actionsBuilder(context) {
-    if (_record == null) {
+    if (_result == null) {
       return null;
     }
 
@@ -273,7 +274,7 @@ class _ResidentVoteState extends State<ResidentVote> {
                 ),
                 TextButton(
                   onPressed: () {
-                    service.delete(_record!.id).then((value) {
+                    pb.collection('results').delete(_result!.id).then((value) {
                       navPop(context, 'OK');
                       navPop(context);
                     });
