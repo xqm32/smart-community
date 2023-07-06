@@ -157,11 +157,13 @@ class _ResidentHouseState extends State<ResidentHouse> {
           .create(body: _getBody())
           .then(_setRecord)
           .catchError((final error) => showException(context, error));
+      showSuccess(context, '提交成功');
     } else {
       service
           .update(_record!.id, body: _getBody())
           .then(_setRecord)
           .catchError((final error) => showException(context, error));
+      showSuccess(context, '修改成功');
     }
   }
 

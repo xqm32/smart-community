@@ -207,11 +207,13 @@ class _ResidentCarState extends State<ResidentCar> {
           .create(body: _getBody(), files: files)
           .then(_setRecord)
           .catchError((final error) => showException(context, error));
+      showSuccess(context, '提交成功');
     } else {
       service
           .update(_record!.id, body: _getBody(), files: files)
           .then(_setRecord)
           .catchError((final error) => showException(context, error));
+      showSuccess(context, '修改成功');
     }
   }
 

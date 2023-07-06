@@ -128,6 +128,7 @@ class _ResidentVoteState extends State<ResidentVote> {
                 service.getOne(widget.recordId).then(_setRecord),
           )
           .catchError((final error) => showException(context, error));
+      showSuccess(context, '投票成功');
     } else {
       pb
           .collection('results')
@@ -137,6 +138,7 @@ class _ResidentVoteState extends State<ResidentVote> {
                 service.getOne(widget.recordId).then(_setRecord),
           )
           .catchError((final error) => showException(context, error));
+      showSuccess(context, '修改成功');
     }
   }
 

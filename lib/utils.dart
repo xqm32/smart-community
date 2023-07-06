@@ -46,6 +46,15 @@ void showSuccess(final context, final error) {
   );
 }
 
+void showInfo(final context, final error, final Color? color) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text('$error'),
+      backgroundColor: color ?? Theme.of(context).colorScheme.primary,
+    ),
+  );
+}
+
 String? usernameValidator(final String? value) {
   if (value == null || value.isEmpty || value.length < 3) {
     return '用户名长度至少为 3';

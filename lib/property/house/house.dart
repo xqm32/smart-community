@@ -120,6 +120,11 @@ class _PropertyHouseState extends State<PropertyHouse> {
             .update(_record!.id, body: body, expand: _expand)
             .then(_setRecord)
             .catchError((final error) => showException(context, error));
+        if (state == 'verified') {
+          showSuccess(context, '已通过');
+        } else if (state == 'rejected') {
+          showInfo(context, '已驳回', Colors.red);
+        }
       };
 
   Widget _form({required final int index}) => Form(

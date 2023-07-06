@@ -120,6 +120,11 @@ class _PropertyCarState extends State<PropertyCar> {
             .update(_record!.id, body: body, expand: _expand)
             .then(_setRecord)
             .catchError((final error) => showException(context, error));
+        if (state == 'verified') {
+          showSuccess(context, '已通过');
+        } else if (state == 'rejected') {
+          showInfo(context, '已驳回', Colors.red);
+        }
       };
 
   Widget _form({required final int index}) => Form(
@@ -184,6 +189,25 @@ class _PropertyCarState extends State<PropertyCar> {
               decoration: const InputDecoration(
                 labelText: '房屋',
               ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              decoration:
+                  _record != null && _record!.getStringValue('photo').isNotEmpty
+                      ? null
+                      : BoxDecoration(border: Border.all(color: Colors.grey)),
+              height: 160,
+              child:
+                  _record != null && _record!.getStringValue('photo').isNotEmpty
+                      ? Image.network(
+                          pb
+                              .getFileUrl(
+                                _record!,
+                                _record!.getStringValue('photo'),
+                              )
+                              .toString(),
+                        )
+                      : const Center(child: Text('用户未上传图片')),
             ),
             const SizedBox(height: 16),
             ElevatedButton(

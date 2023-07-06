@@ -112,6 +112,7 @@ class _PropertyInformationState extends State<PropertyInformation> {
         .update(_record!.id, body: _getBody())
         .then(_setRecord)
         .catchError((final error) => showException(context, error));
+    showSuccess(context, '提交成功');
   }
 
   Widget _form({required final int index}) => Form(

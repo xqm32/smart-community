@@ -124,6 +124,11 @@ class _PropertyProblemState extends State<PropertyProblem> {
             .update(_record!.id, body: body, expand: _expand)
             .then(_setRecord)
             .catchError((final error) => showException(context, error));
+        if (state == 'finished') {
+          showSuccess(context, '已通过');
+        } else if (state == 'processing') {
+          showInfo(context, '已转交', Colors.orange);
+        }
       };
 
   Widget _form({required final int index}) => Form(
@@ -151,7 +156,6 @@ class _PropertyProblemState extends State<PropertyProblem> {
                 labelText: '标题',
               ),
             ),
-            const SizedBox(height: 16),
             TextFormField(
               readOnly: true,
               controller: _controllers['content'],
@@ -163,22 +167,23 @@ class _PropertyProblemState extends State<PropertyProblem> {
             ),
             const SizedBox(height: 16),
             Container(
-              decoration: _record != null
-                  ? null
-                  : BoxDecoration(border: Border.all(color: Colors.grey)),
+              decoration:
+                  _record != null && _record!.getStringValue('photo').isNotEmpty
+                      ? null
+                      : BoxDecoration(border: Border.all(color: Colors.grey)),
               height: 160,
-              child: _record != null
-                  ? Image.network(
-                      pb
-                          .getFileUrl(
-                            _record!,
-                            _record!.getStringValue('photo'),
-                          )
-                          .toString(),
-                    )
-                  : const Text('用户未上传图片'),
+              child:
+                  _record != null && _record!.getStringValue('photo').isNotEmpty
+                      ? Image.network(
+                          pb
+                              .getFileUrl(
+                                _record!,
+                                _record!.getStringValue('photo'),
+                              )
+                              .toString(),
+                        )
+                      : const Center(child: Text('用户未上传图片')),
             ),
-            const Text('问题照片'),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _onPressed('finished'),
