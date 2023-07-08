@@ -1,16 +1,38 @@
-# smart_community
+# Smart Community
 
-A new Flutter project.
+A **Smart Community** application built with [Flutter](https://flutter.dev) and [PocketBase](https://pocketbase.io).
 
-## Getting Started
+# How To Build
 
-This project is a starting point for a Flutter application.
+## Prerequisites
 
-A few resources to get you started if this is your first Flutter project:
+- Flutter 3.10.5
+- PocketBase 0.16.5
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Command
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```sh
+flutter build web --web-renderer canvaskit --no-web-resources-cdn
+```
+
+# How To Run
+
+## Prerequisites
+
+- Open PocketBase admin UI and import `scheme.json`
+
+## Command
+
+You can use any framework run the web build, here is a `python` example.
+
+```sh
+cd path/to/build
+python -m http.server
+```
+
+Then open another terminal and run:
+
+```sh
+cd path/to/database
+pocketbase serve
+```
