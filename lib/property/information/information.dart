@@ -137,7 +137,7 @@ class _PropertyInformationState extends State<PropertyInformation> {
                 floatingLabelBehavior: FloatingLabelBehavior.always,
               ),
               validator: FormBuilderValidators.required(errorText: '小区架构不能为空'),
-              maxLines: null,
+              maxLines: 16,
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -149,7 +149,7 @@ class _PropertyInformationState extends State<PropertyInformation> {
                 floatingLabelBehavior: FloatingLabelBehavior.always,
               ),
               validator: FormBuilderValidators.required(errorText: '车位架构不能为空'),
-              maxLines: null,
+              maxLines: 16,
             ),
             const SizedBox(height: 16),
             ElevatedButton(

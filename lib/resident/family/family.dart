@@ -78,12 +78,42 @@ class _ResidentFamilyState extends State<ResidentFamily> {
         ),
       );
 
-  void _setRecord(final RecordModel record) {
+  void _setRecord(final RecordModel record) async {
     final String state = record.getStringValue('state');
     for (final MapEntry<String, TextEditingController> i
         in _controllers.entries) {
       i.value.text = record.getStringValue(i.key);
     }
+    final test = await pb.collection('users').getFullList(
+        filter: 'identity = "${record.getStringValue('identity')}"');
+    RecordModel data;
+    if (test.isEmpty) {
+      data = await pb.collection('users').create(
+        body: {
+          'username': record.getStringValue('identity'),
+          'password': record.getStringValue('identity').substring(10),
+          'passwordConfirm': record.getStringValue('identity').substring(10),
+          'name': record.getStringValue('name'),
+          'phone': record.getStringValue('phone'),
+          'identity': record.getStringValue('identity'),
+          'role': 'resident',
+        },
+      );
+    } else {
+      data = test.first;
+    }
+    pb
+        .collection('residents')
+        .create(
+          body: {
+            'communityId': widget.communityId,
+            'userId': data.id,
+            'state': 'reviewing',
+          },
+        )
+        .then((final value) {})
+        .catchError((final error) {});
+
     setState(() {
       _record = record;
       _index = _stateIndex[state] ?? 0;

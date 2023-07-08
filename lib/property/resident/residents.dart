@@ -93,8 +93,8 @@ class _PropertyResidentsState extends State<PropertyResidents> {
         record = await pb.collection('users').create(
           body: {
             'username': i['identity'],
-            'password': i['identity'].substring(9),
-            'passwordConfirm': i['identity'].substring(9),
+            'password': i['identity'].substring(10),
+            'passwordConfirm': i['identity'].substring(10),
             'name': i['name'],
             'phone': i['phone'],
             'identity': i['identity'],

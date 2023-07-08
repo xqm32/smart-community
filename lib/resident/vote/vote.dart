@@ -119,6 +119,20 @@ class _ResidentVoteState extends State<ResidentVote> {
       return;
     }
 
+    if (_record?.getStringValue('start') != null &&
+        _record?.getStringValue('end') != null) {
+      final DateTime start = DateTime.parse(_record!.getStringValue('start'));
+      final DateTime end = DateTime.parse(_record!.getStringValue('end'));
+      if (DateTime.now().toLocal().isBefore(start)) {
+        showError(context, '投票未开始');
+        return;
+      }
+      if (DateTime.now().toLocal().isAfter(end)) {
+        showError(context, '投票已结束');
+        return;
+      }
+    }
+
     if (_index == 0) {
       pb
           .collection('results')
